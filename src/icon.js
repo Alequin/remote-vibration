@@ -1,5 +1,6 @@
 import React from "react";
 import { MaterialCommunityIcons, Ionicons, Entypo } from "@expo/vector-icons";
+import { Text } from "react-native";
 
 export const Icon = ({ icon, ...otherProps }) => {
   const IconToRender = ICON_OPTIONS[icon];
@@ -8,8 +9,26 @@ export const Icon = ({ icon, ...otherProps }) => {
   return <IconToRender {...otherProps} />;
 };
 const ICON_OPTIONS = {
-  stop: (props) => <MaterialCommunityIcons name="cancel" {...props} />,
-  vibrate: (props) => <MaterialCommunityIcons name="vibrate" {...props} />,
-  createNewItem: (props) => <Ionicons name="create-outline" {...props} />,
-  link: (props) => <Entypo name="link" {...props} />,
+  stop: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="stopIcon" {...otherProps}>
+      <MaterialCommunityIcons name="cancel" size={size} color={color} />
+    </TestWrapper>
+  ),
+  vibrate: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="vibrateIcon" {...otherProps}>
+      <MaterialCommunityIcons name="vibrate" size={size} color={color} />
+    </TestWrapper>
+  ),
+  createNewItem: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="createNewItemIcon" {...otherProps}>
+      <Ionicons name="create-outline" size={size} color={color} />
+    </TestWrapper>
+  ),
+  link: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="linkIcon" {...otherProps}>
+      <Entypo name="link" size={size} color={color} />
+    </TestWrapper>
+  ),
 };
+
+const TestWrapper = (props) => <Text {...props} />;

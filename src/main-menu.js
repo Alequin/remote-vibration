@@ -7,7 +7,6 @@ import {
   Text,
   Dimensions,
 } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Icon } from "./icon";
 
 export const MainMenu = () => {
@@ -17,7 +16,7 @@ export const MainMenu = () => {
         Make This Phone Vibrate
       </MenuButton>
       <MenuButton icon="createNewItem">Create Vibration Pattern</MenuButton>
-      <MenuButton icon="vibrate">Connect To Another Device</MenuButton>
+      <MenuButton icon="link">Connect To Another Device</MenuButton>
       <MenuButton isBottom icon="stop">
         Turn Off Ads
       </MenuButton>
@@ -33,7 +32,7 @@ const MenuButton = (props) => {
   }, [props.isTop, props.isBottom]);
 
   return (
-    <View style={buttonStyle}>
+    <View style={buttonStyle} accessibilityRole="button">
       <TouchableOpacity {...props}>
         <Icon
           color="white"
