@@ -1,15 +1,9 @@
 import React from "react";
-import { useMemo } from "react";
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Text,
-  Dimensions,
-} from "react-native";
-import { Background } from "./background";
-import { Icon } from "./icon";
-import * as pages from "./pages";
+import { StyleSheet, Text, Dimensions } from "react-native";
+import { Background } from "./shared/background";
+import { Icon } from "./shared/icon";
+import * as pages from "./shared/pages";
+import { Button } from "./shared/button";
 
 export const MainMenu = ({ navigation }) => (
   <Background style={ViewStyles.container}>
@@ -27,60 +21,25 @@ export const MainMenu = ({ navigation }) => (
   </Background>
 );
 
-const MenuButton = (props) => {
-  const buttonStyle = useMemo(() => {
-    if (props.isTop) return ViewStyles.topMenuButton;
-    if (props.isBottom) return ViewStyles.bottomMenuButton;
-    return ViewStyles.menuButton;
-  }, [props.isTop, props.isBottom]);
-
-  return (
-    <View style={buttonStyle} accessibilityRole="button">
-      <TouchableOpacity {...props}>
-        <Icon
-          color="white"
-          icon={props.icon}
-          style={ViewStyles.buttonIcon}
-          size={32}
-        />
-        <Text style={ViewStyles.menuButtonText}>{props.children}</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const baseMenuButton = {
-  width: "80%",
-  backgroundColor: "transparent",
-  borderColor: "white",
-  borderWidth: 1,
-  paddingTop: 30,
-  paddingBottom: 30,
-  paddingLeft: 10,
-  paddingRight: 10,
-};
+const MenuButton = ({ icon, children, ...otherProps }) => (
+  <Button style={ViewStyles.menuButton} {...otherProps}>
+    <Icon color="white" icon={icon} style={ViewStyles.buttonIcon} size={32} />
+    <Text style={ViewStyles.menuButtonText}>{children}</Text>
+  </Button>
+);
 
 const ViewStyles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "black",
-    alignItems: "center",
     paddingTop: Dimensions.get("window").height * 0.15,
   },
-  topMenuButton: {
-    ...baseMenuButton,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  menuButton: baseMenuButton,
-  bottomMenuButton: {
-    ...baseMenuButton,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
+  menuButton: {
+    width: "100%",
+    paddingTop: 30,
+    paddingBottom: 30,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   menuButtonText: {
-    width: "100%",
-    backgroundColor: "transparent",
     color: "white",
     textAlign: "center",
   },

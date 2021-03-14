@@ -12,7 +12,7 @@ export const Background = ({ style, children, ...otherProps }) => {
 
   return (
     <ImageBackground
-      source={require("../assets/background.webp")}
+      source={require("../../assets/background.webp")}
       style={styleToUse}
       {...otherProps}
     >
@@ -26,5 +26,7 @@ const ViewStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: "black",
     alignItems: "center",
+    paddingLeft: "5%",
+    paddingRight: "5%",
   },
 });

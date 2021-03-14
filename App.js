@@ -3,9 +3,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { MainMenu } from "./src/main-menu";
-import { localVibration } from "./src/local-vibration";
-import { Icon } from "./src/icon";
-import * as pages from "./src/pages";
+import { VibrateOnCurrentPhone } from "./src/vibrate-on-current-phone";
+import { Icon } from "./src/shared/icon";
+import * as pages from "./src/shared/pages";
 
 const Stack = createStackNavigator();
 
@@ -33,7 +33,10 @@ const App = () => {
           name={pages.mainMenu}
           component={MainMenu}
         />
-        <Stack.Screen name={pages.localVibration} component={localVibration} />
+        <Stack.Screen
+          name={pages.localVibration}
+          component={VibrateOnCurrentPhone}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
