@@ -1,20 +1,28 @@
 import React, { useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, ImageBackground } from "react-native";
 
-export const Background = ({ style, ...otherProps }) => {
+export const Background = ({ style, children, ...otherProps }) => {
   const styleToUse = useMemo(
     () => ({
-      ...ViewStyles.container,
+      ...ViewStyles.backgroundImage,
       ...style,
     }),
     [ViewStyles.container, style]
   );
 
-  return <View style={styleToUse} {...otherProps}></View>;
+  return (
+    <ImageBackground
+      source={require("../assets/background.webp")}
+      style={styleToUse}
+      {...otherProps}
+    >
+      {children}
+    </ImageBackground>
+  );
 };
 
 const ViewStyles = StyleSheet.create({
-  container: {
+  backgroundImage: {
     flex: 1,
     backgroundColor: "black",
     alignItems: "center",
