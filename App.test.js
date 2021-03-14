@@ -9,19 +9,11 @@ describe("App", () => {
     const buttons = getAllByRole("button");
 
     const makeCurrentPhoneVibrateButton = buttons.find((button) =>
-      within(button).queryByText("Make This Phone Vibrate")
+      within(button).queryByText("Vibrate On Current Phone")
     );
     expect(makeCurrentPhoneVibrateButton).toBeDefined();
     expect(
       within(makeCurrentPhoneVibrateButton).getByTestId("vibrateIcon")
-    ).toBeDefined();
-
-    const makeNewVibrationPatternButton = buttons.find((button) =>
-      within(button).queryByText("Create Vibration Pattern")
-    );
-    expect(makeNewVibrationPatternButton).toBeDefined();
-    expect(
-      within(makeNewVibrationPatternButton).getByTestId("createNewItemIcon")
     ).toBeDefined();
 
     const connectToAnotherDeviceButton = buttons.find((button) =>

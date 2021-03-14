@@ -7,22 +7,25 @@ import {
   Text,
   Dimensions,
 } from "react-native";
+import { Background } from "./background";
 import { Icon } from "./icon";
+import * as pages from "./pages";
 
-export const MainMenu = () => {
-  return (
-    <View style={ViewStyles.container}>
-      <MenuButton isTop icon="vibrate">
-        Make This Phone Vibrate
-      </MenuButton>
-      <MenuButton icon="createNewItem">Create Vibration Pattern</MenuButton>
-      <MenuButton icon="link">Connect To Another Device</MenuButton>
-      <MenuButton isBottom icon="stop">
-        Turn Off Ads
-      </MenuButton>
-    </View>
-  );
-};
+export const MainMenu = ({ navigation }) => (
+  <Background style={ViewStyles.container}>
+    <MenuButton
+      isTop
+      icon="vibrate"
+      onPress={() => navigation.navigate(pages.localVibration)}
+    >
+      Vibrate On Current Phone
+    </MenuButton>
+    <MenuButton icon="link">Connect To Another Device</MenuButton>
+    <MenuButton isBottom icon="stop">
+      Turn Off Ads
+    </MenuButton>
+  </Background>
+);
 
 const MenuButton = (props) => {
   const buttonStyle = useMemo(() => {

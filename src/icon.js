@@ -19,14 +19,14 @@ const ICON_OPTIONS = {
       <MaterialCommunityIcons name="vibrate" size={size} color={color} />
     </TestWrapper>
   ),
-  createNewItem: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="createNewItemIcon" {...otherProps}>
-      <Ionicons name="create-outline" size={size} color={color} />
-    </TestWrapper>
-  ),
   link: ({ size, color, ...otherProps }) => (
     <TestWrapper testID="linkIcon" {...otherProps}>
       <Entypo name="link" size={size} color={color} />
+    </TestWrapper>
+  ),
+  backArrow: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="backArrowIcon" {...otherProps}>
+      <Ionicons name="arrow-back-sharp" size={size} color={color} />
     </TestWrapper>
   ),
 };
