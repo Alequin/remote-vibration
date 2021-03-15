@@ -1,8 +1,8 @@
 import React from "React";
-import { fireEvent, render, within } from "@testing-library/react-native";
+import { render, within } from "@testing-library/react-native";
 import App from "./App";
 
-describe("App - From Menu", () => {
+describe("App - Menu", () => {
   it("displays the expected menu buttons by default", async () => {
     const { getAllByRole } = render(<App />);
 
@@ -29,19 +29,5 @@ describe("App - From Menu", () => {
     );
     expect(disableAdsButton).toBeDefined();
     expect(within(disableAdsButton).getByTestId("stopIcon")).toBeDefined();
-  });
-
-  it("allows the users to go to the 'vibrate on current phone' page", async () => {
-    const { debug, getAllByRole, getByTestId } = render(<App />);
-
-    const buttons = getAllByRole("button");
-
-    const makeCurrentPhoneVibrateButton = buttons.find((button) =>
-      within(button).queryByText("Vibrate On Current Phone")
-    );
-
-    fireEvent.press(makeCurrentPhoneVibrateButton);
-
-    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
   });
 });

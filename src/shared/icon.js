@@ -1,5 +1,11 @@
 import React from "react";
-import { MaterialCommunityIcons, Ionicons, Entypo } from "@expo/vector-icons";
+import {
+  MaterialCommunityIcons,
+  Ionicons,
+  Entypo,
+  AntDesign,
+  Feather,
+} from "@expo/vector-icons";
 import { Text } from "react-native";
 
 export const Icon = ({ icon, ...otherProps }) => {
@@ -27,6 +33,11 @@ const ICON_OPTIONS = {
   backArrow: ({ size, color, ...otherProps }) => (
     <TestWrapper testID="backArrowIcon" {...otherProps}>
       <Ionicons name="arrow-back-sharp" size={size} color={color} />
+    </TestWrapper>
+  ),
+  play: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="playIcon" {...otherProps}>
+      <Feather name="play" size={size} color={color} />
     </TestWrapper>
   ),
 };

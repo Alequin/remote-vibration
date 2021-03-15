@@ -1,18 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, Dimensions } from "react-native";
-import { Background } from "./shared/background";
-import { Icon } from "./shared/icon";
-import * as pages from "./shared/pages";
-import { Button } from "./shared/button";
+import { Background } from "../shared/background";
+import { Icon } from "../shared/icon";
+import { Button } from "../shared/button";
+import * as pageNames from "./page-names";
 
 export const MainMenu = ({ navigation }) => (
-  <Background style={ViewStyles.container}>
+  <Background style={ViewStyles.container} testID="main-menu-page">
     <MenuButton
       isTop
       icon="vibrate"
-      onPress={() => navigation.navigate(pages.localVibration)}
+      onPress={() => navigation.navigate(pageNames.vibrateOnCurrentPhone)}
     >
-      Vibrate On Current Phone
+      {pageNames.vibrateOnCurrentPhone}
     </MenuButton>
     <MenuButton icon="link">Connect To Another Device</MenuButton>
     <MenuButton isBottom icon="stop">

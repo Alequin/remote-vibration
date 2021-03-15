@@ -2,10 +2,11 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import { MainMenu } from "./src/main-menu";
-import { VibrateOnCurrentPhone } from "./src/vibrate-on-current-phone";
 import { Icon } from "./src/shared/icon";
-import * as pages from "./src/shared/pages";
+import * as pageNames from "./src/pages/page-names";
+
+import { MainMenu } from "./src/pages/main-menu";
+import { VibrateOnCurrentPhone } from "./src/pages/vibrate-on-current-phone";
 
 const Stack = createStackNavigator();
 
@@ -13,7 +14,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={pages.mainMenu}
+        initialRouteName={pageNames.mainMenu}
         screenOptions={{
           headerStyle: {
             backgroundColor: "black",
@@ -26,20 +27,28 @@ const App = () => {
           ),
         }}
       >
-        <Stack.Screen
-          options={{
-            headerShown: false,
-          }}
-          name={pages.mainMenu}
-          component={MainMenu}
-        />
-        <Stack.Screen
-          name={pages.localVibration}
-          component={VibrateOnCurrentPhone}
-        />
+        {menuPage()}
+        {vibrateOnCurrentPhonePage()}
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
+
+const menuPage = () => (
+  <Stack.Screen
+    options={{
+      headerShown: false,
+    }}
+    name={pageNames.mainMenu}
+    component={MainMenu}
+  />
+);
+
+const vibrateOnCurrentPhonePage = () => (
+  <Stack.Screen
+    name={pageNames.vibrateOnCurrentPhone}
+    component={VibrateOnCurrentPhone}
+  />
+);
 
 export default App;
