@@ -3,7 +3,7 @@ import {
   MaterialCommunityIcons,
   Ionicons,
   Entypo,
-  AntDesign,
+  MaterialIcons,
   Feather,
 } from "@expo/vector-icons";
 import { Text } from "react-native";
@@ -38,6 +38,16 @@ const ICON_OPTIONS = {
   play: ({ size, color, ...otherProps }) => (
     <TestWrapper testID="playIcon" {...otherProps}>
       <Feather name="play" size={size} color={color} />
+    </TestWrapper>
+  ),
+  checkBoxActive: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="checkBoxActiveIcon" {...otherProps}>
+      <MaterialIcons name="check-box" size={size} color={color} />
+    </TestWrapper>
+  ),
+  checkBoxInactive: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="checkBoxInactiveIcon" {...otherProps}>
+      <MaterialIcons name="check-box-outline-blank" size={size} color={color} />
     </TestWrapper>
   ),
 };

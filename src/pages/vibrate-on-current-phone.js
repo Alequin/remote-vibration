@@ -5,6 +5,8 @@ import { FlatList, StyleSheet, View, Text } from "react-native";
 import { Background } from "../shared/background";
 import { borderRadius } from "../shared/border-radius";
 import { BorderlessButton } from "../shared/borderless-button";
+import { CheckBox } from "../shared/check-box";
+import { CheckBoxWithText } from "../shared/checkbox-with-text";
 import { Icon } from "../shared/icon";
 import { newVibrationPattern } from "../shared/new-vibration-pattern";
 import { vibrate } from "../shared/vibrate";
@@ -23,6 +25,8 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     setPlayingExampleVibration,
   } = useManageExampleVibrationButtons();
 
+  const [isRepeatTurnedOn, setIsRepeatTurnedOn] = useState(false);
+
   return (
     <Background
       style={ViewStyles.container}
@@ -35,6 +39,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
           renderItem={({ item }) => (
             <ListItem
               item={item}
+              isRepeatTurnedOn={isRepeatTurnedOn}
               keyOfCurrentlyPlayingExampleVibration={
                 keyOfCurrentlyPlayingExampleVibration
               }
@@ -43,6 +48,16 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
           )}
         />
       </View>
+      <CheckBoxWithText
+        isActive={isRepeatTurnedOn}
+        onStatusChange={setIsRepeatTurnedOn}
+        size={24}
+        color="white"
+        containerStyle={ViewStyles.checkBoxContainer}
+        textStyle={ViewStyles.checkboxText}
+      >
+        Repeat
+      </CheckBoxWithText>
     </Background>
   );
 };
@@ -71,6 +86,7 @@ const ListItem = ({
   item,
   keyOfCurrentlyPlayingExampleVibration,
   setPlayingExampleVibration,
+  isRepeatTurnedOn,
 }) => {
   const isThisItemVibrating =
     keyOfCurrentlyPlayingExampleVibration === item.key;
@@ -92,16 +108,18 @@ const ListItem = ({
 
             setPlayingExampleVibration({
               key: item.key,
-              disablingTimeout: setTimeout(
-                () =>
-                  setPlayingExampleVibration({
-                    key: null,
-                    disablingTimeout: null,
-                  }),
-                item.runTime
-              ),
+              disablingTimeout:
+                !isRepeatTurnedOn &&
+                setTimeout(
+                  () =>
+                    setPlayingExampleVibration({
+                      key: null,
+                      disablingTimeout: null,
+                    }),
+                  item.runTime
+                ),
             });
-            vibrate.start(item.pattern);
+            vibrate.start(item.pattern, isRepeatTurnedOn);
           }}
         />
       </View>
@@ -158,5 +176,15 @@ const ViewStyles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     padding: 20,
+  },
+  checkBoxContainer: {
+    width: "100%",
+    justifyContent: "space-between",
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  checkboxText: {
+    color: "white",
+    fontSize: 24,
   },
 });

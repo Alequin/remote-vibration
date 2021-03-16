@@ -6,11 +6,11 @@ const newVibrationManager = () => {
   let timeout = null;
 
   return {
-    start: (pattern) => {
+    start: (pattern, isRepeatTurnedOn) => {
       const totalRuntime = sum(pattern);
       isVibrating = true;
 
-      Vibration.vibrate(pattern);
+      Vibration.vibrate(pattern, isRepeatTurnedOn);
       timeout = setTimeout(() => (isVibrating = false), totalRuntime);
     },
     isVibrating: () => isVibrating,
