@@ -1,15 +1,14 @@
 import { last } from "lodash";
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { useCallback } from "react";
-import { FlatList, StyleSheet, View, Text } from "react-native";
+import { FlatList, StyleSheet, View, Text, Vibration } from "react-native";
 import { Background } from "../shared/background";
 import { borderRadius } from "../shared/border-radius";
 import { BorderlessButton } from "../shared/borderless-button";
-import { CheckBox } from "../shared/check-box";
 import { CheckBoxWithText } from "../shared/checkbox-with-text";
 import { Icon } from "../shared/icon";
 import { newVibrationPattern } from "../shared/new-vibration-pattern";
-import { vibrate } from "../shared/vibrate";
 
 const data = [
   newVibrationPattern("Constant", [4]),
@@ -20,12 +19,16 @@ const data = [
 }));
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
-  const {
+  const [
     keyOfCurrentlyPlayingExampleVibration,
-    setPlayingExampleVibration,
-  } = useManageExampleVibrationButtons();
+    setKeyOfCurrentlyPlayingExampleVibration,
+  ] = useState(null);
 
   const [isRepeatTurnedOn, setIsRepeatTurnedOn] = useState(false);
+
+  useEffect(() => {
+    return () => Vibration.cancel();
+  }, []);
 
   return (
     <Background
@@ -36,6 +39,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
         <FlatList
           data={data}
           onStartShouldSetResponderCapture={() => true}
+          keyExtractor={({ id }) => id}
           renderItem={({ item }) => (
             <ListItem
               item={item}
@@ -43,7 +47,10 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
               keyOfCurrentlyPlayingExampleVibration={
                 keyOfCurrentlyPlayingExampleVibration
               }
-              setPlayingExampleVibration={setPlayingExampleVibration}
+              onPressPlay={({ key, pattern }) => {
+                setKeyOfCurrentlyPlayingExampleVibration(key);
+                Vibration.vibrate(pattern, true);
+              }}
             />
           )}
         />
@@ -85,7 +92,7 @@ const useManageExampleVibrationButtons = () => {
 const ListItem = ({
   item,
   keyOfCurrentlyPlayingExampleVibration,
-  setPlayingExampleVibration,
+  onPressPlay,
   isRepeatTurnedOn,
 }) => {
   const isThisItemVibrating =
@@ -103,24 +110,7 @@ const ListItem = ({
         <IconButton
           icon="play"
           color={isThisItemVibrating ? "green" : "white"}
-          onPress={() => {
-            vibrate.stop();
-
-            setPlayingExampleVibration({
-              key: item.key,
-              disablingTimeout:
-                !isRepeatTurnedOn &&
-                setTimeout(
-                  () =>
-                    setPlayingExampleVibration({
-                      key: null,
-                      disablingTimeout: null,
-                    }),
-                  item.runTime
-                ),
-            });
-            vibrate.start(item.pattern, isRepeatTurnedOn);
-          }}
+          onPress={() => onPressPlay(item)}
         />
       </View>
     </View>

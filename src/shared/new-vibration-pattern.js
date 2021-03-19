@@ -1,4 +1,4 @@
-import { sum } from "lodash";
+import { sum, uniqueId } from "lodash";
 
 const seconds = (amount) => amount * 1000;
 
@@ -14,6 +14,7 @@ export const newVibrationPattern = (name, pattern) => {
   const totalRunTime = sum(patternInMilliseconds);
 
   return {
+    id: uniqueId(),
     name,
     pattern: [0, ...patternInMilliseconds],
     runTime: totalRunTime,
