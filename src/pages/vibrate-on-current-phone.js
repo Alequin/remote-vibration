@@ -1,11 +1,10 @@
-import { last } from "lodash";
-import React, { useState } from "react";
-import { useEffect } from "react";
+import { last, round } from "lodash";
+import React, { useState, useEffect, useCallback } from "react";
 import { FlatList, StyleSheet, View, Text, Vibration } from "react-native";
+import Slider from "@react-native-community/slider";
 import { Background } from "../shared/background";
 import { borderRadius } from "../shared/border-radius";
 import { BorderlessButton } from "../shared/borderless-button";
-import { CheckBoxWithText } from "../shared/checkbox-with-text";
 import { Icon } from "../shared/icon";
 import {
   patterns,
@@ -15,69 +14,139 @@ import {
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
   const [
-    keyOfCurrentlyPlayingExampleVibration,
-    setKeyOfCurrentlyPlayingExampleVibration,
+    nameOfCurrentlyPlayingExampleVibration,
+    setNameOfCurrentlyPlayingExampleVibration,
   ] = useState(null);
 
-  const [isRepeatTurnedOn, setIsRepeatTurnedOn] = useState(false);
+  const [
+    hasSpeedModifierBeingPicked,
+    setHasSpeedModifierBeingPicked,
+  ] = useState(true);
+  const {
+    speedModifier,
+    setSpeedModifier,
+    applySpeedModifier,
+  } = useSpeedModifier();
 
   useEffect(() => {
-    return () => Vibration.cancel();
-  }, []);
+    if (nameOfCurrentlyPlayingExampleVibration && hasSpeedModifierBeingPicked) {
+      const pattern =
+        nameOfCurrentlyPlayingExampleVibration === RANDOM_PATTERN_NAME
+          ? newRandomPattern()
+          : patterns[nameOfCurrentlyPlayingExampleVibration];
+
+      Vibration.vibrate(applySpeedModifier(pattern), true);
+    }
+  }, [speedModifier, hasSpeedModifierBeingPicked]);
+
+  useEffect(() => () => Vibration.cancel(), []);
 
   return (
     <Background
       style={ViewStyles.container}
       testID="vibrate-on-current-phone-page"
     >
-      <View style={ViewStyles.patternListContainer}>
-        <FlatList
-          data={patterns}
-          onStartShouldSetResponderCapture={() => true}
-          keyExtractor={({ key }) => key}
-          renderItem={({ item }) => (
-            <ListItem
-              item={item}
-              isLastButton={item.key === last(patterns).key}
-              keyOfCurrentlyPlayingExampleVibration={
-                keyOfCurrentlyPlayingExampleVibration
-              }
-              onPressPlay={({ key, name, pattern }) => {
-                if (keyOfCurrentlyPlayingExampleVibration === key) {
-                  Vibration.cancel();
-                  setKeyOfCurrentlyPlayingExampleVibration(null);
-                  return;
-                }
-
-                setKeyOfCurrentlyPlayingExampleVibration(key);
-
-                const patternToUse =
-                  name !== RANDOM_PATTERN_NAME
-                    ? pattern
-                    : newRandomPattern().pattern;
-
-                Vibration.vibrate(patternToUse, true);
-              }}
-            />
-          )}
-        />
-      </View>
+      <PatternList
+        patterns={Object.values(patterns)}
+        applySpeedModifier={applySpeedModifier}
+        nameOfCurrentlyPlayingExampleVibration={
+          nameOfCurrentlyPlayingExampleVibration
+        }
+        setNameOfCurrentlyPlayingExampleVibration={
+          setNameOfCurrentlyPlayingExampleVibration
+        }
+      />
+      <Text style={ViewStyles.sliderText}>{`Speed ${speedModifier}X`}</Text>
+      <Slider
+        testID="speed-slider"
+        style={ViewStyles.slider}
+        minimumValue={0.1}
+        value={speedModifier}
+        maximumValue={2}
+        onSlidingStart={() => setHasSpeedModifierBeingPicked(false)}
+        onSlidingComplete={() => setHasSpeedModifierBeingPicked(true)}
+        onValueChange={(value) => setSpeedModifier(value)}
+        thumbTintColor="cyan"
+        minimumTrackTintColor="white"
+        maximumTrackTintColor="white"
+      />
     </Background>
+  );
+};
+
+const useSpeedModifier = () => {
+  const [speedModifier, setSpeedModifier] = useState(1);
+
+  const applySpeedModifier = useCallback(
+    ({ pattern }) => {
+      return pattern.map((time) => time * speedModifier);
+    },
+    [speedModifier]
+  );
+
+  return {
+    speedModifier,
+    setSpeedModifier: useCallback((value) => {
+      setSpeedModifier(round(value, 1));
+    }),
+    applySpeedModifier,
+  };
+};
+
+const PatternList = ({
+  patterns,
+  applySpeedModifier,
+  nameOfCurrentlyPlayingExampleVibration,
+  setNameOfCurrentlyPlayingExampleVibration,
+}) => {
+  return (
+    <View style={ViewStyles.patternListContainer}>
+      <FlatList
+        data={patterns}
+        onStartShouldSetResponderCapture={() => true}
+        keyExtractor={({ name }) => name}
+        renderItem={({ item }) => (
+          <ListItem
+            item={item}
+            isLastButton={item.name === last(patterns).name}
+            nameOfCurrentlyPlayingExampleVibration={
+              nameOfCurrentlyPlayingExampleVibration
+            }
+            onPressPlay={(pattern) => {
+              if (nameOfCurrentlyPlayingExampleVibration === pattern.name) {
+                Vibration.cancel();
+                setNameOfCurrentlyPlayingExampleVibration(null);
+                return;
+              }
+
+              setNameOfCurrentlyPlayingExampleVibration(pattern.name);
+
+              const patternToUse =
+                pattern.name !== RANDOM_PATTERN_NAME
+                  ? pattern
+                  : newRandomPattern();
+
+              Vibration.vibrate(applySpeedModifier(patternToUse), true);
+            }}
+          />
+        )}
+      />
+    </View>
   );
 };
 
 const ListItem = ({
   item,
-  keyOfCurrentlyPlayingExampleVibration,
+  nameOfCurrentlyPlayingExampleVibration,
   onPressPlay,
   isLastButton,
 }) => {
   const isThisItemVibrating =
-    keyOfCurrentlyPlayingExampleVibration === item.key;
+    nameOfCurrentlyPlayingExampleVibration === item.name;
 
   return (
     <View
-      key={item.key}
+      key={item.name}
       testID="vibration-pattern-option"
       style={isLastButton ? ViewStyles.lastItem : ViewStyles.item}
     >
@@ -85,7 +154,7 @@ const ListItem = ({
       <View style={ViewStyles.itemButtonContainer}>
         <IconButton
           icon="play"
-          color={isThisItemVibrating ? "green" : "white"}
+          color={isThisItemVibrating ? "cyan" : "white"}
           onPress={() => onPressPlay(item)}
         />
       </View>
@@ -113,7 +182,7 @@ const ViewStyles = StyleSheet.create({
   },
   patternListContainer: {
     width: "100%",
-    maxHeight: "100%",
+    maxHeight: "900%",
     borderColor: "white",
     borderRadius: borderRadius,
     borderWidth: 1,
@@ -142,5 +211,14 @@ const ViewStyles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     padding: 20,
+  },
+  sliderText: {
+    color: "white",
+    fontSize: 20,
+    marginTop: 20,
+  },
+  slider: {
+    marginTop: 10,
+    width: "100%",
   },
 });

@@ -90,7 +90,7 @@ describe("App - Vibrate on current phone", () => {
       // Assert stop has been called
       expect(Vibration.cancel).toHaveBeenCalledTimes(1);
     });
-  });
+  }, 10000);
 
   it("stops vibrating when same option is selected twice", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);

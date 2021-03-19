@@ -1,5 +1,4 @@
 import { sum } from "lodash";
-import uniqueId from "lodash/uniqueId";
 
 /**
  * @param {String} name - The name of the vibration pattern
@@ -8,7 +7,6 @@ import uniqueId from "lodash/uniqueId";
 export const newVibrationPattern = (name, pattern) => {
   const patternInMilliseconds = changePatternToMilliseconds(pattern);
   return {
-    key: uniqueId(),
     name,
     pattern: [0, ...patternInMilliseconds],
     runTime: sum(patternInMilliseconds),

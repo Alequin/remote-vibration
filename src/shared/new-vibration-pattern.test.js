@@ -8,7 +8,6 @@ describe("new-vibration-pattern", () => {
 
   it("is able to create a new pattern with the expected properties", () => {
     expect(newVibrationPattern("test1", [0.5, 1, 0.5, 1])).toEqual({
-      key: 1,
       name: "test1",
       pattern: [0, 500, 1000, 500, 1000],
       runTime: 3000,

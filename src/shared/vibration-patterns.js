@@ -1,3 +1,4 @@
+import { groupBy, mapValues } from "lodash";
 import { newVibrationPattern } from "./new-vibration-pattern";
 
 export const RANDOM_PATTERN_NAME = "Random";
@@ -14,11 +15,14 @@ export const newRandomPattern = () =>
     })
   );
 
-export const patterns = [
-  newVibrationPattern("Constant", [Number.MAX_SAFE_INTEGER]),
-  newVibrationPattern(RANDOM_PATTERN_NAME, []),
-  newVibrationPattern("Rapid Pulse", [0.125, 0.125]),
-  newVibrationPattern("Quick Pulse", [0.25, 0.25]),
-  newVibrationPattern("Pulse", [0.5, 0.5]),
-  newVibrationPattern("Slow Pulse", [1, 1]),
-];
+export const patterns = mapValues(
+  groupBy(
+    [
+      newVibrationPattern("Constant", [Number.MAX_SAFE_INTEGER]),
+      newVibrationPattern(RANDOM_PATTERN_NAME, []),
+      newVibrationPattern("Pulse", [0.5, 0.5]),
+    ],
+    ({ name }) => name
+  ),
+  ([element]) => element
+);
