@@ -1,22 +1,17 @@
 import { last } from "lodash";
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { useCallback } from "react";
 import { FlatList, StyleSheet, View, Text, Vibration } from "react-native";
 import { Background } from "../shared/background";
 import { borderRadius } from "../shared/border-radius";
 import { BorderlessButton } from "../shared/borderless-button";
 import { CheckBoxWithText } from "../shared/checkbox-with-text";
 import { Icon } from "../shared/icon";
-import { newVibrationPattern } from "../shared/new-vibration-pattern";
-
-const data = [
-  newVibrationPattern("Constant", [4]),
-  newVibrationPattern("Pulse", [0.5, 0.5, 0.5, 0.5]),
-].map((obj, index) => ({
-  ...obj,
-  key: index,
-}));
+import {
+  vibrationPatterns,
+  newRandomPattern,
+  RANDOM_PATTERN_NAME,
+} from "../shared/vibration-patterns";
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
   const [
@@ -37,19 +32,31 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     >
       <View style={ViewStyles.patternListContainer}>
         <FlatList
-          data={data}
+          data={vibrationPatterns}
           onStartShouldSetResponderCapture={() => true}
           keyExtractor={({ id }) => id}
           renderItem={({ item }) => (
             <ListItem
               item={item}
-              isRepeatTurnedOn={isRepeatTurnedOn}
+              isLastButton={item.key === last(vibrationPatterns).key}
               keyOfCurrentlyPlayingExampleVibration={
                 keyOfCurrentlyPlayingExampleVibration
               }
-              onPressPlay={({ key, pattern }) => {
+              onPressPlay={({ key, name, pattern }) => {
+                if (keyOfCurrentlyPlayingExampleVibration === key) {
+                  Vibration.cancel();
+                  setKeyOfCurrentlyPlayingExampleVibration(null);
+                  return;
+                }
+
                 setKeyOfCurrentlyPlayingExampleVibration(key);
-                Vibration.vibrate(pattern, true);
+
+                const patternToUse =
+                  name !== RANDOM_PATTERN_NAME
+                    ? pattern
+                    : newRandomPattern().pattern;
+
+                Vibration.vibrate(patternToUse, true);
               }}
             />
           )}
@@ -69,35 +76,14 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
   );
 };
 
-const useManageExampleVibrationButtons = () => {
-  const [
-    keyOfCurrentlyPlayingExampleVibration,
-    setKeyOfCurrentlyPlayingExampleVibration,
-  ] = useState(null);
-  const [exampleVibrationTimeout, setExampleVibrationTimeout] = useState(null);
-
-  return {
-    keyOfCurrentlyPlayingExampleVibration,
-    setPlayingExampleVibration: useCallback(
-      ({ key: exampleVibrationKey, disablingTimeout }) => {
-        clearTimeout(exampleVibrationTimeout);
-        setExampleVibrationTimeout(disablingTimeout);
-        setKeyOfCurrentlyPlayingExampleVibration(exampleVibrationKey);
-      },
-      [exampleVibrationTimeout, setKeyOfCurrentlyPlayingExampleVibration]
-    ),
-  };
-};
-
 const ListItem = ({
   item,
   keyOfCurrentlyPlayingExampleVibration,
   onPressPlay,
-  isRepeatTurnedOn,
+  isLastButton,
 }) => {
   const isThisItemVibrating =
     keyOfCurrentlyPlayingExampleVibration === item.key;
-  const isLastButton = item.key === last(data).key;
 
   return (
     <View
@@ -119,7 +105,7 @@ const ListItem = ({
 
 const IconButton = ({ icon, color, onPress }) => (
   <BorderlessButton style={ViewStyles.itemButton} onPress={onPress}>
-    <Icon icon={icon} size={25} color={color || "white"} />
+    <Icon icon={icon} size={32} color={color || "white"} />
   </BorderlessButton>
 );
 
