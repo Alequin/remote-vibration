@@ -14,7 +14,7 @@ export const newRandomPattern = () =>
     })
   );
 
-export const vibrationPatterns = [
+export const patterns = [
   newVibrationPattern("Constant", [Number.MAX_SAFE_INTEGER]),
   newVibrationPattern(RANDOM_PATTERN_NAME, []),
   newVibrationPattern("Rapid Pulse", [0.125, 0.125]),

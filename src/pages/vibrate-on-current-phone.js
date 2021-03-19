@@ -8,7 +8,7 @@ import { BorderlessButton } from "../shared/borderless-button";
 import { CheckBoxWithText } from "../shared/checkbox-with-text";
 import { Icon } from "../shared/icon";
 import {
-  vibrationPatterns,
+  patterns,
   newRandomPattern,
   RANDOM_PATTERN_NAME,
 } from "../shared/vibration-patterns";
@@ -32,13 +32,13 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     >
       <View style={ViewStyles.patternListContainer}>
         <FlatList
-          data={vibrationPatterns}
+          data={patterns}
           onStartShouldSetResponderCapture={() => true}
-          keyExtractor={({ id }) => id}
+          keyExtractor={({ key }) => key}
           renderItem={({ item }) => (
             <ListItem
               item={item}
-              isLastButton={item.key === last(vibrationPatterns).key}
+              isLastButton={item.key === last(patterns).key}
               keyOfCurrentlyPlayingExampleVibration={
                 keyOfCurrentlyPlayingExampleVibration
               }
@@ -62,16 +62,6 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
           )}
         />
       </View>
-      <CheckBoxWithText
-        isActive={isRepeatTurnedOn}
-        onStatusChange={setIsRepeatTurnedOn}
-        size={24}
-        color="white"
-        containerStyle={ViewStyles.checkBoxContainer}
-        textStyle={ViewStyles.checkboxText}
-      >
-        Repeat
-      </CheckBoxWithText>
     </Background>
   );
 };
@@ -123,7 +113,7 @@ const ViewStyles = StyleSheet.create({
   },
   patternListContainer: {
     width: "100%",
-    maxHeight: "80%",
+    maxHeight: "100%",
     borderColor: "white",
     borderRadius: borderRadius,
     borderWidth: 1,
@@ -152,15 +142,5 @@ const ViewStyles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     padding: 20,
-  },
-  checkBoxContainer: {
-    width: "100%",
-    justifyContent: "space-between",
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-  checkboxText: {
-    color: "white",
-    fontSize: 24,
   },
 });
