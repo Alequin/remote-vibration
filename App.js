@@ -7,30 +7,37 @@ import * as pageNames from "./src/pages/page-names";
 
 import { MainMenu } from "./src/pages/main-menu";
 import { VibrateOnCurrentPhone } from "./src/pages/vibrate-on-current-phone";
+import { useAppState } from "./src/utilities/use-app-state";
 
 const Stack = createStackNavigator();
 
+const AppContext = React.createContext({});
+
 const App = () => {
+  const appState = useAppState();
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={pageNames.mainMenu}
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: "black",
-          },
-          headerTitleStyle: {
-            color: "white",
-          },
-          headerBackImage: () => (
-            <Icon icon="backArrow" size={32} color="white" />
-          ),
-        }}
-      >
-        {menuPage()}
-        {vibrateOnCurrentPhonePage()}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AppContext.Provider value={{ appState }}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={pageNames.mainMenu}
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: "black",
+            },
+            headerTitleStyle: {
+              color: "white",
+            },
+            headerBackImage: () => (
+              <Icon icon="backArrow" size={32} color="white" />
+            ),
+          }}
+        >
+          {menuPage()}
+          {vibrateOnCurrentPhonePage()}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AppContext.Provider>
   );
 };
 
