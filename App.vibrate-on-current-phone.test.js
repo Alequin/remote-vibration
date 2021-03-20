@@ -1,3 +1,7 @@
+jest.mock("react-native/Libraries/AppState/AppState", () => ({
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+}));
 // hides warning about module which cannot be used in tests
 jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
 jest.mock("react-native/Libraries/Vibration/Vibration", () => ({
@@ -15,7 +19,7 @@ import {
 } from "@testing-library/react-native";
 import App from "./App";
 
-import { Vibration } from "react-native";
+import { Vibration, AppState } from "react-native";
 import * as vibrationPatterns from "./src/shared/vibration-patterns";
 import { newVibrationPattern } from "./src/shared/new-vibration-pattern";
 
@@ -25,7 +29,7 @@ describe("App - Vibrate on current phone", () => {
     Vibration.cancel.mockClear();
   });
 
-  it("allows the users to go to the 'vibrate on current phone' page from the 'main menu'", () => {
+  it("allows the users to go to the 'vibrate on current phone' page from the 'main menu'", async () => {
     const { getAllByRole, getByTestId } = render(<App />);
 
     // Starts on main menu
@@ -34,12 +38,12 @@ describe("App - Vibrate on current phone", () => {
     moveToVibrateOnCurrentPhonePage(getAllByRole);
 
     // Moves to expected page
-    // expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
   });
 
   it.todo("shows the expected buttons");
 
-  it("allows the user to play a vibration pattern", () => {
+  it("allows the user to play a vibration pattern", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
 
     moveToVibrateOnCurrentPhonePage(getAllByRole);
@@ -84,13 +88,13 @@ describe("App - Vibrate on current phone", () => {
     // Returns to main menu
     fireEvent.press(backButton);
 
-    waitFor(() => {
+    await waitFor(() => {
       // Assert the page is the main menu
       expect(getByTestId("main-menu-page")).toBeDefined();
       // Assert stop has been called
       expect(Vibration.cancel).toHaveBeenCalledTimes(1);
     });
-  }, 10000);
+  });
 
   it("stops vibrating when same option is selected twice", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
@@ -116,7 +120,43 @@ describe("App - Vibrate on current phone", () => {
     expect(Vibration.cancel).toHaveBeenCalledTimes(1);
   });
 
+  it("stops vibrating when the app becomes inactive", async () => {
+    let mockStateChangeCallback = null;
+    AppState.addEventListener.mockImplementation(
+      (_, callback) => (mockStateChangeCallback = callback)
+    );
+
+    const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
+
+    moveToVibrateOnCurrentPhonePage(getAllByRole);
+
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+
+    const constantVibrationOption = getAllByTestId(
+      "vibration-pattern-option"
+    ).find((option) => within(option).queryByText("Constant"));
+
+    const exampleConstantVibrationButton = within(constantVibrationOption)
+      .getAllByRole("button")
+      .find((button) => within(button).getByTestId("playIcon"));
+
+    // Assert vibration starts on the first press
+    act(() => fireEvent.press(exampleConstantVibrationButton));
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+
+    // Update the app state to inactive
+    act(() => mockStateChangeCallback("inactive"));
+
+    // Confirm vibration was canceled
+    await waitFor(() => expect(Vibration.cancel).toHaveBeenCalledTimes(1));
+  });
+
   it("creates a new random pattern when the 'Random' option is selected", async () => {
+    const mockPattern = newVibrationPattern("mockRandom", [1, 1, 1]);
+    const spyOfNewRandomPattern = jest
+      .spyOn(vibrationPatterns, "newRandomPattern")
+      .mockReturnValue(mockPattern);
+
     const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
 
     moveToVibrateOnCurrentPhonePage(getAllByRole);
@@ -135,23 +175,14 @@ describe("App - Vibrate on current phone", () => {
 
     act(() => fireEvent.press(exampleConstantVibrationButton));
 
-    const mockPattern = newVibrationPattern("mockRandom", [1, 1, 1]);
-
-    // Assert a random pattern was created
-    const spyOfNewRandomPattern = jest
-      .spyOn(vibrationPatterns, "newRandomPattern")
-      .mockReturnValue(mockPattern);
-
-    waitFor(() => {
+    await waitFor(() => {
       // Assert a new random pattern was created
       expect(spyOfNewRandomPattern).toHaveBeenCalledTimes(1);
-
       // Assert vibration has started
       expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
-
       // Assert the correct pattern was used with vibrate
       expect(Vibration.vibrate).toHaveBeenCalledWith(
-        mockPattern.map((time) => time * 1000),
+        mockPattern.pattern.map((time) => time),
         true
       );
     });
@@ -165,5 +196,5 @@ const moveToVibrateOnCurrentPhonePage = (getAllByRole) => {
     within(button).queryByText("Vibrate On Current Phone")
   );
 
-  act(() => fireEvent.press(makeCurrentPhoneVibrateButton));
+  return act(() => fireEvent.press(makeCurrentPhoneVibrateButton));
 };

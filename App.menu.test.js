@@ -1,3 +1,5 @@
+jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
+
 import React from "React";
 import { render, within } from "@testing-library/react-native";
 import App from "./App";
