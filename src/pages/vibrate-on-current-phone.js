@@ -11,7 +11,7 @@ import {
   newRandomPattern,
   patterns,
   RANDOM_PATTERN_NAME,
-} from "../shared/vibration-patterns";
+} from "../utilities/vibration-patterns";
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
   const { appState } = useContext(AppContext);

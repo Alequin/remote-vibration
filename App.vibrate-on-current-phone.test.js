@@ -20,8 +20,9 @@ import {
 import App from "./App";
 
 import { Vibration, AppState } from "react-native";
-import * as vibrationPatterns from "./src/shared/vibration-patterns";
-import { newVibrationPattern } from "./src/shared/new-vibration-pattern";
+import * as vibrationPatterns from "./src/utilities/vibration-patterns";
+import { newVibrationPattern } from "./src/utilities/new-vibration-pattern";
+newVibrationPattern;
 
 describe("App - Vibrate on current phone", () => {
   beforeEach(() => {
