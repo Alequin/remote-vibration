@@ -1,18 +1,21 @@
-import { last, round } from "lodash";
-import React, { useState, useEffect, useCallback } from "react";
-import { FlatList, StyleSheet, View, Text, Vibration } from "react-native";
 import Slider from "@react-native-community/slider";
+import { last, round } from "lodash";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { FlatList, StyleSheet, Text, Vibration, View } from "react-native";
+import { AppContext } from "../../app-context";
 import { Background } from "../shared/background";
 import { borderRadius } from "../shared/border-radius";
 import { BorderlessButton } from "../shared/borderless-button";
 import { Icon } from "../shared/icon";
 import {
-  patterns,
   newRandomPattern,
+  patterns,
   RANDOM_PATTERN_NAME,
 } from "../shared/vibration-patterns";
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
+  const { appState } = useContext(AppContext);
+
   const [
     nameOfCurrentlyPlayingExampleVibration,
     setNameOfCurrentlyPlayingExampleVibration,
@@ -39,7 +42,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     }
   }, [speedModifier, hasSpeedModifierBeingPicked]);
 
-  useEffect(() => () => Vibration.cancel(), []);
+  useEffect(() => () => Vibration.cancel(), [appState]);
 
   return (
     <Background

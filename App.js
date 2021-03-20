@@ -1,17 +1,14 @@
-import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-
-import { Icon } from "./src/shared/icon";
-import * as pageNames from "./src/pages/page-names";
-
+import React from "react";
+import { AppContext } from "./app-context";
 import { MainMenu } from "./src/pages/main-menu";
+import * as pageNames from "./src/pages/page-names";
 import { VibrateOnCurrentPhone } from "./src/pages/vibrate-on-current-phone";
+import { Icon } from "./src/shared/icon";
 import { useAppState } from "./src/utilities/use-app-state";
 
 const Stack = createStackNavigator();
-
-const AppContext = React.createContext({});
 
 const App = () => {
   const appState = useAppState();
