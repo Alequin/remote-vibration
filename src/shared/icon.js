@@ -5,6 +5,7 @@ import {
   Entypo,
   MaterialIcons,
   Feather,
+  SimpleLineIcons,
 } from "@expo/vector-icons";
 import { Text } from "react-native";
 
@@ -48,6 +49,16 @@ const ICON_OPTIONS = {
   checkBoxInactive: ({ size, color, ...otherProps }) => (
     <TestWrapper testID="checkBoxInactiveIcon" {...otherProps}>
       <MaterialIcons name="check-box-outline-blank" size={size} color={color} />
+    </TestWrapper>
+  ),
+  locked: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="lockedIcon" {...otherProps}>
+      <SimpleLineIcons name="lock" size={size} color={color} />
+    </TestWrapper>
+  ),
+  unlocked: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="unlockedIcon" {...otherProps}>
+      <SimpleLineIcons name="lock-open" size={size} color={color} />
     </TestWrapper>
   ),
 };

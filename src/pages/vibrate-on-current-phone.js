@@ -1,10 +1,17 @@
 import Slider from "@react-native-community/slider";
 import { last, round } from "lodash";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, Vibration, View } from "react-native";
-import { AppContext } from "../../app-context";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  BackHandler,
+  FlatList,
+  StyleSheet,
+  Text,
+  Vibration,
+  View,
+} from "react-native";
 import { Background } from "../shared/background";
 import { borderRadius } from "../shared/border-radius";
+import { Button } from "../shared/button";
 import { BorderlessButton } from "../shared/borderless-button";
 import { Icon } from "../shared/icon";
 import {
@@ -12,10 +19,9 @@ import {
   patterns,
   RANDOM_PATTERN_NAME,
 } from "../utilities/vibration-patterns";
+import { LockScreen } from "./lock-screen";
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
-  const { appState } = useContext(AppContext);
-
   const [
     nameOfCurrentlyPlayingExampleVibration,
     setNameOfCurrentlyPlayingExampleVibration,
@@ -30,6 +36,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     setSpeedModifier,
     applySpeedModifier,
   } = useSpeedModifier();
+  const [isScreenLocked, setIsScreenLocked] = useState(false);
 
   useEffect(() => {
     if (nameOfCurrentlyPlayingExampleVibration && hasSpeedModifierBeingPicked) {
@@ -42,11 +49,14 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     }
   }, [speedModifier, hasSpeedModifierBeingPicked]);
 
-  useEffect(() => () => Vibration.cancel(), [appState]);
-
-  return (
+  return isScreenLocked ? (
+    <LockScreen
+      onUnlock={() => setIsScreenLocked(false)}
+      navigation={navigation}
+    />
+  ) : (
     <Background
-      style={ViewStyles.container}
+      style={isScreenLocked ? ViewStyles.lockedContainer : ViewStyles.container}
       testID="vibrate-on-current-phone-page"
     >
       <PatternList
@@ -73,6 +83,12 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
         minimumTrackTintColor="white"
         maximumTrackTintColor="white"
       />
+      <Button
+        onPress={() => setIsScreenLocked(true)}
+        style={ViewStyles.lockButton}
+      >
+        <Text style={ViewStyles.lockButtonText}>Lock Screen</Text>
+      </Button>
     </Background>
   );
 };
@@ -183,11 +199,15 @@ const ViewStyles = StyleSheet.create({
   container: {
     paddingTop: "2%",
   },
+  lockedContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
   patternListContainer: {
+    borderRadius,
     width: "100%",
     maxHeight: "900%",
     borderColor: "white",
-    borderRadius: borderRadius,
     borderWidth: 1,
     marginBottom: "4%",
     paddingTop: 8,
@@ -219,9 +239,20 @@ const ViewStyles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     marginTop: 20,
+    textAlign: "center",
   },
   slider: {
     marginTop: 10,
     width: "100%",
+  },
+  lockButton: {
+    borderRadius,
+    width: "100%",
+    padding: 20,
+    marginTop: 20,
+  },
+  lockButtonText: {
+    textAlign: "center",
+    color: "white",
   },
 });

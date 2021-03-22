@@ -64,39 +64,6 @@ describe("App - Vibrate on current phone", () => {
     expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
   });
 
-  it("stops vibrating when moving off the page 'vibrate on current phone'", async () => {
-    const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
-
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
-
-    const backButton = getByTestId("backArrowIcon");
-
-    // Start vibrating
-    const constantVibrationOption = getAllByTestId(
-      "vibration-pattern-option"
-    ).find((option) => within(option).queryByText("Constant"));
-    const exampleConstantVibrationButton = within(constantVibrationOption)
-      .getAllByRole("button")
-      .find((button) => within(button).getByTestId("playIcon"));
-    act(() => fireEvent.press(exampleConstantVibrationButton));
-
-    // Assert vibration has started
-    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
-
-    // Assert vibration has not being stopped yet
-    expect(Vibration.cancel).toHaveBeenCalledTimes(0);
-
-    // Returns to main menu
-    fireEvent.press(backButton);
-
-    await waitFor(() => {
-      // Assert the page is the main menu
-      expect(getByTestId("main-menu-page")).toBeDefined();
-      // Assert stop has been called
-      expect(Vibration.cancel).toHaveBeenCalledTimes(1);
-    });
-  });
-
   it("stops vibrating when same option is selected twice", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
 
@@ -119,37 +86,6 @@ describe("App - Vibrate on current phone", () => {
     // Assert vibration stops on the second press
     act(() => fireEvent.press(exampleConstantVibrationButton));
     expect(Vibration.cancel).toHaveBeenCalledTimes(1);
-  });
-
-  it("stops vibrating when the app becomes inactive", async () => {
-    let mockStateChangeCallback = null;
-    AppState.addEventListener.mockImplementation(
-      (_, callback) => (mockStateChangeCallback = callback)
-    );
-
-    const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
-
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
-
-    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
-
-    const constantVibrationOption = getAllByTestId(
-      "vibration-pattern-option"
-    ).find((option) => within(option).queryByText("Constant"));
-
-    const exampleConstantVibrationButton = within(constantVibrationOption)
-      .getAllByRole("button")
-      .find((button) => within(button).getByTestId("playIcon"));
-
-    // Assert vibration starts on the first press
-    act(() => fireEvent.press(exampleConstantVibrationButton));
-    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
-
-    // Update the app state to inactive
-    act(() => mockStateChangeCallback("inactive"));
-
-    // Confirm vibration was canceled
-    await waitFor(() => expect(Vibration.cancel).toHaveBeenCalledTimes(1));
   });
 
   it("creates a new random pattern when the 'Random' option is selected", async () => {
@@ -187,6 +123,25 @@ describe("App - Vibrate on current phone", () => {
         true
       );
     });
+  });
+
+  it("allows the user to lock the screen", async () => {
+    const { getAllByRole, getByTestId, getByText } = render(<App />);
+
+    moveToVibrateOnCurrentPhonePage(getAllByRole);
+
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+
+    const lockScreenButton = getAllByRole("button").find((option) =>
+      within(option).queryByText("Lock Screen")
+    );
+
+    act(() => fireEvent.press(lockScreenButton));
+
+    expect(getByTestId("lockedIcon")).toBeDefined();
+    expect(
+      getByText("Drag the slider from left to right to unlock")
+    ).toBeDefined();
   });
 });
 
