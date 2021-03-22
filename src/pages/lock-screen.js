@@ -5,9 +5,13 @@ import { Background } from "../shared/background";
 import { borderRadius } from "../shared/border-radius";
 import { Icon } from "../shared/icon";
 import { preventDefaultEvent } from "../utilities/prevent-default-event";
-const MAX_SLIDER_VALUE = 1;
+const MAX_SLIDER_VALUE = 100;
 
-export const LockScreen = ({ onUnlock, navigation }) => {
+export const LockScreen = ({
+  onUnlock,
+  navigation,
+  currentVibrationPatternName,
+}) => {
   const [resetSliderTimeout, setResetSliderTimeout] = useState(null);
   const [sliderValue, setSliderValue] = useState(0);
 
@@ -25,22 +29,30 @@ export const LockScreen = ({ onUnlock, navigation }) => {
 
   const iconToShow = isSliderAtMax ? "unlocked" : "locked";
 
+  // TODO improve on using a slide as you don't need to drag the slider
   return (
     <Background style={ViewStyles.container}>
-      <Icon icon={iconToShow} size={300} color="white"></Icon>
       <Text style={ViewStyles.sliderText}>
-        Drag the slider from left to right to unlock
+        Vibration Pattern: {currentVibrationPatternName || "Nothing"}
       </Text>
+      <Icon icon={iconToShow} size={300} color="white"></Icon>
+      <Text style={ViewStyles.sliderText}>Drag to 100% to unlock</Text>
+      <Text style={ViewStyles.sliderText}>{sliderValue}%</Text>
+
       <Slider
         testID="speed-slider"
+        tapToSeek={false}
         style={ViewStyles.slider}
         minimumValue={0}
         value={sliderValue}
         maximumValue={MAX_SLIDER_VALUE}
-        onValueChange={(value) => console.log(value) || setSliderValue(value)}
-        onSlidingComplete={() =>
-          setResetSliderTimeout(setTimeout(() => setSliderValue(0), 500))
-        }
+        onValueChange={(value) => {
+          setSliderValue(Math.round(value));
+        }}
+        onSlidingComplete={(value) => {
+          if (value < MAX_SLIDER_VALUE)
+            setResetSliderTimeout(setTimeout(() => setSliderValue(0), 250));
+        }}
         thumbTintColor="cyan"
         minimumTrackTintColor="white"
         maximumTrackTintColor="white"

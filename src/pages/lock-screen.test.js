@@ -28,9 +28,7 @@ describe("Lock Screen", () => {
     );
 
     expect(getByTestId("lockedIcon")).toBeDefined();
-    expect(
-      getByText("Drag the slider from left to right to unlock")
-    ).toBeDefined();
+    expect(getByText("Drag to 100% to unlock")).toBeDefined();
   });
 
   it("disables the navigation buttons whilst on this page", async () => {

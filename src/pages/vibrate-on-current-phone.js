@@ -53,6 +53,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     <LockScreen
       onUnlock={() => setIsScreenLocked(false)}
       navigation={navigation}
+      currentVibrationPatternName={nameOfCurrentlyPlayingExampleVibration}
     />
   ) : (
     <Background
