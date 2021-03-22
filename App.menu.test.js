@@ -2,11 +2,11 @@ jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
 
 import React from "React";
 import { render, within } from "@testing-library/react-native";
-import App from "./App";
+import { AppRouter } from "./App";
 
 describe("App - Menu", () => {
   it("displays the expected menu buttons by default", async () => {
-    const { getAllByRole } = render(<App />);
+    const { getAllByRole } = render(<AppRouter />);
 
     const buttons = getAllByRole("button");
 
@@ -23,12 +23,13 @@ describe("App - Menu", () => {
     );
     expect(connectToAnotherDeviceButton).toBeDefined();
     expect(
-      within(connectToAnotherDeviceButton).getByTestId("linkIcon")
+      within(connectToAnotherDeviceButton).getByTestId("wifiIcon")
     ).toBeDefined();
 
     const disableAdsButton = buttons.find((button) =>
       within(button).queryByText("Turn Off Ads")
     );
+
     expect(disableAdsButton).toBeDefined();
     expect(within(disableAdsButton).getByTestId("stopIcon")).toBeDefined();
   });

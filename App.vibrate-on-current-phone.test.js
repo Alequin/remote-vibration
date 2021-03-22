@@ -17,12 +17,11 @@ import {
   act,
   waitFor,
 } from "@testing-library/react-native";
-import App from "./App";
+import { AppRouter } from "./App";
 
-import { Vibration, AppState } from "react-native";
+import { Vibration } from "react-native";
 import * as vibrationPatterns from "./src/utilities/vibration-patterns";
 import { newVibrationPattern } from "./src/utilities/new-vibration-pattern";
-newVibrationPattern;
 
 describe("App - Vibrate on current phone", () => {
   beforeEach(() => {
@@ -31,7 +30,7 @@ describe("App - Vibrate on current phone", () => {
   });
 
   it("allows the users to go to the 'vibrate on current phone' page from the 'main menu'", async () => {
-    const { getAllByRole, getByTestId } = render(<App />);
+    const { getAllByRole, getByTestId } = render(<AppRouter />);
 
     // Starts on main menu
     expect(getByTestId("main-menu-page")).toBeDefined();
@@ -45,7 +44,7 @@ describe("App - Vibrate on current phone", () => {
   it.todo("shows the expected buttons");
 
   it("allows the user to play a vibration pattern", async () => {
-    const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
+    const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
     moveToVibrateOnCurrentPhonePage(getAllByRole);
 
@@ -65,7 +64,7 @@ describe("App - Vibrate on current phone", () => {
   });
 
   it("stops vibrating when same option is selected twice", async () => {
-    const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
+    const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
     moveToVibrateOnCurrentPhonePage(getAllByRole);
 
@@ -94,7 +93,7 @@ describe("App - Vibrate on current phone", () => {
       .spyOn(vibrationPatterns, "newRandomPattern")
       .mockReturnValue(mockPattern);
 
-    const { getAllByRole, getByTestId, getAllByTestId } = render(<App />);
+    const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
     moveToVibrateOnCurrentPhonePage(getAllByRole);
 
@@ -126,7 +125,7 @@ describe("App - Vibrate on current phone", () => {
   });
 
   it("allows the user to lock the screen", async () => {
-    const { getAllByRole, getByTestId, getByText } = render(<App />);
+    const { getAllByRole, getByTestId, getByText } = render(<AppRouter />);
 
     moveToVibrateOnCurrentPhonePage(getAllByRole);
 
@@ -139,9 +138,6 @@ describe("App - Vibrate on current phone", () => {
     act(() => fireEvent.press(lockScreenButton));
 
     expect(getByTestId("lockedIcon")).toBeDefined();
-    expect(
-      getByText("Drag the slider from left to right to unlock")
-    ).toBeDefined();
   });
 });
 

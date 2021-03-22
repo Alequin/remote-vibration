@@ -6,6 +6,7 @@ import {
   MaterialIcons,
   Feather,
   SimpleLineIcons,
+  FontAwesome5,
 } from "@expo/vector-icons";
 import { Text } from "react-native";
 
@@ -59,6 +60,16 @@ const ICON_OPTIONS = {
   unlocked: ({ size, color, ...otherProps }) => (
     <TestWrapper testID="unlockedIcon" {...otherProps}>
       <SimpleLineIcons name="lock-open" size={size} color={color} />
+    </TestWrapper>
+  ),
+  wifi: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="wifiIcon" {...otherProps}>
+      <FontAwesome5 name="wifi" size={size} color={color} />
+    </TestWrapper>
+  ),
+  connectedPeople: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="connectedPeopleIcon" {...otherProps}>
+      <MaterialIcons name="connect-without-contact" size={size} color={color} />
     </TestWrapper>
   ),
 };
