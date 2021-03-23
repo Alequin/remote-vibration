@@ -4,6 +4,7 @@
     "refresh-node-modules": "rm -rf node_modules && rm yarn.lock && yarn install",
     "start": "expo start -c",
     "test": "jest --runInBand",
+    "test-silent": "jest --runInBand --silent",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -16,6 +17,7 @@
     "@react-navigation/native": "^5.9.3",
     "@react-navigation/stack": "^5.14.3",
     "expo": "^40.0.1",
+    "expo-clipboard": "~1.0.1",
     "expo-constants": "~9.3.3",
     "expo-status-bar": "~1.0.3",
     "lodash": "^4.17.21",
@@ -29,6 +31,7 @@
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "~2.15.2",
     "react-native-web": "~0.13.12",
+    "wait-for-expect": "^3.0.2",
     "websocket": "^1.0.33"
   },
   "devDependencies": {

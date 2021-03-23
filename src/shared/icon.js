@@ -72,6 +72,11 @@ const ICON_OPTIONS = {
       <MaterialIcons name="connect-without-contact" size={size} color={color} />
     </TestWrapper>
   ),
+  copyToClipboard: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="connectedPeopleIcon" {...otherProps}>
+      <MaterialIcons name="content-copy" size={size} color={color} />
+    </TestWrapper>
+  ),
 };
 
 const TestWrapper = (props) => <Text {...props} />;

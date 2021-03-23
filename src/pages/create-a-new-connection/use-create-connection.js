@@ -17,6 +17,7 @@ export const useCreateConnection = () => {
       .then(async (response) => {
         const { roomKey } = await response.json();
         const client = establishWebsocketConnection();
+
         client.onopen = () => {
           client.send(
             JSON.stringify({
