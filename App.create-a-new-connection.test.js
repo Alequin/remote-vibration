@@ -32,7 +32,7 @@ import Clipboard from "expo-clipboard";
 const MOCK_DEVICE_ID = "123";
 const MOCK_ROOM_KEY = "234";
 
-describe("App - Create a connection", () => {
+describe("App - Create a new connection", () => {
   const mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
 
   const establishWebsocketSpy = jest
