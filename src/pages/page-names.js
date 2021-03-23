@@ -6,4 +6,4 @@ export const connectToAnotherDevice = "Connect To Another Device";
 
 export const connectToSomeoneElse = "Connect To Someone Else";
 
-export const createAConnection = "Create a Connection";
+export const createAConnection = "Create A New Connection";

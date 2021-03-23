@@ -27,12 +27,39 @@ const MOCK_DEVICE_ID = "123";
 const MOCK_ROOM_KEY = "234";
 
 describe("App - Create a connection", () => {
-  it("creates a new connection on visiting the 'create-a-connection' page", async () => {
-    const mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
-    const establishWebsocketSpy = jest
-      .spyOn(establishWebsocketConnection, "establishWebsocketConnection")
-      .mockImplementation(() => mockWebsocketClient);
+  const mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
 
+  const establishWebsocketSpy = jest
+    .spyOn(establishWebsocketConnection, "establishWebsocketConnection")
+    .mockImplementation(() => mockWebsocketClient);
+
+  afterEach(() => {
+    nock.cleanAll();
+    nock.abortPendingRequests();
+    establishWebsocketSpy.mockClear();
+  });
+
+  it("show a loading indicator when communication with the server takes a while", async () => {
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { getByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(getByTestId("main-menu-page")).toBeDefined();
+
+      await moveToCreateAConnectionPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(getByTestId("create-a-connection-page")).toBeDefined();
+
+      expect(getByTestId("loadingIndicator")).toBeDefined();
+    });
+  });
+
+  it("creates a new connection on visiting the 'create-a-connection' page", async () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, getByTestId, getAllByRole } = render(
@@ -53,6 +80,10 @@ describe("App - Create a connection", () => {
       // 3. Makes the call to the server to create the room
       expect(createARoomInterceptor.isDone()).toBe(true);
     });
+    console.log(
+      "🚀 ~ file: App.create-a-connection.test.js ~ line 49 ~ beforeEach ~ establishWebsocketSpy",
+      establishWebsocketSpy.mock.calls
+    );
 
     await waitFor(async () => {
       // 4. Make the call to open a websocket
