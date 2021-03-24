@@ -1,6 +1,7 @@
 import React from "react";
 import { ActivityIndicator, StyleSheet, Text } from "react-native";
 import { Background } from "../shared/background";
+import { VibrationPicker } from "../shared/vibration-picker";
 import { CopyConnectionKeyButton } from "./create-a-new-connection/copy-connection-key-button";
 import { useCreateConnection } from "./create-a-new-connection/use-create-connection";
 import { useHasEnoughTimePassedToHideLoadingIndicator } from "./create-a-new-connection/use-has-enough-time-to-hide-loading-indicator";
@@ -34,7 +35,12 @@ export const createANewConnection = ({ navigation }) => {
 };
 
 const Page = ({ connectionKey, client }) => {
-  return <CopyConnectionKeyButton connectionKey={connectionKey} />;
+  return (
+    <>
+      <CopyConnectionKeyButton connectionKey={connectionKey} />
+      <VibrationPicker listHeight="30%" />
+    </>
+  );
 };
 
 const ViewStyles = StyleSheet.create({

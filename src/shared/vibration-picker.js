@@ -11,7 +11,11 @@ import { borderRadius } from "./border-radius";
 import { Button } from "./button";
 import { PatternList } from "./pattern-list";
 
-export const VibrationPicker = ({ onPressLockScreen, onPickPattern }) => {
+export const VibrationPicker = ({
+  onPressLockScreen,
+  onPickPattern,
+  listHeight,
+}) => {
   const [
     nameOfCurrentlyPlayingExampleVibration,
     setNameOfCurrentlyPlayingExampleVibration,
@@ -41,6 +45,7 @@ export const VibrationPicker = ({ onPressLockScreen, onPickPattern }) => {
   return (
     <>
       <PatternList
+        listHeight={listHeight}
         patterns={Object.values(patterns)}
         applySpeedModifier={applySpeedModifier}
         nameOfCurrentlyPlayingExampleVibration={
@@ -53,7 +58,7 @@ export const VibrationPicker = ({ onPressLockScreen, onPickPattern }) => {
             return;
           }
 
-          onPickPattern(pattern);
+          if (onPickPattern) onPickPattern(pattern);
           setNameOfCurrentlyPlayingExampleVibration(pattern.name);
 
           const patternToUse =

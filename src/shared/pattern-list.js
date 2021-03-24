@@ -1,5 +1,5 @@
 import { last } from "lodash";
-import React from "react";
+import React, { useMemo } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { borderRadius } from "../shared/border-radius";
 import { BorderlessButton } from "../shared/borderless-button";
@@ -7,11 +7,21 @@ import { Icon } from "../shared/icon";
 
 export const PatternList = ({
   patterns,
+  listHeight,
   onSelectItem,
   nameOfCurrentlyPlayingExampleVibration,
 }) => {
+  const containerStyle = useMemo(() => {
+    if (!listHeight) return ViewStyles.patternListContainer;
+
+    return {
+      ...ViewStyles.patternListContainer,
+      height: listHeight,
+    };
+  }, [listHeight]);
+
   return (
-    <View style={ViewStyles.patternListContainer}>
+    <View style={containerStyle}>
       <FlatList
         data={patterns}
         keyExtractor={({ name }) => name}
