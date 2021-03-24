@@ -1,5 +1,6 @@
-import React from "react";
-import { ActivityIndicator, StyleSheet, Text } from "react-native";
+import React, { useCallback } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { useState } from "react/cjs/react.development";
 import { Background } from "../shared/background";
 import { VibrationPicker } from "../shared/vibration-picker";
 import { CopyConnectionKeyButton } from "./create-a-new-connection/copy-connection-key-button";
@@ -35,10 +36,50 @@ export const createANewConnection = ({ navigation }) => {
 };
 
 const Page = ({ connectionKey, client }) => {
+  const [isSendingVibration, setIsSendingVibration] = useState(false);
+  const [selectedPatternName, setSelectedPatternName] = useState(null);
+
+  client.onmessage = useCallback(
+    ({ data }) => {
+      const parsedResponse = JSON.parse(data);
+      if (parsedResponse.type === "confirmVibrationPatternSent")
+        setIsSendingVibration(false);
+    },
+    [setIsSendingVibration]
+  );
+
   return (
     <>
       <CopyConnectionKeyButton connectionKey={connectionKey} />
-      <VibrationPicker listHeight="30%" />
+      <VibrationPicker
+        listHeight="30%"
+        onPickPattern={(pattern) => {
+          console.log("sending");
+          client.send(
+            JSON.stringify({
+              type: "sendVibrationPattern",
+              data: {
+                vibrationPattern: pattern,
+              },
+            })
+          );
+          setIsSendingVibration(true);
+          setSelectedPatternName(pattern.name);
+        }}
+        disableVibrationOnCurrentPhone
+      />
+      {selectedPatternName && isSendingVibration && (
+        <View style={ViewStyles.sendingTextContainer}>
+          <Text style={ViewStyles.sendingText}>
+            Sending "{selectedPatternName}" to others
+          </Text>
+          <ActivityIndicator
+            testID="loadingIndicator"
+            size={20}
+            color="white"
+          />
+        </View>
+      )}
     </>
   );
 };
@@ -49,5 +90,13 @@ const ViewStyles = StyleSheet.create({
   },
   loadingText: {
     color: "white",
+  },
+  sendingTextContainer: {
+    paddingTop: 20,
+    flexDirection: "row",
+  },
+  sendingText: {
+    color: "white",
+    paddingRight: 10,
   },
 });

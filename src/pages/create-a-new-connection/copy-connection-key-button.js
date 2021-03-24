@@ -13,7 +13,7 @@ export const CopyConnectionKeyButton = ({ connectionKey }) => {
     fadeAnim.setValue(1);
     Animated.timing(fadeAnim, {
       toValue: 0,
-      duration: 2000,
+      duration: 3000,
       useNativeDriver: true,
     }).start();
   };

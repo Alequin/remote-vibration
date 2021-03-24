@@ -13,21 +13,20 @@ jest.mock(
   () => ({ hideLoadingIndicatorInterval: () => 0 })
 );
 
-import React from "React";
-import nock from "nock";
 import {
+  act,
   fireEvent,
   render,
-  within,
-  act,
   waitFor,
+  within,
 } from "@testing-library/react-native";
+import Clipboard from "expo-clipboard";
+import nock from "nock";
+import React from "React";
 import { AppRouter } from "./App";
 import * as pageNames from "./src/pages/page-names";
-
 import * as establishWebsocketConnection from "./src/utilities/establish-websocket-connection";
-import waitForExpect from "wait-for-expect";
-import Clipboard from "expo-clipboard";
+import { patterns } from "./src/utilities/vibration-patterns";
 
 const MOCK_DEVICE_ID = "123";
 const MOCK_ROOM_KEY = "234";
@@ -150,7 +149,58 @@ describe("App - Create a new connection", () => {
     // 5. Confirm the key is copied
     expect(Clipboard.setString).toHaveBeenCalledTimes(1);
     expect(Clipboard.setString).toHaveBeenCalledWith(MOCK_ROOM_KEY);
-  }, 10_000);
+  });
+
+  it("sends a vibration pattern when one is selected", async () => {
+    jest.spyOn(Clipboard, "setString");
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToCreateAConnectionPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(await findByTestId("create-a-connection-page")).toBeDefined();
+    });
+
+    await mockCallsToCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(`Connection Key:`));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    // 4. Press play on a vibration pattern
+    const constantVibration = (
+      await findAllByTestId("vibration-pattern-option")
+    ).find((option) => within(option).queryByText("Constant"));
+
+    const exampleConstantVibrationButton = within(constantVibration)
+      .getAllByRole("button")
+      .find((button) => within(button).getByTestId("playIcon"));
+
+    await act(async () => fireEvent.press(exampleConstantVibrationButton));
+
+    // 5. Confirm the pattern was sent
+    expect(mockWebsocketClient.send).toHaveBeenCalled();
+    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+      JSON.stringify({
+        type: "sendVibrationPattern",
+        data: {
+          vibrationPattern: patterns["Constant"],
+        },
+      })
+    );
+  });
 });
 
 const moveToCreateAConnectionPage = async (getAllByRole) => {

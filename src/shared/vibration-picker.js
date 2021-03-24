@@ -1,6 +1,6 @@
 import Slider from "@react-native-community/slider";
 import { round } from "lodash";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, Vibration } from "react-native";
 import {
   newRandomPattern,
@@ -15,6 +15,7 @@ export const VibrationPicker = ({
   onPressLockScreen,
   onPickPattern,
   listHeight,
+  disableVibrationOnCurrentPhone,
 }) => {
   const [
     nameOfCurrentlyPlayingExampleVibration,
@@ -31,6 +32,11 @@ export const VibrationPicker = ({
     applySpeedModifier,
   } = useSpeedModifier();
 
+  const startVibrating = useStartVibrating(
+    disableVibrationOnCurrentPhone,
+    applySpeedModifier
+  );
+
   useEffect(() => {
     if (nameOfCurrentlyPlayingExampleVibration && hasSpeedModifierBeingPicked) {
       const pattern =
@@ -38,7 +44,7 @@ export const VibrationPicker = ({
           ? newRandomPattern()
           : patterns[nameOfCurrentlyPlayingExampleVibration];
 
-      Vibration.vibrate(applySpeedModifier(pattern), true);
+      startVibrating(pattern);
     }
   }, [speedModifier, hasSpeedModifierBeingPicked]);
 
@@ -64,7 +70,7 @@ export const VibrationPicker = ({
           const patternToUse =
             pattern.name !== RANDOM_PATTERN_NAME ? pattern : newRandomPattern();
 
-          Vibration.vibrate(applySpeedModifier(patternToUse), true);
+          startVibrating(patternToUse);
         }}
       />
       <Text style={ViewStyles.sliderText}>{`Speed ${speedModifier}X`}</Text>
@@ -106,6 +112,15 @@ const useSpeedModifier = () => {
     applySpeedModifier,
   };
 };
+
+const useStartVibrating = (
+  disableVibrationOnCurrentPhone,
+  applySpeedModifier
+) =>
+  useCallback((pattern) => {
+    if (!disableVibrationOnCurrentPhone)
+      Vibration.vibrate(applySpeedModifier(pattern), true);
+  });
 
 const ViewStyles = StyleSheet.create({
   container: {
