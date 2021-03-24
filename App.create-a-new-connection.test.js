@@ -22,7 +22,8 @@ import {
 } from "@testing-library/react-native";
 import Clipboard from "expo-clipboard";
 import nock from "nock";
-import React from "React";
+import React, { useState } from "React";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { AppRouter } from "./App";
 import * as pageNames from "./src/pages/page-names";
 import * as establishWebsocketConnection from "./src/utilities/establish-websocket-connection";
@@ -200,6 +201,65 @@ describe("App - Create a new connection", () => {
         },
       })
     );
+  });
+
+  it("reconnects to the server when the state changes from inactive to active", async () => {
+    const createARoomInterceptor = mockCreateARoom();
+
+    const TestComponent = () => {
+      const [mockAppState, setMockAppState] = useState({
+        deviceId: MOCK_DEVICE_ID,
+        isAppActive: true,
+      });
+
+      return (
+        <>
+          <AppRouter appState={mockAppState} />
+          <TouchableOpacity
+            testID="setAppActive"
+            onPress={() =>
+              setMockAppState({ ...mockAppState, isAppActive: true })
+            }
+          />
+          <TouchableOpacity
+            testID="setAppInactive"
+            onPress={() =>
+              setMockAppState({ ...mockAppState, isAppActive: false })
+            }
+          />
+        </>
+      );
+    };
+
+    const { findByTestId, getByTestId, getAllByRole } = render(
+      <TestComponent />
+    );
+
+    await waitFor(async () => {
+      // 2. Starts on main menu
+      expect(getByTestId("main-menu-page")).toBeDefined();
+
+      await moveToCreateAConnectionPage(getAllByRole);
+
+      // 3. Moves to expected page
+      expect(getByTestId("create-a-connection-page")).toBeDefined();
+    });
+
+    // 4. set the app as inactive and then active again
+    const inactiveButton = await findByTestId("setAppInactive");
+    await act(async () => fireEvent.press(inactiveButton));
+    const activeButton = await findByTestId("setAppActive");
+    await act(async () => fireEvent.press(activeButton));
+
+    await waitFor(async () => {
+      // 5. re-connects to the room
+      expect(createARoomInterceptor.isDone()).toBe(true);
+    });
+
+    await waitFor(async () => {
+      // 6. re-connects to the websocket
+      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
+    });
   });
 });
 

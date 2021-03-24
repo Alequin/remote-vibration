@@ -22,14 +22,20 @@ export const useAppState = () => {
 };
 
 const useAppActiveState = () => {
-  const [isAppActive, setIsAppActive] = useState(
-    isStateActive(AppState.current)
+  const [appState, setAppState] = useState(AppState.currentState);
+  const [isAppActive, setIsAppActive] = useState(isStateActive(appState));
+  console.log(
+    "🚀 ~ file: use-app-state.js ~ line 26 ~ useAppActiveState ~ appState",
+    appState
   );
-  const [appState, setAppState] = useState(AppState.current);
+  console.log(
+    "🚀 ~ file: use-app-state.js ~ line 27 ~ useAppActiveState ~ isAppActive",
+    isAppActive
+  );
 
   const handleAppStateChange = useCallback(
     (nextAppState) => {
-      setIsAppActive(!isStateActive(appState) && isStateActive(nextAppState));
+      setIsAppActive(isStateActive(nextAppState));
       setAppState(nextAppState);
     },
     [setAppState, setIsAppActive, isStateActive]
