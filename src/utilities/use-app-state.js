@@ -24,14 +24,6 @@ export const useAppState = () => {
 const useAppActiveState = () => {
   const [appState, setAppState] = useState(AppState.currentState);
   const [isAppActive, setIsAppActive] = useState(isStateActive(appState));
-  console.log(
-    "🚀 ~ file: use-app-state.js ~ line 26 ~ useAppActiveState ~ appState",
-    appState
-  );
-  console.log(
-    "🚀 ~ file: use-app-state.js ~ line 27 ~ useAppActiveState ~ isAppActive",
-    isAppActive
-  );
 
   const handleAppStateChange = useCallback(
     (nextAppState) => {

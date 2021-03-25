@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { useState } from "react/cjs/react.development";
+import { useEffect, useState } from "react/cjs/react.development";
 import { Background } from "../shared/background";
 import { VibrationPicker } from "../shared/vibration-picker";
 import { CopyConnectionKeyButton } from "./create-a-new-connection/copy-connection-key-button";
@@ -38,21 +38,22 @@ export const createANewConnection = ({ navigation }) => {
 const Page = ({ connectionKey, client }) => {
   const [isSendingVibration, setIsSendingVibration] = useState(false);
   const [selectedPatternName, setSelectedPatternName] = useState(null);
+  const [vibrationSpeed, setVibrationSpeed] = useState(1);
 
-  client.onmessage = useCallback(
-    ({ data }) => {
+  useEffect(() => {
+    client.onmessage = ({ data }) => {
       const parsedResponse = JSON.parse(data);
       if (parsedResponse.type === "confirmVibrationPatternSent")
         setIsSendingVibration(false);
-    },
-    [setIsSendingVibration]
-  );
+    };
+  }, [setIsSendingVibration]);
 
   return (
     <>
       <CopyConnectionKeyButton connectionKey={connectionKey} />
       <VibrationPicker
         listHeight="30%"
+        onChangeVibrationSpeed={setVibrationSpeed}
         onPickPattern={(pattern) => {
           console.log("sending");
           client.send(
@@ -60,6 +61,7 @@ const Page = ({ connectionKey, client }) => {
               type: "sendVibrationPattern",
               data: {
                 vibrationPattern: pattern,
+                speed: vibrationSpeed,
               },
             })
           );

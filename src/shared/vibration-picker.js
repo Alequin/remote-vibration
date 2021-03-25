@@ -13,6 +13,7 @@ import { PatternList } from "./pattern-list";
 
 export const VibrationPicker = ({
   onPressLockScreen,
+  onSetVibrationSpeed,
   onPickPattern,
   listHeight,
   disableVibrationOnCurrentPhone,
@@ -82,7 +83,10 @@ export const VibrationPicker = ({
         maximumValue={2}
         onSlidingStart={() => setHasSpeedModifierBeingPicked(false)}
         onSlidingComplete={() => setHasSpeedModifierBeingPicked(true)}
-        onValueChange={(value) => setSpeedModifier(value)}
+        onValueChange={(value) => {
+          onSetVibrationSpeed && onSetVibrationSpeed(value);
+          setSpeedModifier(value);
+        }}
         thumbTintColor="cyan"
         minimumTrackTintColor="white"
         maximumTrackTintColor="white"

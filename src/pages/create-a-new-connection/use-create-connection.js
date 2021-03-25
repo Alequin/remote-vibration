@@ -10,13 +10,7 @@ export const useCreateConnection = () => {
   const [connectionKey, setConnectionKey] = useState(null);
 
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: use-create-connection.js ~ line 14 ~ useEffect ~ isAppActive",
-      isAppActive
-    );
     if (isAppActive) {
-      console.log("mount");
-
       fetch("http://remote-vibration-server.herokuapp.com/room", {
         method: "POST",
         headers: { deviceId },
@@ -42,8 +36,6 @@ export const useCreateConnection = () => {
           setError(error);
         });
     }
-
-    return () => console.log("unmount");
   }, [isAppActive]);
 
   // Clean up the client on unmount assuming there is one
