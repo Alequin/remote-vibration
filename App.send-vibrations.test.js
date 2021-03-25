@@ -35,7 +35,7 @@ import { patterns } from "./src/utilities/vibration-patterns";
 const MOCK_DEVICE_ID = "123";
 const MOCK_ROOM_KEY = "234";
 
-describe("App - Create a new connection", () => {
+describe("App - send vibrations", () => {
   const mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
 
   const establishWebsocketSpy = jest
@@ -64,16 +64,16 @@ describe("App - Create a new connection", () => {
       // 1. Starts on main menu
       expect(getByTestId("main-menu-page")).toBeDefined();
 
-      await moveToCreateAConnectionPage(getAllByRole);
+      await moveToSendVibrationsPage(getAllByRole);
 
       // 2. Moves to expected page
-      expect(getByTestId("create-a-connection-page")).toBeDefined();
+      expect(getByTestId("send-vibrations-page")).toBeDefined();
 
       expect(getByTestId("loadingIndicator")).toBeDefined();
     });
   });
 
-  it("creates a new connection on visiting the 'create-a-connection' page", async () => {
+  it("creates a new connection on visiting the 'send-vibration' page", async () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, getByTestId, getAllByRole } = render(
@@ -84,10 +84,10 @@ describe("App - Create a new connection", () => {
       // 1. Starts on main menu
       expect(getByTestId("main-menu-page")).toBeDefined();
 
-      await moveToCreateAConnectionPage(getAllByRole);
+      await moveToSendVibrationsPage(getAllByRole);
 
       // 2. Moves to expected page
-      expect(getByTestId("create-a-connection-page")).toBeDefined();
+      expect(getByTestId("send-vibrations-page")).toBeDefined();
     });
 
     await waitFor(async () => {
@@ -130,10 +130,10 @@ describe("App - Create a new connection", () => {
       // 1. Starts on main menu
       expect(await findByTestId("main-menu-page")).toBeDefined();
 
-      await moveToCreateAConnectionPage(getAllByRole);
+      await moveToSendVibrationsPage(getAllByRole);
 
       // 2. Moves to expected page
-      expect(await findByTestId("create-a-connection-page")).toBeDefined();
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
     await mockCallsToCreateConnection(
@@ -168,10 +168,10 @@ describe("App - Create a new connection", () => {
       // 1. Starts on main menu
       expect(await findByTestId("main-menu-page")).toBeDefined();
 
-      await moveToCreateAConnectionPage(getAllByRole);
+      await moveToSendVibrationsPage(getAllByRole);
 
       // 2. Moves to expected page
-      expect(await findByTestId("create-a-connection-page")).toBeDefined();
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
     await mockCallsToCreateConnection(
@@ -220,10 +220,10 @@ describe("App - Create a new connection", () => {
       // 1. Starts on main menu
       expect(await findByTestId("main-menu-page")).toBeDefined();
 
-      await moveToCreateAConnectionPage(getAllByRole);
+      await moveToSendVibrationsPage(getAllByRole);
 
       // 2. Moves to expected page
-      expect(await findByTestId("create-a-connection-page")).toBeDefined();
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
     await mockCallsToCreateConnection(
@@ -300,10 +300,10 @@ describe("App - Create a new connection", () => {
       // 2. Starts on main menu
       expect(await findByTestId("main-menu-page")).toBeDefined();
 
-      await moveToCreateAConnectionPage(getAllByRole);
+      await moveToSendVibrationsPage(getAllByRole);
 
       // 3. Moves to expected page
-      expect(await findByTestId("create-a-connection-page")).toBeDefined();
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
     // 4. set the app as inactive
@@ -326,7 +326,7 @@ describe("App - Create a new connection", () => {
   });
 });
 
-const moveToCreateAConnectionPage = async (getAllByRole) => {
+const moveToSendVibrationsPage = async (getAllByRole) => {
   const mainMenuButtons = getAllByRole("button");
 
   const connectToAnotherDeviceButton = mainMenuButtons.find((button) =>
