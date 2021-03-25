@@ -9,7 +9,7 @@ export const PatternList = ({
   patterns,
   listHeight,
   onSelectItem,
-  nameOfCurrentlyPlayingExampleVibration,
+  activeVibrationName,
 }) => {
   const containerStyle = useMemo(() => {
     if (!listHeight) return ViewStyles.patternListContainer;
@@ -29,9 +29,7 @@ export const PatternList = ({
           <ListPatternOption
             item={item}
             isLastButton={item.name === last(patterns).name}
-            isThisPatternInUse={
-              nameOfCurrentlyPlayingExampleVibration === item.name
-            }
+            isThisPatternInUse={activeVibrationName === item.name}
             onPressPlay={(pattern) => {
               onSelectItem(pattern);
             }}

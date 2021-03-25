@@ -1,23 +1,47 @@
 import { round } from "lodash";
-import React, { useCallback, useState } from "react";
-import { StyleSheet } from "react-native";
+import React, { useCallback, useState, useEffect } from "react";
+import { StyleSheet, Vibration } from "react-native";
 import { Background } from "../shared/background";
 import { borderRadius } from "../shared/border-radius";
 import { VibrationPicker } from "../shared/vibration-picker";
+import {
+  newRandomPattern,
+  patterns,
+  RANDOM_PATTERN_NAME,
+} from "../utilities/vibration-patterns";
 import { LockScreen } from "./lock-screen";
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
   const [
-    nameOfCurrentlyPlayingExampleVibration,
+    activeVibrationName,
     setNameOfCurrentlyPlayingExampleVibration,
   ] = useState(null);
   const [isScreenLocked, setIsScreenLocked] = useState(false);
+
+  const {
+    speedModifier,
+    setSpeedModifier,
+    applySpeedModifier,
+  } = useSpeedModifier();
+
+  const startVibrating = useStartVibrating(applySpeedModifier);
+
+  useEffect(() => {
+    if (activeVibrationName) {
+      const pattern =
+        activeVibrationName === RANDOM_PATTERN_NAME
+          ? newRandomPattern()
+          : patterns[activeVibrationName];
+
+      startVibrating(pattern);
+    }
+  }, [speedModifier]);
 
   return isScreenLocked ? (
     <LockScreen
       onUnlock={() => setIsScreenLocked(false)}
       navigation={navigation}
-      currentVibrationPatternName={nameOfCurrentlyPlayingExampleVibration}
+      currentVibrationPatternName={activeVibrationName}
     />
   ) : (
     <Background
@@ -25,10 +49,22 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
       testID="vibrate-on-current-phone-page"
     >
       <VibrationPicker
+        activeVibrationName={activeVibrationName}
         onPressLockScreen={() => setIsScreenLocked(true)}
-        onPickPattern={({ name }) =>
-          setNameOfCurrentlyPlayingExampleVibration(name)
-        }
+        onSetVibrationSpeed={setSpeedModifier}
+        onPickPattern={(pattern) => {
+          if (activeVibrationName === pattern.name) {
+            Vibration.cancel();
+            setNameOfCurrentlyPlayingExampleVibration(null);
+            return;
+          }
+
+          const patternToUse =
+            pattern.name === RANDOM_PATTERN_NAME ? newRandomPattern() : pattern;
+
+          startVibrating(patternToUse);
+          setNameOfCurrentlyPlayingExampleVibration(pattern.name);
+        }}
       />
     </Background>
   );
@@ -38,9 +74,7 @@ const useSpeedModifier = () => {
   const [speedModifier, setSpeedModifier] = useState(1);
 
   const applySpeedModifier = useCallback(
-    ({ pattern }) => {
-      return pattern.map((time) => time * speedModifier);
-    },
+    ({ pattern }) => pattern.map((time) => time / speedModifier),
     [speedModifier]
   );
 
@@ -52,6 +86,11 @@ const useSpeedModifier = () => {
     applySpeedModifier,
   };
 };
+
+const useStartVibrating = (applySpeedModifier) =>
+  useCallback((pattern) =>
+    Vibration.vibrate(applySpeedModifier(pattern), true)
+  );
 
 const ViewStyles = StyleSheet.create({
   container: {

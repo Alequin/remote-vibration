@@ -2,11 +2,7 @@ import Slider from "@react-native-community/slider";
 import { round } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, Vibration } from "react-native";
-import {
-  newRandomPattern,
-  patterns,
-  RANDOM_PATTERN_NAME,
-} from "../utilities/vibration-patterns";
+import { patterns } from "../utilities/vibration-patterns";
 import { borderRadius } from "./border-radius";
 import { Button } from "./button";
 import { PatternList } from "./pattern-list";
@@ -16,63 +12,28 @@ export const VibrationPicker = ({
   onSetVibrationSpeed,
   onPickPattern,
   listHeight,
-  disableVibrationOnCurrentPhone,
+  activeVibrationName,
 }) => {
-  const [
-    nameOfCurrentlyPlayingExampleVibration,
-    setNameOfCurrentlyPlayingExampleVibration,
-  ] = useState(null);
+  const [speedModifier, setSpeedModifier] = useState(1);
 
   const [
     hasSpeedModifierBeingPicked,
     setHasSpeedModifierBeingPicked,
   ] = useState(true);
-  const {
-    speedModifier,
-    setSpeedModifier,
-    applySpeedModifier,
-  } = useSpeedModifier();
-
-  const startVibrating = useStartVibrating(
-    disableVibrationOnCurrentPhone,
-    applySpeedModifier
-  );
 
   useEffect(() => {
-    if (nameOfCurrentlyPlayingExampleVibration && hasSpeedModifierBeingPicked) {
-      const pattern =
-        nameOfCurrentlyPlayingExampleVibration === RANDOM_PATTERN_NAME
-          ? newRandomPattern()
-          : patterns[nameOfCurrentlyPlayingExampleVibration];
-
-      startVibrating(pattern);
+    if (hasSpeedModifierBeingPicked && onSetVibrationSpeed) {
+      onSetVibrationSpeed(speedModifier);
     }
-  }, [speedModifier, hasSpeedModifierBeingPicked]);
+  }, [hasSpeedModifierBeingPicked]);
 
   return (
     <>
       <PatternList
         listHeight={listHeight}
         patterns={Object.values(patterns)}
-        applySpeedModifier={applySpeedModifier}
-        nameOfCurrentlyPlayingExampleVibration={
-          nameOfCurrentlyPlayingExampleVibration
-        }
-        onSelectItem={(pattern) => {
-          if (nameOfCurrentlyPlayingExampleVibration === pattern.name) {
-            Vibration.cancel();
-            setNameOfCurrentlyPlayingExampleVibration(null);
-            return;
-          }
-
-          if (onPickPattern) onPickPattern(pattern);
-          setNameOfCurrentlyPlayingExampleVibration(pattern.name);
-
-          const patternToUse =
-            pattern.name !== RANDOM_PATTERN_NAME ? pattern : newRandomPattern();
-
-          startVibrating(patternToUse);
-        }}
+        activeVibrationName={activeVibrationName}
+        onSelectItem={(pattern) => onPickPattern && onPickPattern(pattern)}
       />
       <Text style={ViewStyles.sliderText}>{`Speed ${speedModifier}X`}</Text>
       <Slider
@@ -80,13 +41,10 @@ export const VibrationPicker = ({
         style={ViewStyles.slider}
         minimumValue={0.1}
         value={speedModifier}
-        maximumValue={2}
+        maximumValue={4}
         onSlidingStart={() => setHasSpeedModifierBeingPicked(false)}
         onSlidingComplete={() => setHasSpeedModifierBeingPicked(true)}
-        onValueChange={(value) => {
-          onSetVibrationSpeed && onSetVibrationSpeed(value);
-          setSpeedModifier(value);
-        }}
+        onValueChange={(value) => setSpeedModifier(round(value, 1))}
         thumbTintColor="cyan"
         minimumTrackTintColor="white"
         maximumTrackTintColor="white"

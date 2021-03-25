@@ -51,24 +51,26 @@ const Page = ({ connectionKey, client }) => {
   return (
     <>
       <CopyConnectionKeyButton connectionKey={connectionKey} />
+
       <VibrationPicker
         listHeight="30%"
+        activeVibrationName={selectedPatternName}
         onChangeVibrationSpeed={setVibrationSpeed}
         onPickPattern={(pattern) => {
-          console.log("sending");
+          const patternToSet = !selectedPatternName ? pattern : null;
+
           client.send(
             JSON.stringify({
               type: "sendVibrationPattern",
               data: {
-                vibrationPattern: pattern,
+                vibrationPattern: patternToSet,
                 speed: vibrationSpeed,
               },
             })
           );
           setIsSendingVibration(true);
-          setSelectedPatternName(pattern.name);
+          setSelectedPatternName(patternToSet && patternToSet.name);
         }}
-        disableVibrationOnCurrentPhone
       />
       {selectedPatternName && isSendingVibration && (
         <View style={ViewStyles.sendingTextContainer}>

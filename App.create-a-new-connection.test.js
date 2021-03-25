@@ -206,7 +206,61 @@ describe("App - Create a new connection", () => {
     );
   });
 
-  it.only("reconnects to the server when the state changes from inactive to active", async () => {
+  it.only("sends an empty vibration pattern when one deselected to signify the vibration should stop", async () => {
+    jest.spyOn(Clipboard, "setString");
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToCreateAConnectionPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(await findByTestId("create-a-connection-page")).toBeDefined();
+    });
+
+    await mockCallsToCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(`Connection Key:`));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    // 4. Press play on a vibration pattern
+    const constantVibration = (
+      await findAllByTestId("vibration-pattern-option")
+    ).find((option) => within(option).queryByText("Constant"));
+
+    const exampleConstantVibrationButton = within(constantVibration)
+      .getAllByRole("button")
+      .find((button) => within(button).getByTestId("playIcon"));
+
+    await act(async () => fireEvent.press(exampleConstantVibrationButton));
+
+    // 5. Presses play on vibration pattern again to turn it off
+    await act(async () => fireEvent.press(exampleConstantVibrationButton));
+
+    // 6. Confirm the empty pattern was sent
+    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+      JSON.stringify({
+        type: "sendVibrationPattern",
+        data: {
+          vibrationPattern: null,
+          speed: 1,
+        },
+      })
+    );
+  });
+
+  it("reconnects to the server when the state changes from inactive to active", async () => {
     mockCreateARoom();
 
     // 1. Create buttons to allow mocking of changing app state
