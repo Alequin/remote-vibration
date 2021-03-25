@@ -9,8 +9,10 @@ jest.mock("react-native/Libraries/Vibration/Vibration", () => ({
   cancel: jest.fn(),
 }));
 jest.mock(
-  "./src/pages/create-a-new-connection/hide-loading-indicator-interval",
-  () => ({ hideLoadingIndicatorInterval: () => 0 })
+  "./src/pages/send-vibrations/hide-loading-indicator-interval",
+  () => ({
+    hideLoadingIndicatorInterval: () => 0,
+  })
 );
 
 import {
@@ -336,7 +338,7 @@ const moveToCreateAConnectionPage = async (getAllByRole) => {
   const connectToADeviceMenuButtons = getAllByRole("button");
 
   const createAConnectionButton = connectToADeviceMenuButtons.find((button) =>
-    within(button).queryByText(pageNames.createAConnection)
+    within(button).queryByText(pageNames.sendVibrations)
   );
 
   return await act(async () => fireEvent.press(createAConnectionButton));

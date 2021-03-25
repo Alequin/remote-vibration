@@ -4,6 +4,6 @@ export const vibrateOnCurrentPhone = "Vibrate On Current Phone";
 
 export const connectToAnotherDevice = "Connect To Another Device";
 
-export const connectToSomeoneElse = "Connect To Someone Else";
+export const receiveVibrations = "Receive Vibrations";
 
-export const createAConnection = "Create A New Connection";
+export const sendVibrations = "Send Vibrations";

@@ -3,11 +3,11 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react/cjs/react.development";
 import { Background } from "../shared/background";
 import { VibrationPicker } from "../shared/vibration-picker";
-import { CopyConnectionKeyButton } from "./create-a-new-connection/copy-connection-key-button";
-import { useCreateConnection } from "./create-a-new-connection/use-create-connection";
-import { useHasEnoughTimePassedToHideLoadingIndicator } from "./create-a-new-connection/use-has-enough-time-to-hide-loading-indicator";
+import { CopyConnectionKeyButton } from "./send-vibrations/copy-connection-key-button";
+import { useCreateConnection } from "./send-vibrations/use-create-connection";
+import { useHasEnoughTimePassedToHideLoadingIndicator } from "./send-vibrations/use-has-enough-time-to-hide-loading-indicator";
 
-export const createANewConnection = ({ navigation }) => {
+export const sendVibrations = ({ navigation }) => {
   // Add in false loading time to stop screen flashing the loading spinner
   // if the connection is create really fast
   const canHideIndicator = useHasEnoughTimePassedToHideLoadingIndicator();

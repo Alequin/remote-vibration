@@ -3,7 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { AppContext } from "./app-context";
 import { ConnectToAnotherDevice } from "./src/pages/connect-to-another-device";
-import { createANewConnection } from "./src/pages/create-a-new-connection";
+import { sendVibrations } from "./src/pages/send-vibrations";
 import { MainMenu } from "./src/pages/main-menu";
 import * as pageNames from "./src/pages/page-names";
 import { VibrateOnCurrentPhone } from "./src/pages/vibrate-on-current-phone";
@@ -74,10 +74,7 @@ const connectToAnotherDevicePage = () => (
 );
 
 const createAConnectionPage = () => (
-  <Stack.Screen
-    name={pageNames.createAConnection}
-    component={createANewConnection}
-  />
+  <Stack.Screen name={pageNames.sendVibrations} component={sendVibrations} />
 );
 
 export default App;

@@ -5,11 +5,9 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "../../shared/icon";
 
 export const CopyConnectionKeyButton = ({ connectionKey }) => {
-  // fadeAnim will be used as the value for opacity. Initial Value: 0
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const fadeOut = () => {
-    // Will change fadeAnim value to 0 in 5 seconds
     fadeAnim.setValue(1);
     Animated.timing(fadeAnim, {
       toValue: 0,
@@ -21,7 +19,7 @@ export const CopyConnectionKeyButton = ({ connectionKey }) => {
     <>
       <Animated.View
         style={{
-          opacity: fadeAnim, // Bind opacity to animated value
+          opacity: fadeAnim,
         }}
       >
         <Text style={ViewStyles.connectionKeyCopiedMessage}>Copied</Text>

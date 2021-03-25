@@ -10,14 +10,14 @@ export const ConnectToAnotherDevice = ({ navigation }) => (
     testID="connect-to-another-device-page"
   >
     <MenuButton isTop icon="connectedPeople">
-      {pageNames.connectToSomeoneElse}
+      {pageNames.receiveVibrations}
     </MenuButton>
     <MenuButton
       isBottom
       icon="link"
-      onPress={() => navigation.navigate(pageNames.createAConnection)}
+      onPress={() => navigation.navigate(pageNames.sendVibrations)}
     >
-      {pageNames.createAConnection}
+      {pageNames.sendVibrations}
     </MenuButton>
   </Background>
 );

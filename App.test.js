@@ -5,7 +5,7 @@ import { render, waitFor } from "@testing-library/react-native";
 import App from "./App";
 import * as newDeviceKey from "./src/utilities/new-device-key";
 
-describe("App - Menu", () => {
+describe("App", () => {
   it("creates a new device key when one does not exist", async () => {
     const newDeviceKeySpy = jest
       .spyOn(newDeviceKey, "newDeviceKey")
