@@ -4,21 +4,34 @@ import { useEffect, useState } from "react/cjs/react.development";
 import { Background } from "../shared/background";
 import { VibrationPicker } from "../shared/vibration-picker";
 import { CopyConnectionKeyButton } from "./send-vibrations/copy-connection-key-button";
-import { useCreateConnection } from "./send-vibrations/use-create-connection";
+import { useCreateRoom } from "../shared/use-create-room";
+import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useHasEnoughTimePassedToHideLoadingIndicator } from "./send-vibrations/use-has-enough-time-to-hide-loading-indicator";
 
-export const sendVibrations = ({ navigation }) => {
+export const SendVibrations = ({ navigation }) => {
   // Add in false loading time to stop screen flashing the loading spinner
   // if the connection is create really fast
   const canHideIndicator = useHasEnoughTimePassedToHideLoadingIndicator();
 
-  const { client, connectionKey, isLoading, error } = useCreateConnection();
+  const {
+    connectionKey,
+    isLoading: isStillCreatingRoom,
+    error: createRoomError,
+  } = useCreateRoom();
+  const {
+    client,
+    isLoading: isStillConnectingToRoom,
+    error: connectToRoomError,
+  } = useConnectToRoom(connectionKey);
+
+  const isLoading = isStillCreatingRoom || isStillConnectingToRoom;
 
   // TODO make the error handling better (error page maybe?)
-  if (error) return <Text>An error occurred</Text>;
+  if (createRoomError) return <Text>An error occurred</Text>;
+  if (connectToRoomError) return <Text>An error occurred</Text>;
 
   return (
-    <Background style={ViewStyles.container} testID="create-a-connection-page">
+    <Background style={ViewStyles.container} testID="send-vibrations-page">
       {isLoading || !canHideIndicator ? (
         <>
           <ActivityIndicator

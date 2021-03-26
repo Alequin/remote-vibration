@@ -95,7 +95,7 @@ describe("App - send vibrations", () => {
       expect(createARoomInterceptor.isDone()).toBe(true);
     });
 
-    await waitFor(async () => {
+    await waitForExpect(async () => {
       // 4. Make the call to open a websocket
       expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
     });
@@ -208,7 +208,7 @@ describe("App - send vibrations", () => {
     );
   });
 
-  it.only("sends an empty vibration pattern when one deselected to signify the vibration should stop", async () => {
+  it("sends an empty vibration pattern when one deselected to signify the vibration should stop", async () => {
     jest.spyOn(Clipboard, "setString");
     const createARoomInterceptor = mockCreateARoom();
 
@@ -320,8 +320,11 @@ describe("App - send vibrations", () => {
     await waitForExpect(async () => {
       // 7. re-connects to the room
       expect(createARoomInterceptor.isDone()).toBe(true);
+    });
+
+    await waitForExpect(async () => {
       // 8. re-connects to the websocket
-      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
+      expect(establishWebsocketSpy).toHaveBeenCalled();
     });
   });
 });
@@ -354,7 +357,7 @@ const mockCallsToCreateConnection = async (
     expect(createARoomInterceptor.isDone()).toBe(true);
   });
 
-  await waitFor(async () => {
+  await waitForExpect(async () => {
     // 2. Make the call to open a websocket
     expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
   });

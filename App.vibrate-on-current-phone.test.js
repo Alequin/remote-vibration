@@ -29,18 +29,6 @@ describe("App - Vibrate on current phone", () => {
     Vibration.cancel.mockClear();
   });
 
-  it("allows the users to go to the 'vibrate on current phone' page from the 'main menu'", async () => {
-    const { getAllByRole, getByTestId } = render(<AppRouter />);
-
-    // Starts on main menu
-    expect(getByTestId("main-menu-page")).toBeDefined();
-
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
-
-    // Moves to expected page
-    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
-  });
-
   it.todo("shows the expected buttons");
 
   it("allows the user to play a vibration pattern", async () => {
