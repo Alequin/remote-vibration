@@ -357,13 +357,13 @@ describe("App - receive vibrations", () => {
       mockWebsocketClient.onmessage({
         data: JSON.stringify({
           type: "receivedVibrationPattern",
-          data: { vibrationPattern: mockVibrationPattern },
+          data: { vibrationPattern: mockVibrationPattern, speed: 2 },
         }),
       })
     );
 
     expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
-    expect(Vibration.vibrate).toHaveBeenCalledWith([0, 100], true);
+    expect(Vibration.vibrate).toHaveBeenCalledWith([0, 50], true);
   });
 
   it("stops vibrating when an empty vibration pattern message is received", async () => {

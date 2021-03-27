@@ -113,7 +113,16 @@ describe("App - send vibrations", () => {
       })
     );
 
-    // 7. Confirm the connection key is presented to the user
+    // 7. Fake receiving a message confirming the room connection
+    await act(async () =>
+      mockWebsocketClient.onmessage({
+        data: JSON.stringify({
+          type: "confirmRoomConnection",
+        }),
+      })
+    );
+
+    // 8. Confirm the connection key is presented to the user
     expect(await findByText(`Connection Key:`));
     expect(await findByText(`${MOCK_ROOM_KEY}`));
   });
@@ -233,7 +242,7 @@ describe("App - send vibrations", () => {
     );
 
     // 3. Confirm connection is established
-    expect(await findByText(`Connection Key:`));
+    expect(await findByText(/connection key/i));
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
     // 4. Press play on a vibration pattern
@@ -372,6 +381,15 @@ const mockCallsToCreateConnection = async (
     JSON.stringify({
       type: "connectToRoom",
       data: { roomKey: MOCK_ROOM_KEY },
+    })
+  );
+
+  // 5. Fake receiving a message confirming the room connection
+  await act(async () =>
+    mockWebsocketClient.onmessage({
+      data: JSON.stringify({
+        type: "confirmRoomConnection",
+      }),
     })
   );
 };

@@ -50,7 +50,7 @@ export const SendVibrations = ({ navigation }) => {
 
 const Page = ({ connectionKey, client }) => {
   const [isSendingVibration, setIsSendingVibration] = useState(false);
-  const [selectedPatternName, setSelectedPatternName] = useState(null);
+  const [selectedPattern, setSelectedPattern] = useState(null);
   const [vibrationSpeed, setVibrationSpeed] = useState(1);
 
   useEffect(() => {
@@ -61,6 +61,20 @@ const Page = ({ connectionKey, client }) => {
     };
   }, [setIsSendingVibration]);
 
+  useEffect(() => {
+    client.send(
+      JSON.stringify({
+        type: "sendVibrationPattern",
+        data: {
+          vibrationPattern: selectedPattern,
+          speed: vibrationSpeed,
+        },
+      })
+    );
+  }, [selectedPattern, vibrationSpeed]);
+
+  const currentPatterName = selectedPattern && selectedPattern.name;
+
   return (
     <>
       <CopyConnectionKeyButton
@@ -69,28 +83,17 @@ const Page = ({ connectionKey, client }) => {
       />
       <VibrationPicker
         listHeight="30%"
-        activeVibrationName={selectedPatternName}
+        activeVibrationName={currentPatterName}
         onChangeVibrationSpeed={setVibrationSpeed}
         onPickPattern={(pattern) => {
-          const patternToSet = !selectedPatternName ? pattern : null;
-
-          client.send(
-            JSON.stringify({
-              type: "sendVibrationPattern",
-              data: {
-                vibrationPattern: patternToSet,
-                speed: vibrationSpeed,
-              },
-            })
-          );
           setIsSendingVibration(true);
-          setSelectedPatternName(patternToSet && patternToSet.name);
+          setSelectedPattern(!selectedPattern ? pattern : null);
         }}
       />
-      {selectedPatternName && isSendingVibration && (
+      {selectedPattern && isSendingVibration && (
         <View style={ViewStyles.sendingTextContainer}>
           <Text style={ViewStyles.sendingText}>
-            Sending "{selectedPatternName}" to others
+            Sending "{currentPatterName}" to others
           </Text>
           <ActivityIndicator
             testID="loadingIndicator"

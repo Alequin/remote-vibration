@@ -9,7 +9,7 @@ import { PatternList } from "./pattern-list";
 
 export const VibrationPicker = ({
   onPressLockScreen,
-  onSetVibrationSpeed,
+  onChangeVibrationSpeed,
   onPickPattern,
   listHeight,
   activeVibrationName,
@@ -22,10 +22,10 @@ export const VibrationPicker = ({
   ] = useState(true);
 
   useEffect(() => {
-    if (hasSpeedModifierBeingPicked && onSetVibrationSpeed) {
-      onSetVibrationSpeed(speedModifier);
+    if (hasSpeedModifierBeingPicked && onChangeVibrationSpeed) {
+      onChangeVibrationSpeed(speedModifier);
     }
-  }, [hasSpeedModifierBeingPicked]);
+  }, [hasSpeedModifierBeingPicked, speedModifier]);
 
   return (
     <>

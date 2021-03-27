@@ -17,10 +17,16 @@ export const ReceiveVibrations = ({ navigation }) => {
         const parsedResponse = JSON.parse(data);
 
         if (parsedResponse.type === "receivedVibrationPattern") {
-          const { data } = parsedResponse;
+          const {
+            data: { vibrationPattern, speed },
+          } = parsedResponse;
 
-          if (!data.vibrationPattern) Vibration.cancel();
-          else Vibration.vibrate(data.vibrationPattern.pattern, true);
+          if (!vibrationPattern) Vibration.cancel();
+          else
+            Vibration.vibrate(
+              vibrationPattern.pattern.map((time) => time / speed),
+              true
+            );
         }
       };
     }
