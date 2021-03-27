@@ -49,6 +49,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
       testID="vibrate-on-current-phone-page"
     >
       <VibrationPicker
+        listHeight="60%"
         activeVibrationName={activeVibrationName}
         onPressLockScreen={() => setIsScreenLocked(true)}
         onSetVibrationSpeed={setSpeedModifier}

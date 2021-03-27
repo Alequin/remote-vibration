@@ -16,7 +16,7 @@ export const PatternList = ({
 
     return {
       ...ViewStyles.patternListContainer,
-      height: listHeight,
+      maxHeight: listHeight,
     };
   }, [listHeight]);
 
@@ -82,7 +82,6 @@ const ViewStyles = StyleSheet.create({
   patternListContainer: {
     borderRadius,
     width: "100%",
-    maxHeight: "900%",
     borderColor: "white",
     borderWidth: 1,
     marginBottom: "4%",
