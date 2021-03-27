@@ -63,8 +63,10 @@ const Page = ({ connectionKey, client }) => {
 
   return (
     <>
-      <CopyConnectionKeyButton connectionKey={connectionKey} />
-
+      <CopyConnectionKeyButton
+        label="Connection Key"
+        connectionKey={connectionKey}
+      />
       <VibrationPicker
         listHeight="30%"
         activeVibrationName={selectedPatternName}

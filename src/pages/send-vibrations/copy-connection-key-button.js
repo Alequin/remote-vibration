@@ -4,7 +4,7 @@ import { Animated, StyleSheet, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "../../shared/icon";
 
-export const CopyConnectionKeyButton = ({ connectionKey }) => {
+export const CopyConnectionKeyButton = ({ label, connectionKey }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const fadeOut = () => {
@@ -33,7 +33,7 @@ export const CopyConnectionKeyButton = ({ connectionKey }) => {
           fadeOut();
         }}
       >
-        <Text style={ViewStyles.connectionKeyTitleText}>Connection Key:</Text>
+        <Text style={ViewStyles.connectionKeyTitleText}>{label}:</Text>
         <Text style={ViewStyles.connectionKeyText}>{connectionKey}</Text>
         <Icon icon="copyToClipboard" size={24} color="white" />
       </TouchableOpacity>

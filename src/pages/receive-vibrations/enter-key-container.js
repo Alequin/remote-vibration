@@ -6,7 +6,7 @@ import { borderRadius } from "../../shared/border-radius";
 import { Button } from "../../shared/button";
 import { mostRecentRoomKey } from "../../utilities/async-storage";
 
-export const EnterKeyContainer = ({ onPressConnect }) => {
+export const EnterKeyContainer = ({ onPressConnect, testID }) => {
   const { key, setKey } = useKey();
 
   const isButtonDisabled = isEmpty(key);
@@ -19,7 +19,7 @@ export const EnterKeyContainer = ({ onPressConnect }) => {
   }, [isButtonDisabled]);
 
   return (
-    <Background testID="receive-vibrations-page">
+    <Background testID={testID}>
       <View style={ViewStyles.keyInputContainer}>
         <Text style={ViewStyles.keyText}>
           Enter the other persons connection key

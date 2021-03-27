@@ -4,6 +4,7 @@ import { Background } from "../shared/background";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { EnterKeyContainer } from "./receive-vibrations/enter-key-container";
 import { FullPageLoading } from "./receive-vibrations/full-page-loading";
+import { CopyConnectionKeyButton } from "./send-vibrations/copy-connection-key-button";
 
 export const ReceiveVibrations = ({ navigation }) => {
   const [connectionKey, setConnectionKey] = useState(false);
@@ -28,16 +29,28 @@ export const ReceiveVibrations = ({ navigation }) => {
   // TODO make the error handling better (error page maybe?)
   if (error) return <Text>An error occurred</Text>;
 
-  if (!client) return <EnterKeyContainer onPressConnect={setConnectionKey} />;
-  if (isLoading) return <FullPageLoading />;
+  if (!client)
+    return (
+      <EnterKeyContainer
+        testID="receive-vibrations-page"
+        onPressConnect={setConnectionKey}
+      />
+    );
+  if (isLoading) return <FullPageLoading testID="receive-vibrations-page" />;
 
-  return <Page />;
+  return (
+    <Page testID="receive-vibrations-page" connectionKey={connectionKey} />
+  );
 };
 
-const Page = () => {
+const Page = ({ connectionKey, testID }) => {
+  console.log("page");
   return (
-    <Background>
-      <Text style={{ color: "white" }}>Connected</Text>
+    <Background testID={testID}>
+      <CopyConnectionKeyButton
+        label="Connected To"
+        connectionKey={connectionKey}
+      />
     </Background>
   );
 };
