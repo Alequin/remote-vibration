@@ -4,8 +4,8 @@ import { establishWebsocketConnection } from "../utilities/establish-websocket-c
 
 export const useConnectToRoom = (connectionKey) => {
   const { isAppActive } = useContext(AppContext);
-  // TODO error handling
-  // const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [client, setClient] = useState(null);
 
   useEffect(() => {
@@ -22,6 +22,14 @@ export const useConnectToRoom = (connectionKey) => {
 
         setClient(client);
       };
+
+      client.onmessage = ({ data }) => {
+        const parsedResponse = JSON.parse(data);
+
+        if (parsedResponse.error) setError(parsedResponse.error);
+        if (parsedResponse.type === "confirmRoomConnection")
+          setIsLoading(false);
+      };
     }
   }, [isAppActive, connectionKey]);
 
@@ -31,7 +39,7 @@ export const useConnectToRoom = (connectionKey) => {
   return {
     client,
     connectionKey,
-    isLoading: !client,
-    error: false,
+    isLoading,
+    error,
   };
 };

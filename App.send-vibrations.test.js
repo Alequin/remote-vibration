@@ -102,7 +102,7 @@ describe("App - send vibrations", () => {
 
     // 5. Fake the connection to the websocket
     expect(mockWebsocketClient.onopen).toBeDefined();
-    act(() => mockWebsocketClient.onopen());
+    await waitFor(() => mockWebsocketClient.onopen());
 
     // 6. Confirm a message is send to connect to the new room
     expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);

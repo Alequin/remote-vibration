@@ -11,3 +11,9 @@ export const sessionId = {
   save: async (id) => AsyncStorage.setItem(SESSION_ID_KEY, id),
   read: async () => AsyncStorage.getItem(SESSION_ID_KEY),
 };
+
+const MOST_RECENT_ROOM_KEY = "MOST_RECENT_ROOM_KEY";
+export const mostRecentRoomKey = {
+  save: async (key) => AsyncStorage.setItem(MOST_RECENT_ROOM_KEY, key),
+  read: async () => AsyncStorage.getItem(MOST_RECENT_ROOM_KEY),
+};

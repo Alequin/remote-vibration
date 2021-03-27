@@ -3,13 +3,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { AppContext } from "./app-context";
 import { ConnectToAnotherDevice } from "./src/pages/connect-to-another-device";
-import { sendVibrations } from "./src/pages/send-vibrations";
+import { SendVibrations } from "./src/pages/send-vibrations";
 import { MainMenu } from "./src/pages/main-menu";
 import * as pageNames from "./src/pages/page-names";
 import { VibrateOnCurrentPhone } from "./src/pages/vibrate-on-current-phone";
 import { Background } from "./src/shared/background";
 import { Icon } from "./src/shared/icon";
 import { useAppState } from "./src/utilities/use-app-state";
+import { ReceiveVibrations } from "./src/pages/receive-vibrations";
 
 const Stack = createStackNavigator();
 
@@ -43,7 +44,8 @@ export const AppRouter = ({ appState }) => (
         {menuPage()}
         {vibrateOnCurrentPhonePage()}
         {connectToAnotherDevicePage()}
-        {createAConnectionPage()}
+        {sendVibrationsPage()}
+        {receiveVibrationsPage()}
       </Stack.Navigator>
     </NavigationContainer>
   </AppContext.Provider>
@@ -73,8 +75,15 @@ const connectToAnotherDevicePage = () => (
   />
 );
 
-const createAConnectionPage = () => (
-  <Stack.Screen name={pageNames.sendVibrations} component={sendVibrations} />
+const sendVibrationsPage = () => (
+  <Stack.Screen name={pageNames.sendVibrations} component={SendVibrations} />
+);
+
+const receiveVibrationsPage = () => (
+  <Stack.Screen
+    name={pageNames.receiveVibrations}
+    component={ReceiveVibrations}
+  />
 );
 
 export default App;

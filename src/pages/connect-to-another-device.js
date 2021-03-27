@@ -9,7 +9,11 @@ export const ConnectToAnotherDevice = ({ navigation }) => (
     style={ViewStyles.container}
     testID="connect-to-another-device-page"
   >
-    <MenuButton isTop icon="connectedPeople">
+    <MenuButton
+      isTop
+      icon="connectedPeople"
+      onPress={() => navigation.navigate(pageNames.receiveVibrations)}
+    >
       {pageNames.receiveVibrations}
     </MenuButton>
     <MenuButton
