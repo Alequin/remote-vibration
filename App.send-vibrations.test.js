@@ -473,19 +473,11 @@ describe("App - send vibrations", () => {
 const moveToSendVibrationsPage = async (getAllByRole) => {
   const mainMenuButtons = getAllByRole("button");
 
-  const connectToAnotherDeviceButton = mainMenuButtons.find((button) =>
-    within(button).queryByText("Connect To Another Device")
-  );
-
-  await act(async () => fireEvent.press(connectToAnotherDeviceButton));
-
-  const connectToADeviceMenuButtons = getAllByRole("button");
-
-  const createAConnectionButton = connectToADeviceMenuButtons.find((button) =>
+  const sendVibrationsButton = mainMenuButtons.find((button) =>
     within(button).queryByText(pageNames.sendVibrations)
   );
 
-  return await act(async () => fireEvent.press(createAConnectionButton));
+  await act(async () => fireEvent.press(sendVibrationsButton));
 };
 
 const mockCallsToCreateConnection = async (

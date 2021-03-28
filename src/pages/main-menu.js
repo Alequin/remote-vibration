@@ -14,10 +14,16 @@ export const MainMenu = ({ navigation }) => (
       {pageNames.vibrateOnCurrentPhone}
     </MenuButton>
     <MenuButton
-      icon="wifi"
-      onPress={() => navigation.navigate(pageNames.connectToAnotherDevice)}
+      icon="connectedPeople"
+      onPress={() => navigation.navigate(pageNames.receiveVibrations)}
     >
-      Connect To Another Device
+      {pageNames.receiveVibrations}
+    </MenuButton>
+    <MenuButton
+      icon="link"
+      onPress={() => navigation.navigate(pageNames.sendVibrations)}
+    >
+      {pageNames.sendVibrations}
     </MenuButton>
     <MenuButton isBottom icon="stop">
       Turn Off Ads

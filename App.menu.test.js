@@ -3,6 +3,7 @@ jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
 import React from "React";
 import { render, within } from "@testing-library/react-native";
 import { AppRouter } from "./App";
+import * as pageNames from "./src/pages/page-names";
 
 describe("App - Menu", () => {
   it("displays the expected menu buttons by default", async () => {
@@ -11,25 +12,30 @@ describe("App - Menu", () => {
     const buttons = getAllByRole("button");
 
     const makeCurrentPhoneVibrateButton = buttons.find((button) =>
-      within(button).queryByText("Vibrate On Current Phone")
+      within(button).queryByText(pageNames.vibrateOnCurrentPhone)
     );
     expect(makeCurrentPhoneVibrateButton).toBeDefined();
     expect(
       within(makeCurrentPhoneVibrateButton).getByTestId("vibrateIcon")
     ).toBeDefined();
 
-    const connectToAnotherDeviceButton = buttons.find((button) =>
-      within(button).queryByText("Connect To Another Device")
+    const receiveVibrationsButton = buttons.find((button) =>
+      within(button).queryByText(pageNames.receiveVibrations)
     );
-    expect(connectToAnotherDeviceButton).toBeDefined();
+    expect(receiveVibrationsButton).toBeDefined();
     expect(
-      within(connectToAnotherDeviceButton).getByTestId("wifiIcon")
+      within(receiveVibrationsButton).getByTestId("connectedPeopleIcon")
     ).toBeDefined();
+
+    const sendVibrationsButton = buttons.find((button) =>
+      within(button).queryByText(pageNames.sendVibrations)
+    );
+    expect(sendVibrationsButton).toBeDefined();
+    expect(within(sendVibrationsButton).getByTestId("linkIcon")).toBeDefined();
 
     const disableAdsButton = buttons.find((button) =>
       within(button).queryByText("Turn Off Ads")
     );
-
     expect(disableAdsButton).toBeDefined();
     expect(within(disableAdsButton).getByTestId("stopIcon")).toBeDefined();
   });

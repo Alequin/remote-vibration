@@ -462,19 +462,11 @@ describe("App - receive vibrations", () => {
   const moveToReceiveVibrationsPage = async (findAllByRole) => {
     const mainMenuButtons = await findAllByRole("button");
 
-    const connectToAnotherDeviceButton = mainMenuButtons.find((button) =>
-      within(button).queryByText("Connect To Another Device")
-    );
-
-    await act(async () => fireEvent.press(connectToAnotherDeviceButton));
-
-    const connectToADeviceMenuButtons = await findAllByRole("button");
-
-    const createAConnectionButton = connectToADeviceMenuButtons.find((button) =>
+    const receiveVibrationsButton = mainMenuButtons.find((button) =>
       within(button).queryByText(pageNames.receiveVibrations)
     );
 
-    return await act(async () => fireEvent.press(createAConnectionButton));
+    await act(async () => fireEvent.press(receiveVibrationsButton));
   };
 
   const makeAConnection = async (getAllByRole, getByPlaceholderText) => {

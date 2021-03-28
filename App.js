@@ -2,7 +2,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { AppContext } from "./app-context";
-import { ConnectToAnotherDevice } from "./src/pages/connect-to-another-device";
 import { SendVibrations } from "./src/pages/send-vibrations";
 import { MainMenu } from "./src/pages/main-menu";
 import * as pageNames from "./src/pages/page-names";
@@ -43,7 +42,6 @@ export const AppRouter = ({ appState }) => (
       >
         {menuPage()}
         {vibrateOnCurrentPhonePage()}
-        {connectToAnotherDevicePage()}
         {sendVibrationsPage()}
         {receiveVibrationsPage()}
       </Stack.Navigator>
@@ -65,13 +63,6 @@ const vibrateOnCurrentPhonePage = () => (
   <Stack.Screen
     name={pageNames.vibrateOnCurrentPhone}
     component={VibrateOnCurrentPhone}
-  />
-);
-
-const connectToAnotherDevicePage = () => (
-  <Stack.Screen
-    name={pageNames.connectToAnotherDevice}
-    component={ConnectToAnotherDevice}
   />
 );
 

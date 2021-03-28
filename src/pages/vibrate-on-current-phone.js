@@ -52,7 +52,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
         listHeight="60%"
         activeVibrationName={activeVibrationName}
         onPressLockScreen={() => setIsScreenLocked(true)}
-        onSetVibrationSpeed={setSpeedModifier}
+        onChangeVibrationSpeed={setSpeedModifier}
         onPickPattern={(pattern) => {
           if (activeVibrationName === pattern.name) {
             Vibration.cancel();
