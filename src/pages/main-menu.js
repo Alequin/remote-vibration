@@ -1,13 +1,12 @@
 import React from "react";
-import { StyleSheet, Text, Dimensions } from "react-native";
+import { StyleSheet } from "react-native";
 import { Background } from "../shared/background";
-import * as pageNames from "./page-names";
 import { MenuButton } from "../shared/menu-button";
+import * as pageNames from "./page-names";
 
 export const MainMenu = ({ navigation }) => (
   <Background style={ViewStyles.container} testID="main-menu-page">
     <MenuButton
-      isTop
       icon="vibrate"
       onPress={() => navigation.navigate(pageNames.vibrateOnCurrentPhone)}
     >
@@ -25,14 +24,19 @@ export const MainMenu = ({ navigation }) => (
     >
       {pageNames.sendVibrations}
     </MenuButton>
-    <MenuButton isBottom icon="stop">
-      Turn Off Ads
+    <MenuButton
+      icon="create"
+      onPress={() => navigation.navigate(pageNames.sendVibrations)}
+    >
+      {pageNames.createACustomPattern}
     </MenuButton>
+    <MenuButton icon="stop">Turn Off Ads</MenuButton>
   </Background>
 );
 
 const ViewStyles = StyleSheet.create({
   container: {
-    paddingTop: Dimensions.get("window").height * 0.15,
+    paddingTop: "15%",
+    paddingBottom: "5%",
   },
 });

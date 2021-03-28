@@ -77,6 +77,11 @@ const ICON_OPTIONS = {
       <MaterialIcons name="content-copy" size={size} color={color} />
     </TestWrapper>
   ),
+  create: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="createIcon" {...otherProps}>
+      <Ionicons name="create-outline" size={size} color={color} />
+    </TestWrapper>
+  ),
 };
 
 const TestWrapper = (props) => <Text {...props} />;

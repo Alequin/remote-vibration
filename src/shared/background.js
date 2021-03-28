@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { StyleSheet, ImageBackground } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 export const Background = ({ style, children, ...otherProps }) => {
   const styleToUse = useMemo(
@@ -11,20 +11,16 @@ export const Background = ({ style, children, ...otherProps }) => {
   );
 
   return (
-    <ImageBackground
-      source={require("../../assets/background.webp")}
-      style={styleToUse}
-      {...otherProps}
-    >
+    <View style={styleToUse} {...otherProps}>
       {children}
-    </ImageBackground>
+    </View>
   );
 };
 
 const ViewStyles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "white",
     alignItems: "center",
     paddingLeft: "5%",
     paddingRight: "5%",

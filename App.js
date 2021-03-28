@@ -10,6 +10,7 @@ import { Background } from "./src/shared/background";
 import { Icon } from "./src/shared/icon";
 import { useAppState } from "./src/utilities/use-app-state";
 import { ReceiveVibrations } from "./src/pages/receive-vibrations";
+import { AdMobBanner } from "expo-ads-admob";
 
 const Stack = createStackNavigator();
 
@@ -25,27 +26,35 @@ const App = () => {
 
 export const AppRouter = ({ appState }) => (
   <AppContext.Provider value={{ ...appState }}>
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={pageNames.mainMenu}
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: "black",
-          },
-          headerTitleStyle: {
-            color: "white",
-          },
-          headerBackImage: () => (
-            <Icon icon="backArrow" size={32} color="white" />
-          ),
-        }}
-      >
-        {menuPage()}
-        {vibrateOnCurrentPhonePage()}
-        {sendVibrationsPage()}
-        {receiveVibrationsPage()}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={pageNames.mainMenu}
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: "black",
+            },
+            headerTitleStyle: {
+              color: "white",
+            },
+            headerBackImage: () => (
+              <Icon icon="backArrow" size={32} color="white" />
+            ),
+          }}
+        >
+          {menuPage()}
+          {vibrateOnCurrentPhonePage()}
+          {sendVibrationsPage()}
+          {receiveVibrationsPage()}
+        </Stack.Navigator>
+      </NavigationContainer>
+      <AdMobBanner
+        bannerSize="fullBanner"
+        adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+        servePersonalizedAds // true or false
+        onDidFailToReceiveAdWithError={this.bannerError}
+      />
+    </>
   </AppContext.Provider>
 );
 
