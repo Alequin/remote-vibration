@@ -4,6 +4,8 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import { borderRadius } from "../shared/border-radius";
 import { BorderlessButton } from "../shared/borderless-button";
 import { Icon } from "../shared/icon";
+import { copperRose, cyan, darkCyan, spaceCadet } from "../utilities/colours";
+import { SerifText } from "./serif-text";
 
 export const PatternList = ({
   patterns,
@@ -11,31 +13,35 @@ export const PatternList = ({
   onSelectItem,
   activeVibrationName,
 }) => {
-  const containerStyle = useMemo(() => {
-    if (!listHeight) return ViewStyles.patternListContainer;
-
-    return {
-      ...ViewStyles.patternListContainer,
-      maxHeight: listHeight,
-    };
-  }, [listHeight]);
+  const containerStyle = useMemo(
+    () =>
+      !listHeight
+        ? ViewStyles.patternListContainer
+        : {
+            ...ViewStyles.patternListContainer,
+            maxHeight: listHeight,
+          },
+    [listHeight]
+  );
 
   return (
-    <View style={containerStyle}>
-      <FlatList
-        data={patterns}
-        keyExtractor={({ name }) => name}
-        renderItem={({ item }) => (
-          <ListPatternOption
-            item={item}
-            isLastButton={item.name === last(patterns).name}
-            isThisPatternInUse={activeVibrationName === item.name}
-            onPressPlay={(pattern) => {
-              onSelectItem(pattern);
-            }}
-          />
-        )}
-      />
+    <View style={ViewStyles.patternListFlexWrapper}>
+      <View style={containerStyle}>
+        <FlatList
+          data={patterns}
+          keyExtractor={({ name }) => name}
+          renderItem={({ item }) => (
+            <ListPatternOption
+              item={item}
+              isLastButton={item.name === last(patterns).name}
+              isThisPatternInUse={activeVibrationName === item.name}
+              onPressPlay={(pattern) => {
+                onSelectItem(pattern);
+              }}
+            />
+          )}
+        />
+      </View>
     </View>
   );
 };
@@ -52,11 +58,11 @@ const ListPatternOption = ({
       testID="vibration-pattern-option"
       style={isLastButton ? ViewStyles.lastItem : ViewStyles.item}
     >
-      <Text style={ViewStyles.itemText}>{item.name}</Text>
+      <SerifText style={ViewStyles.itemText}>{item.name}</SerifText>
       <View style={ViewStyles.itemButtonContainer}>
         <IconButton
           icon="play"
-          color={isThisPatternInUse ? "cyan" : "white"}
+          color={isThisPatternInUse ? cyan : "white"}
           onPress={() => onPressPlay(item)}
         />
       </View>
@@ -73,20 +79,23 @@ const IconButton = ({ icon, color, onPress }) => (
 const baseItem = {
   flexDirection: "row",
   alignItems: "center",
-  borderBottomWidth: 1,
-  borderBottomColor: "white",
   height: 75,
 };
 
 const ViewStyles = StyleSheet.create({
+  patternListFlexWrapper: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   patternListContainer: {
     borderRadius,
     width: "100%",
-    borderColor: "white",
-    borderWidth: 1,
+    backgroundColor: spaceCadet,
     marginBottom: "4%",
     paddingTop: 8,
     paddingBottom: 8,
+    flex: 1,
   },
   item: baseItem,
   lastItem: {

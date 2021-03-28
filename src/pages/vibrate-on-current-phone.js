@@ -44,12 +44,9 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
       currentVibrationPatternName={activeVibrationName}
     />
   ) : (
-    <Background
-      style={ViewStyles.container}
-      testID="vibrate-on-current-phone-page"
-    >
+    <Background testID="vibrate-on-current-phone-page">
       <VibrationPicker
-        listHeight="60%"
+        listHeight="80%"
         activeVibrationName={activeVibrationName}
         onPressLockScreen={() => setIsScreenLocked(true)}
         onChangeVibrationSpeed={setSpeedModifier}
@@ -93,28 +90,4 @@ const useStartVibrating = (applySpeedModifier) =>
     Vibration.vibrate(applySpeedModifier(pattern), true)
   );
 
-const ViewStyles = StyleSheet.create({
-  container: {
-    paddingTop: "2%",
-  },
-  sliderText: {
-    color: "white",
-    fontSize: 20,
-    marginTop: 20,
-    textAlign: "center",
-  },
-  slider: {
-    marginTop: 10,
-    width: "100%",
-  },
-  lockButton: {
-    borderRadius,
-    width: "100%",
-    padding: 20,
-    marginTop: 20,
-  },
-  lockButtonText: {
-    textAlign: "center",
-    color: "white",
-  },
-});
+const ViewStyles = StyleSheet.create({});

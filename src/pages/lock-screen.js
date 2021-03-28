@@ -4,6 +4,7 @@ import { BackHandler, StyleSheet, Text } from "react-native";
 import { Background } from "../shared/background";
 import { borderRadius } from "../shared/border-radius";
 import { Icon } from "../shared/icon";
+import { cyan } from "../utilities/colours";
 import { preventDefaultEvent } from "../utilities/prevent-default-event";
 const MAX_SLIDER_VALUE = 100;
 
@@ -53,7 +54,7 @@ export const LockScreen = ({
           if (value < MAX_SLIDER_VALUE)
             setResetSliderTimeout(setTimeout(() => setSliderValue(0), 250));
         }}
-        thumbTintColor="cyan"
+        thumbTintColor={cyan}
         minimumTrackTintColor="white"
         maximumTrackTintColor="white"
       />

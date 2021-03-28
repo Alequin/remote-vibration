@@ -1,16 +1,18 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { AdMobBanner } from "expo-ads-admob";
 import React from "react";
+import { View } from "react-native";
 import { AppContext } from "./app-context";
-import { SendVibrations } from "./src/pages/send-vibrations";
 import { MainMenu } from "./src/pages/main-menu";
 import * as pageNames from "./src/pages/page-names";
+import { ReceiveVibrations } from "./src/pages/receive-vibrations";
+import { SendVibrations } from "./src/pages/send-vibrations";
 import { VibrateOnCurrentPhone } from "./src/pages/vibrate-on-current-phone";
 import { Background } from "./src/shared/background";
 import { Icon } from "./src/shared/icon";
+import { cyan, spaceCadet } from "./src/utilities/colours";
 import { useAppState } from "./src/utilities/use-app-state";
-import { ReceiveVibrations } from "./src/pages/receive-vibrations";
-import { AdMobBanner } from "expo-ads-admob";
 
 const Stack = createStackNavigator();
 
@@ -26,13 +28,13 @@ const App = () => {
 
 export const AppRouter = ({ appState }) => (
   <AppContext.Provider value={{ ...appState }}>
-    <>
+    <View style={{ width: "100%", height: "100%" }}>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName={pageNames.mainMenu}
           screenOptions={{
             headerStyle: {
-              backgroundColor: "black",
+              backgroundColor: spaceCadet,
             },
             headerTitleStyle: {
               color: "white",
@@ -48,24 +50,18 @@ export const AppRouter = ({ appState }) => (
           {receiveVibrationsPage()}
         </Stack.Navigator>
       </NavigationContainer>
-      <AdMobBanner
+      {/* <AdMobBanner
         bannerSize="fullBanner"
         adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
         servePersonalizedAds // true or false
         onDidFailToReceiveAdWithError={this.bannerError}
-      />
-    </>
+      /> */}
+    </View>
   </AppContext.Provider>
 );
 
 const menuPage = () => (
-  <Stack.Screen
-    options={{
-      headerShown: false,
-    }}
-    name={pageNames.mainMenu}
-    component={MainMenu}
-  />
+  <Stack.Screen name={pageNames.mainMenu} component={MainMenu} />
 );
 
 const vibrateOnCurrentPhonePage = () => (

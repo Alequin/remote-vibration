@@ -22,6 +22,8 @@ const ViewStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     alignItems: "center",
+    paddingTop: "2%",
+    paddingBottom: "2%",
     paddingLeft: "5%",
     paddingRight: "5%",
   },

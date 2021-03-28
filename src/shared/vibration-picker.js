@@ -1,10 +1,11 @@
 import Slider from "@react-native-community/slider";
 import { round } from "lodash";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, Vibration } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { cyan, spaceCadet } from "../utilities/colours";
 import { patterns } from "../utilities/vibration-patterns";
 import { borderRadius } from "./border-radius";
-import { Button } from "./button";
+import { Button, ButtonText } from "./button";
 import { PatternList } from "./pattern-list";
 
 export const VibrationPicker = ({
@@ -35,6 +36,27 @@ export const VibrationPicker = ({
         activeVibrationName={activeVibrationName}
         onSelectItem={(pattern) => onPickPattern && onPickPattern(pattern)}
       />
+      <SpeedSelector
+        speedModifier={speedModifier}
+        onSlidingStart={() => setHasSpeedModifierBeingPicked(false)}
+        onSlidingComplete={() => setHasSpeedModifierBeingPicked(true)}
+        onValueChange={(value) => setSpeedModifier(round(value, 1))}
+      />
+      <Button onPress={onPressLockScreen} style={ViewStyles.lockButton}>
+        <ButtonText>Lock Screen</ButtonText>
+      </Button>
+    </>
+  );
+};
+
+const SpeedSelector = ({
+  speedModifier,
+  onSlidingStart,
+  onSlidingComplete,
+  onValueChange,
+}) => {
+  return (
+    <View style={ViewStyles.speedSelectorContainer}>
       <Text style={ViewStyles.sliderText}>{`Speed ${speedModifier}X`}</Text>
       <Slider
         testID="speed-slider"
@@ -42,57 +64,24 @@ export const VibrationPicker = ({
         minimumValue={0.1}
         value={speedModifier}
         maximumValue={4}
-        onSlidingStart={() => setHasSpeedModifierBeingPicked(false)}
-        onSlidingComplete={() => setHasSpeedModifierBeingPicked(true)}
-        onValueChange={(value) => setSpeedModifier(round(value, 1))}
-        thumbTintColor="cyan"
+        thumbTintColor={cyan}
         minimumTrackTintColor="white"
         maximumTrackTintColor="white"
+        onSlidingStart={onSlidingStart}
+        onSlidingComplete={onSlidingComplete}
+        onValueChange={onValueChange}
       />
-      <Button onPress={onPressLockScreen} style={ViewStyles.lockButton}>
-        <Text style={ViewStyles.lockButtonText}>Lock Screen</Text>
-      </Button>
-    </>
+    </View>
   );
 };
-
-const useSpeedModifier = () => {
-  const [speedModifier, setSpeedModifier] = useState(1);
-
-  const applySpeedModifier = useCallback(
-    ({ pattern }) => {
-      return pattern.map((time) => time * speedModifier);
-    },
-    [speedModifier]
-  );
-
-  return {
-    speedModifier,
-    setSpeedModifier: useCallback((value) => {
-      setSpeedModifier(round(value, 1));
-    }),
-    applySpeedModifier,
-  };
-};
-
-const useStartVibrating = (
-  disableVibrationOnCurrentPhone,
-  applySpeedModifier
-) =>
-  useCallback((pattern) => {
-    if (!disableVibrationOnCurrentPhone)
-      Vibration.vibrate(applySpeedModifier(pattern), true);
-  });
 
 const ViewStyles = StyleSheet.create({
   container: {
     paddingTop: "2%",
   },
-
   sliderText: {
     color: "white",
     fontSize: 20,
-    marginTop: 20,
     textAlign: "center",
   },
   slider: {
@@ -105,8 +94,11 @@ const ViewStyles = StyleSheet.create({
     padding: 20,
     marginTop: 20,
   },
-  lockButtonText: {
-    textAlign: "center",
-    color: "white",
+
+  speedSelectorContainer: {
+    width: "100%",
+    backgroundColor: spaceCadet,
+    borderRadius,
+    padding: 20,
   },
 });
