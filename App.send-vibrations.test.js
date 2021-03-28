@@ -30,6 +30,8 @@ import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
 import * as pageNames from "./src/pages/page-names";
 import * as establishWebsocketConnection from "./src/utilities/establish-websocket-connection";
+import { newVibrationPattern } from "./src/utilities/new-vibration-pattern";
+import * as vibrationPatterns from "./src/utilities/vibration-patterns";
 import { patterns } from "./src/utilities/vibration-patterns";
 
 const MOCK_DEVICE_ID = "123";
@@ -211,6 +213,64 @@ describe("App - send vibrations", () => {
         type: "sendVibrationPattern",
         data: {
           vibrationPattern: patterns["Constant"],
+          speed: 1,
+        },
+      })
+    );
+  });
+
+  it("creates a new random pattern when the 'Random' option is selected", async () => {
+    jest.spyOn(Clipboard, "setString");
+    const createARoomInterceptor = mockCreateARoom();
+
+    const mockPattern = newVibrationPattern("mockRandom", [1, 1, 1]);
+    const spyOfNewRandomPattern = jest
+      .spyOn(vibrationPatterns, "newRandomPattern")
+      .mockReturnValue(mockPattern);
+
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToSendVibrationsPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
+    });
+
+    await mockCallsToCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(`Connection Key:`));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    // 4. Press play on a vibration pattern
+    const constantVibration = (
+      await findAllByTestId("vibration-pattern-option")
+    ).find((option) => within(option).queryByText("Random"));
+
+    const exampleConstantVibrationButton = within(constantVibration)
+      .getAllByRole("button")
+      .find((button) => within(button).getByTestId("playIcon"));
+
+    await act(async () => fireEvent.press(exampleConstantVibrationButton));
+
+    // 5. Confirm the random pattern was sent
+    expect(spyOfNewRandomPattern).toHaveBeenCalledTimes(1);
+    expect(mockWebsocketClient.send).toHaveBeenCalled();
+    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+      JSON.stringify({
+        type: "sendVibrationPattern",
+        data: {
+          vibrationPattern: mockPattern,
           speed: 1,
         },
       })

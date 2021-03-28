@@ -1,11 +1,15 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react/cjs/react.development";
 import { Background } from "../shared/background";
-import { VibrationPicker } from "../shared/vibration-picker";
-import { CopyConnectionKeyButton } from "./send-vibrations/copy-connection-key-button";
-import { useCreateRoom } from "../shared/use-create-room";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
+import { useCreateRoom } from "../shared/use-create-room";
+import { VibrationPicker } from "../shared/vibration-picker";
+import {
+  newRandomPattern,
+  RANDOM_PATTERN_NAME,
+} from "../utilities/vibration-patterns";
+import { CopyConnectionKeyButton } from "./send-vibrations/copy-connection-key-button";
 import { useHasEnoughTimePassedToHideLoadingIndicator } from "./send-vibrations/use-has-enough-time-to-hide-loading-indicator";
 
 export const SendVibrations = ({ navigation }) => {
@@ -66,7 +70,7 @@ const Page = ({ connectionKey, client }) => {
       JSON.stringify({
         type: "sendVibrationPattern",
         data: {
-          vibrationPattern: selectedPattern,
+          vibrationPattern: vibrationPatternToSend(selectedPattern),
           speed: vibrationSpeed,
         },
       })
@@ -104,6 +108,13 @@ const Page = ({ connectionKey, client }) => {
       )}
     </>
   );
+};
+
+const vibrationPatternToSend = (selectedPattern) => {
+  if (!selectedPattern) return null;
+  return selectedPattern.name === RANDOM_PATTERN_NAME
+    ? newRandomPattern()
+    : selectedPattern;
 };
 
 const ViewStyles = StyleSheet.create({
