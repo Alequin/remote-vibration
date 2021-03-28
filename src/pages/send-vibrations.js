@@ -91,7 +91,7 @@ const Page = ({ connectionKey, client }) => {
         onChangeVibrationSpeed={setVibrationSpeed}
         onPickPattern={(pattern) => {
           setIsSendingVibration(true);
-          setSelectedPattern(!selectedPattern ? pattern : null);
+          setSelectedPattern(vibrationPatternToSet(pattern, selectedPattern));
         }}
       />
       {selectedPattern && isSendingVibration && (
@@ -108,6 +108,12 @@ const Page = ({ connectionKey, client }) => {
       )}
     </>
   );
+};
+
+const vibrationPatternToSet = (pattern, currentPattern) => {
+  const shouldSendStopVibratingMessage =
+    currentPattern && currentPattern.name === pattern.name;
+  return !shouldSendStopVibratingMessage ? pattern : null;
 };
 
 const vibrationPatternToSend = (selectedPattern) => {

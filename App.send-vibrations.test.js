@@ -331,6 +331,78 @@ describe("App - send vibrations", () => {
     );
   });
 
+  it("sends a different vibration pattern if one is playing and then another is selected", async () => {
+    jest.spyOn(Clipboard, "setString");
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToSendVibrationsPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
+    });
+
+    await mockCallsToCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(/connection key/i));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    const patternOptions = await findAllByTestId("vibration-pattern-option");
+
+    // 4. Press play on the constant vibration pattern
+    await waitFor(async () => {
+      const constantVibration = patternOptions.find((option) =>
+        within(option).queryByText("Constant")
+      );
+      console.log(
+        "🚀 ~ file: App.send-vibrations.test.js ~ line 369 ~ awaitwaitFor ~ constantVibration",
+        !!constantVibration
+      );
+      const exampleConstantVibrationButton = within(constantVibration)
+        .getAllByRole("button")
+        .find((button) => within(button).getByTestId("playIcon"));
+      await act(async () => fireEvent.press(exampleConstantVibrationButton));
+    });
+
+    await waitFor(async () => {
+      // 5. Press play on the pulse vibration pattern
+      const pulseVibration = patternOptions.find((option) =>
+        within(option).queryByText("Pulse")
+      );
+      console.log(
+        "🚀 ~ file: App.send-vibrations.test.js ~ line 381 ~ awaitwaitFor ~ pulseVibration",
+        !!pulseVibration
+      );
+      const examplePulseVibrationButton = within(pulseVibration)
+        .getAllByRole("button")
+        .find((button) => within(button).getByTestId("playIcon"));
+      await act(async () => fireEvent.press(examplePulseVibrationButton));
+    });
+
+    // 6. Confirm the empty pattern was sent
+    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+      JSON.stringify({
+        type: "sendVibrationPattern",
+        data: {
+          vibrationPattern: patterns["Pulse"],
+          speed: 1,
+        },
+      })
+    );
+  });
+
   it("reconnects to the server when the state changes from inactive to active", async () => {
     mockCreateARoom();
 
