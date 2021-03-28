@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, Vibration } from "react-native";
+import { StyleSheet, Text, Vibration, View } from "react-native";
 import { Background } from "../shared/background";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { EnterKeyContainer } from "./receive-vibrations/enter-key-container";
@@ -8,6 +8,7 @@ import { CopyConnectionKeyButton } from "./send-vibrations/copy-connection-key-b
 
 export const ReceiveVibrations = ({ navigation }) => {
   const [connectionKey, setConnectionKey] = useState(false);
+  const [currentVibrationPattern, setCurrentVibrationPattern] = useState(false);
 
   const { client, isLoading, error } = useConnectToRoom(connectionKey);
 
@@ -20,6 +21,7 @@ export const ReceiveVibrations = ({ navigation }) => {
           const {
             data: { vibrationPattern, speed },
           } = parsedResponse;
+          setCurrentVibrationPattern(vibrationPattern);
 
           if (!vibrationPattern) Vibration.cancel();
           else
@@ -45,20 +47,51 @@ export const ReceiveVibrations = ({ navigation }) => {
   if (isLoading) return <FullPageLoading testID="receive-vibrations-page" />;
 
   return (
-    <Page testID="receive-vibrations-page" connectionKey={connectionKey} />
+    <Page
+      testID="receive-vibrations-page"
+      connectionKey={connectionKey}
+      currentVibrationPattern={currentVibrationPattern}
+    />
   );
 };
 
-const Page = ({ connectionKey, testID }) => {
+const Page = ({ connectionKey, testID, currentVibrationPattern }) => {
   console.log("page");
   return (
     <Background testID={testID}>
-      <CopyConnectionKeyButton
-        label="Connected To"
-        connectionKey={connectionKey}
-      />
+      <View>
+        <CopyConnectionKeyButton
+          label="Connected To"
+          connectionKey={connectionKey}
+        />
+      </View>
+      <View style={ViewStyles.currentVibrationContainer}>
+        <Text style={ViewStyles.currentVibrationHeader}>
+          Current Vibration Pattern
+        </Text>
+        <Text style={ViewStyles.currentVibrationText}>
+          {currentVibrationPattern ? currentVibrationPattern.name : "Nothing"}
+        </Text>
+      </View>
     </Background>
   );
 };
 
-const ViewStyles = StyleSheet.create({});
+const ViewStyles = StyleSheet.create({
+  currentVibrationContainer: {
+    height: "60%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  currentVibrationHeader: {
+    color: "white",
+    fontSize: 22,
+    textAlign: "center",
+  },
+  currentVibrationText: {
+    color: "white",
+    fontSize: 24,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+});

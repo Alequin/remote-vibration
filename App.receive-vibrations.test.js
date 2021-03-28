@@ -470,48 +470,10 @@ describe("App - receive vibrations", () => {
       expect(getByTestId("receive-vibrations-page")).toBeDefined()
     );
 
-    // 3. User enters text into the input
-    await act(async () =>
-      fireEvent.changeText(getByPlaceholderText("Enter a key"), MOCK_ROOM_KEY)
-    );
+    // 3. start the connection
+    await makeAConnection(getAllByRole, getByPlaceholderText);
 
-    // 4. Submit the given key
-    await act(async () =>
-      fireEvent.press(
-        getAllByRole("button").find((button) =>
-          within(button).queryByText("Connect")
-        )
-      )
-    );
-
-    // 5. Makes the call to open a websocket
-    await waitForExpect(async () => {
-      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
-    });
-
-    // 6. Fake the connection to the websocket
-    expect(mockWebsocketClient.onopen).toBeDefined();
-    await act(async () => mockWebsocketClient.onopen());
-
-    // 7. Confirm a message is send to connect to the new room
-    expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
-    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
-      JSON.stringify({
-        type: "connectToRoom",
-        data: { roomKey: MOCK_ROOM_KEY },
-      })
-    );
-
-    // 8. Fake receiving a message confirming the room connection
-    await act(async () =>
-      mockWebsocketClient.onmessage({
-        data: JSON.stringify({
-          type: "confirmRoomConnection",
-        }),
-      })
-    );
-
-    // 9. Confirm the connection key is on screen
+    // 4. Confirm the connection key is on screen
     await waitForExpect(() => {
       const page = getByTestId("receive-vibrations-page");
       expect(within(page).queryByText(/connect to/i)).toBeDefined();
@@ -520,34 +482,106 @@ describe("App - receive vibrations", () => {
 
     jest.spyOn(Clipboard, "setString");
 
-    // 10. Press button to copy key
+    // 5. Press button to copy key
     await act(async () =>
       fireEvent.press(await findByTestId("copyConnectionKeyButton"))
     );
 
-    // 11. Confirm the key is copied
+    // 6. Confirm the key is copied
     expect(Clipboard.setString).toHaveBeenCalledTimes(1);
     expect(Clipboard.setString).toHaveBeenCalledWith(MOCK_ROOM_KEY);
   });
+
+  it("displays the current vibration pattern", async () => {
+    mockCreateARoom();
+
+    const {
+      getByTestId,
+      getAllByRole,
+      getByText,
+      findAllByRole,
+      getByPlaceholderText,
+    } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. start the connection
+    await makeAConnection(getAllByRole, getByPlaceholderText);
+
+    // 4. Fake receiving a vibration pattern message
+    const mockVibrationPattern = newVibrationPattern("mockPattern", [0.1]);
+    await act(async () =>
+      mockWebsocketClient.onmessage({
+        data: JSON.stringify({
+          type: "receivedVibrationPattern",
+          data: { vibrationPattern: mockVibrationPattern, speed: 2 },
+        }),
+      })
+    );
+
+    expect(getByText("Current Vibration Pattern")).toBeDefined();
+    expect(getByText(mockVibrationPattern.name)).toBeDefined();
+  });
+
+  const moveToReceiveVibrationsPage = async (findAllByRole) => {
+    const mainMenuButtons = await findAllByRole("button");
+
+    const connectToAnotherDeviceButton = mainMenuButtons.find((button) =>
+      within(button).queryByText("Connect To Another Device")
+    );
+
+    await act(async () => fireEvent.press(connectToAnotherDeviceButton));
+
+    const connectToADeviceMenuButtons = await findAllByRole("button");
+
+    const createAConnectionButton = connectToADeviceMenuButtons.find((button) =>
+      within(button).queryByText(pageNames.receiveVibrations)
+    );
+
+    return await act(async () => fireEvent.press(createAConnectionButton));
+  };
+
+  const makeAConnection = async (getAllByRole, getByPlaceholderText) => {
+    // 1. User enters text into the input
+    await act(async () =>
+      fireEvent.changeText(getByPlaceholderText("Enter a key"), MOCK_ROOM_KEY)
+    );
+
+    // 2. Submit the given key
+    await act(async () =>
+      fireEvent.press(
+        getAllByRole("button").find((button) =>
+          within(button).queryByText("Connect")
+        )
+      )
+    );
+
+    // 3. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 4. Fake receiving a message confirming the room connection
+    await act(async () =>
+      mockWebsocketClient.onmessage({
+        data: JSON.stringify({
+          type: "confirmRoomConnection",
+        }),
+      })
+    );
+  };
 });
-
-const moveToReceiveVibrationsPage = async (findAllByRole) => {
-  const mainMenuButtons = await findAllByRole("button");
-
-  const connectToAnotherDeviceButton = mainMenuButtons.find((button) =>
-    within(button).queryByText("Connect To Another Device")
-  );
-
-  await act(async () => fireEvent.press(connectToAnotherDeviceButton));
-
-  const connectToADeviceMenuButtons = await findAllByRole("button");
-
-  const createAConnectionButton = connectToADeviceMenuButtons.find((button) =>
-    within(button).queryByText(pageNames.receiveVibrations)
-  );
-
-  return await act(async () => fireEvent.press(createAConnectionButton));
-};
 
 const mockCreateARoom = ({ delayTime } = {}) =>
   nock("http://remote-vibration-server.herokuapp.com", {
