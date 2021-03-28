@@ -310,48 +310,10 @@ describe("App - receive vibrations", () => {
       expect(getByTestId("receive-vibrations-page")).toBeDefined()
     );
 
-    // 3. User enters text into the input
-    await act(async () =>
-      fireEvent.changeText(getByPlaceholderText("Enter a key"), MOCK_ROOM_KEY)
-    );
+    // 3. start the connection
+    await makeAConnection(getAllByRole, getByPlaceholderText);
 
-    // 4. Submit the given key
-    await act(async () =>
-      fireEvent.press(
-        getAllByRole("button").find((button) =>
-          within(button).queryByText("Connect")
-        )
-      )
-    );
-
-    // 5. Makes the call to open a websocket
-    await waitForExpect(async () => {
-      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
-    });
-
-    // 6. Fake the connection to the websocket
-    expect(mockWebsocketClient.onopen).toBeDefined();
-    await act(async () => mockWebsocketClient.onopen());
-
-    // 7. Confirm a message is send to connect to the new room
-    expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
-    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
-      JSON.stringify({
-        type: "connectToRoom",
-        data: { roomKey: MOCK_ROOM_KEY },
-      })
-    );
-
-    // 8. Fake receiving a message confirming the room connection
-    await act(async () =>
-      mockWebsocketClient.onmessage({
-        data: JSON.stringify({
-          type: "confirmRoomConnection",
-        }),
-      })
-    );
-
-    // 9. Fake receiving a vibration pattern message
+    // 4. Fake receiving a vibration pattern message
     const mockVibrationPattern = newVibrationPattern("mockPattern", [0.1]);
     await act(async () =>
       mockWebsocketClient.onmessage({
@@ -390,48 +352,10 @@ describe("App - receive vibrations", () => {
       expect(getByTestId("receive-vibrations-page")).toBeDefined()
     );
 
-    // 3. User enters text into the input
-    await act(async () =>
-      fireEvent.changeText(getByPlaceholderText("Enter a key"), MOCK_ROOM_KEY)
-    );
+    // 3. start the connection
+    await makeAConnection(getAllByRole, getByPlaceholderText);
 
-    // 4. Submit the given key
-    await act(async () =>
-      fireEvent.press(
-        getAllByRole("button").find((button) =>
-          within(button).queryByText("Connect")
-        )
-      )
-    );
-
-    // 5. Makes the call to open a websocket
-    await waitForExpect(async () => {
-      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
-    });
-
-    // 6. Fake the connection to the websocket
-    expect(mockWebsocketClient.onopen).toBeDefined();
-    await act(async () => mockWebsocketClient.onopen());
-
-    // 7. Confirm a message is send to connect to the new room
-    expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
-    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
-      JSON.stringify({
-        type: "connectToRoom",
-        data: { roomKey: MOCK_ROOM_KEY },
-      })
-    );
-
-    // 8. Fake receiving a message confirming the room connection
-    await act(async () =>
-      mockWebsocketClient.onmessage({
-        data: JSON.stringify({
-          type: "confirmRoomConnection",
-        }),
-      })
-    );
-
-    // 9. Fake receiving a vibration pattern message
+    // 4. Fake receiving a vibration pattern message
     await act(async () =>
       mockWebsocketClient.onmessage({
         data: JSON.stringify({
