@@ -1,6 +1,5 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { AdMobBanner } from "expo-ads-admob";
 import React from "react";
 import { View } from "react-native";
 import { AppContext } from "./app-context";
@@ -11,7 +10,7 @@ import { SendVibrations } from "./src/pages/send-vibrations";
 import { VibrateOnCurrentPhone } from "./src/pages/vibrate-on-current-phone";
 import { Background } from "./src/shared/background";
 import { Icon } from "./src/shared/icon";
-import { cyan, spaceCadet } from "./src/utilities/colours";
+import { spaceCadet } from "./src/utilities/colours";
 import { useAppState } from "./src/utilities/use-app-state";
 
 const Stack = createStackNavigator();

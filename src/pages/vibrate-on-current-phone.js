@@ -1,8 +1,7 @@
 import { round } from "lodash";
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Vibration } from "react-native";
 import { Background } from "../shared/background";
-import { borderRadius } from "../shared/border-radius";
 import { VibrationPicker } from "../shared/vibration-picker";
 import {
   newRandomPattern,
@@ -46,7 +45,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
   ) : (
     <Background testID="vibrate-on-current-phone-page">
       <VibrationPicker
-        listHeight="80%"
+        listHeight="90%"
         activeVibrationName={activeVibrationName}
         onPressLockScreen={() => setIsScreenLocked(true)}
         onChangeVibrationSpeed={setSpeedModifier}

@@ -38,13 +38,9 @@ describe("App - Vibrate on current phone", () => {
 
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
-    const constantVibrationOption = getAllByTestId(
+    const exampleConstantVibrationButton = getAllByTestId(
       "vibration-pattern-option"
     ).find((option) => within(option).queryByText("Constant"));
-
-    const exampleConstantVibrationButton = within(constantVibrationOption)
-      .getAllByRole("button")
-      .find((button) => within(button).getByTestId("playIcon"));
 
     act(() => fireEvent.press(exampleConstantVibrationButton));
 
@@ -58,13 +54,9 @@ describe("App - Vibrate on current phone", () => {
 
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
-    const constantVibrationOption = getAllByTestId(
+    const exampleConstantVibrationButton = getAllByTestId(
       "vibration-pattern-option"
     ).find((option) => within(option).queryByText("Constant"));
-
-    const exampleConstantVibrationButton = within(constantVibrationOption)
-      .getAllByRole("button")
-      .find((button) => within(button).getByTestId("playIcon"));
 
     // Assert vibration starts on the first press
     act(() => fireEvent.press(exampleConstantVibrationButton));
@@ -87,15 +79,11 @@ describe("App - Vibrate on current phone", () => {
 
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
-    const constantVibrationOption = getAllByTestId(
+    const exampleConstantVibrationButton = getAllByTestId(
       "vibration-pattern-option"
     ).find((option) =>
       within(option).queryByText(vibrationPatterns.RANDOM_PATTERN_NAME)
     );
-
-    const exampleConstantVibrationButton = within(constantVibrationOption)
-      .getAllByRole("button")
-      .find((button) => within(button).getByTestId("playIcon"));
 
     act(() => fireEvent.press(exampleConstantVibrationButton));
 

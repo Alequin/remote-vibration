@@ -1,10 +1,10 @@
-import { last } from "lodash";
 import React, { useMemo } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { borderRadius } from "../shared/border-radius";
 import { BorderlessButton } from "../shared/borderless-button";
 import { Icon } from "../shared/icon";
-import { copperRose, cyan, darkCyan, spaceCadet } from "../utilities/colours";
+import { cyan, spaceCadet } from "../utilities/colours";
 import { SerifText } from "./serif-text";
 
 export const PatternList = ({
@@ -33,7 +33,6 @@ export const PatternList = ({
           renderItem={({ item }) => (
             <ListPatternOption
               item={item}
-              isLastButton={item.name === last(patterns).name}
               isThisPatternInUse={activeVibrationName === item.name}
               onPressPlay={(pattern) => {
                 onSelectItem(pattern);
@@ -46,40 +45,27 @@ export const PatternList = ({
   );
 };
 
-const ListPatternOption = ({
-  item,
-  onPressPlay,
-  isLastButton,
-  isThisPatternInUse,
-}) => {
+const ListPatternOption = ({ item, onPressPlay, isThisPatternInUse }) => {
+  const baseColour = isThisPatternInUse ? cyan : "white";
+
+  const textStyle = useMemo(() => {
+    return {
+      ...ViewStyles.itemText,
+      color: baseColour,
+    };
+  }, [baseColour]);
+
   return (
-    <View
-      key={item.name}
+    <TouchableWithoutFeedback
       testID="vibration-pattern-option"
-      style={isLastButton ? ViewStyles.lastItem : ViewStyles.item}
+      onPress={() => onPressPlay(item)}
+      accessibilityRole="button"
     >
-      <SerifText style={ViewStyles.itemText}>{item.name}</SerifText>
-      <View style={ViewStyles.itemButtonContainer}>
-        <IconButton
-          icon="play"
-          color={isThisPatternInUse ? cyan : "white"}
-          onPress={() => onPressPlay(item)}
-        />
+      <View key={item.name} style={ViewStyles.item}>
+        <SerifText style={textStyle}>{item.name}</SerifText>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
-};
-
-const IconButton = ({ icon, color, onPress }) => (
-  <BorderlessButton style={ViewStyles.itemButton} onPress={onPress}>
-    <Icon icon={icon} size={32} color={color || "white"} />
-  </BorderlessButton>
-);
-
-const baseItem = {
-  flexDirection: "row",
-  alignItems: "center",
-  height: 75,
 };
 
 const ViewStyles = StyleSheet.create({
@@ -97,16 +83,17 @@ const ViewStyles = StyleSheet.create({
     paddingBottom: 8,
     flex: 1,
   },
-  item: baseItem,
-  lastItem: {
-    ...baseItem,
-    borderBottomWidth: 0,
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 75,
+    width: "100%",
   },
   itemText: {
     color: "white",
     fontSize: 18,
-    paddingLeft: 40,
-    width: "50%",
+    width: "100%",
+    textAlign: "center",
   },
   itemButtonContainer: {
     width: "50%",
