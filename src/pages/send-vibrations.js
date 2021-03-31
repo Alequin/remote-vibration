@@ -5,6 +5,7 @@ import { Background } from "../shared/background";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useCreateRoom } from "../shared/use-create-room";
 import { VibrationPicker } from "../shared/vibration-picker";
+import { cyan } from "../utilities/colours";
 import {
   newRandomPattern,
   RANDOM_PATTERN_NAME,
@@ -41,7 +42,7 @@ export const SendVibrations = ({ navigation }) => {
           <ActivityIndicator
             testID="loadingIndicator"
             size={100}
-            color="white"
+            color={cyan}
           />
           <Text style={ViewStyles.loadingText}>Setting up connection</Text>
         </>
@@ -86,7 +87,7 @@ const Page = ({ connectionKey, client }) => {
         connectionKey={connectionKey}
       />
       <VibrationPicker
-        listHeight="30%"
+        listHeight="100%"
         activeVibrationName={currentPatterName}
         onChangeVibrationSpeed={setVibrationSpeed}
         onPickPattern={(pattern) => {
@@ -128,7 +129,7 @@ const ViewStyles = StyleSheet.create({
     paddingTop: 5,
   },
   loadingText: {
-    color: "white",
+    color: "black",
   },
   sendingTextContainer: {
     paddingTop: 20,

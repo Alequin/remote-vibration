@@ -196,13 +196,9 @@ describe("App - send vibrations", () => {
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
     // 4. Press play on a vibration pattern
-    const constantVibration = (
+    const exampleConstantVibrationButton = (
       await findAllByTestId("vibration-pattern-option")
-    ).find((option) => within(option).queryByText("Constant"));
-
-    const exampleConstantVibrationButton = within(constantVibration)
-      .getAllByRole("button")
-      .find((button) => within(button).getByTestId("playIcon"));
+    ).find((button) => within(button).getByText("Constant"));
 
     await act(async () => fireEvent.press(exampleConstantVibrationButton));
 
@@ -253,15 +249,11 @@ describe("App - send vibrations", () => {
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
     // 4. Press play on a vibration pattern
-    const constantVibration = (
+    const exampleRandomVibrationButton = (
       await findAllByTestId("vibration-pattern-option")
-    ).find((option) => within(option).queryByText("Random"));
+    ).find((button) => within(button).queryByText("Random"));
 
-    const exampleConstantVibrationButton = within(constantVibration)
-      .getAllByRole("button")
-      .find((button) => within(button).getByTestId("playIcon"));
-
-    await act(async () => fireEvent.press(exampleConstantVibrationButton));
+    await act(async () => fireEvent.press(exampleRandomVibrationButton));
 
     // 5. Confirm the random pattern was sent
     expect(spyOfNewRandomPattern).toHaveBeenCalledTimes(1);
@@ -312,7 +304,7 @@ describe("App - send vibrations", () => {
 
     const exampleConstantVibrationButton = within(constantVibration)
       .getAllByRole("button")
-      .find((button) => within(button).getByTestId("playIcon"));
+      .find((button) => within(button).getByText("Constant"));
 
     await act(async () => fireEvent.press(exampleConstantVibrationButton));
 
@@ -366,13 +358,10 @@ describe("App - send vibrations", () => {
       const constantVibration = patternOptions.find((option) =>
         within(option).queryByText("Constant")
       );
-      console.log(
-        "🚀 ~ file: App.send-vibrations.test.js ~ line 369 ~ awaitwaitFor ~ constantVibration",
-        !!constantVibration
-      );
+
       const exampleConstantVibrationButton = within(constantVibration)
         .getAllByRole("button")
-        .find((button) => within(button).getByTestId("playIcon"));
+        .find((button) => within(button).getByText("Constant"));
       await act(async () => fireEvent.press(exampleConstantVibrationButton));
     });
 
@@ -381,13 +370,10 @@ describe("App - send vibrations", () => {
       const pulseVibration = patternOptions.find((option) =>
         within(option).queryByText("Pulse")
       );
-      console.log(
-        "🚀 ~ file: App.send-vibrations.test.js ~ line 381 ~ awaitwaitFor ~ pulseVibration",
-        !!pulseVibration
-      );
+
       const examplePulseVibrationButton = within(pulseVibration)
         .getAllByRole("button")
-        .find((button) => within(button).getByTestId("playIcon"));
+        .find((button) => within(button).getByText("Pulse"));
       await act(async () => fireEvent.press(examplePulseVibrationButton));
     });
 

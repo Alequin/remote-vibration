@@ -36,7 +36,7 @@ export const CopyConnectionKeyButton = ({ label, connectionKey }) => {
       >
         <Text style={ViewStyles.connectionKeyTitleText}>{label}:</Text>
         <Text style={ViewStyles.connectionKeyText}>{connectionKey}</Text>
-        <Icon icon="copyToClipboard" size={24} color="white" />
+        <Icon icon="copyToClipboard" size={24} color="black" />
       </TouchableOpacity>
     </>
   );
@@ -55,7 +55,7 @@ const ViewStyles = StyleSheet.create({
   },
   connectionKeyTitleText: {
     marginRight: 5,
-    color: "white",
+    color: "black",
     fontSize: 20,
   },
   connectionKeyText: {

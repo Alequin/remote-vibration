@@ -31,7 +31,7 @@ describe("App - Menu", () => {
       within(button).queryByText(pageNames.sendVibrations)
     );
     expect(sendVibrationsButton).toBeDefined();
-    expect(within(sendVibrationsButton).getByTestId("linkIcon")).toBeDefined();
+    expect(within(sendVibrationsButton).getByTestId("wifiIcon")).toBeDefined();
 
     const disableAdsButton = buttons.find((button) =>
       within(button).queryByText("Turn Off Ads")

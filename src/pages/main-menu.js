@@ -22,7 +22,7 @@ export const MainMenu = ({ navigation }) => (
     </MenuButton>
     <MenuButton
       style={ViewStyles.middleButton}
-      icon="link"
+      icon="wifi"
       onPress={() => navigation.navigate(pageNames.sendVibrations)}
     >
       {pageNames.sendVibrations}
