@@ -1,42 +1,25 @@
 import React, { useMemo } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { borderRadius } from "../shared/border-radius";
-import { BorderlessButton } from "../shared/borderless-button";
-import { Icon } from "../shared/icon";
-import { cyan, spaceCadet } from "../utilities/colours";
-import { SerifText } from "./serif-text";
+import { spaceCadet, darkSpaceCadet } from "../utilities/colours";
 
 export const PatternList = ({
   patterns,
-  listHeight,
   onSelectItem,
   activeVibrationName,
 }) => {
-  const containerStyle = useMemo(
-    () =>
-      !listHeight
-        ? ViewStyles.patternListContainer
-        : {
-            ...ViewStyles.patternListContainer,
-            maxHeight: listHeight,
-          },
-    [listHeight]
-  );
-
   return (
     <View style={ViewStyles.patternListFlexWrapper}>
-      <View style={containerStyle}>
+      <View style={ViewStyles.patternListContainer}>
         <FlatList
           data={patterns}
           keyExtractor={({ name }) => name}
           renderItem={({ item }) => (
-            <ListPatternOption
+            <ListButton
               item={item}
-              isThisPatternInUse={activeVibrationName === item.name}
-              onPressPlay={(pattern) => {
-                onSelectItem(pattern);
-              }}
+              onPress={onSelectItem}
+              isActiveButton={activeVibrationName === item.name}
             />
           )}
         />
@@ -45,65 +28,66 @@ export const PatternList = ({
   );
 };
 
-const ListPatternOption = ({ item, onPressPlay, isThisPatternInUse }) => {
-  const baseColour = isThisPatternInUse ? cyan : "white";
+const ListButton = ({ item, onPress, isActiveButton }) => {
+  const buttonStyle = useMemo(
+    () => ({
+      ...ViewStyles.listButton,
+      backgroundColor: isActiveButton ? darkSpaceCadet : spaceCadet,
+    }),
+    [isActiveButton]
+  );
 
-  const textStyle = useMemo(() => {
-    return {
-      ...ViewStyles.itemText,
-      color: baseColour,
-    };
-  }, [baseColour]);
+  const buttonTextStyle = useMemo(
+    () => ({
+      ...ViewStyles.listButtonText,
+      fontWeight: isActiveButton ? "bold" : "normal",
+      fontSize: isActiveButton ? 24 : 20,
+    }),
+    [isActiveButton]
+  );
 
   return (
-    <TouchableWithoutFeedback
-      testID="vibration-pattern-option"
-      onPress={() => onPressPlay(item)}
-      accessibilityRole="button"
-    >
-      <View key={item.name} style={ViewStyles.item}>
-        <SerifText style={textStyle}>{item.name}</SerifText>
-      </View>
-    </TouchableWithoutFeedback>
+    <View style={ViewStyles.listButtonWrapper}>
+      <TouchableWithoutFeedback
+        testID="vibration-pattern-option"
+        accessibilityRole="button"
+        style={buttonStyle}
+        onPress={() => onPress(item)}
+      >
+        <Text style={buttonTextStyle}>{item.name}</Text>
+      </TouchableWithoutFeedback>
+    </View>
   );
 };
 
 const ViewStyles = StyleSheet.create({
   patternListFlexWrapper: {
     flex: 1,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
   patternListContainer: {
     borderRadius,
     width: "100%",
-    backgroundColor: spaceCadet,
-    marginBottom: "4%",
     paddingTop: 8,
     paddingBottom: 8,
     flex: 1,
   },
-  item: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 75,
+  listButtonWrapper: {
     width: "100%",
-  },
-  itemText: {
-    color: "white",
-    fontSize: 18,
-    width: "100%",
-    textAlign: "center",
-  },
-  itemButtonContainer: {
-    width: "50%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  itemButton: {
-    height: "100%",
     justifyContent: "center",
-    padding: 20,
+    padding: 10,
+  },
+  listButton: {
+    borderRadius,
+    backgroundColor: spaceCadet,
+    height: 60,
+    justifyContent: "center",
+  },
+  listButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 20,
   },
 });

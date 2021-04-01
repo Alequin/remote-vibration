@@ -1,13 +1,13 @@
-import React from "react";
 import {
-  MaterialCommunityIcons,
-  Ionicons,
   Entypo,
-  MaterialIcons,
   Feather,
-  SimpleLineIcons,
   FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+  SimpleLineIcons,
 } from "@expo/vector-icons";
+import React from "react";
 import { Text } from "react-native";
 
 export const Icon = ({ icon, ...otherProps }) => {
@@ -80,6 +80,20 @@ const ICON_OPTIONS = {
   create: ({ size, color, ...otherProps }) => (
     <TestWrapper testID="createIcon" {...otherProps}>
       <Ionicons name="create-outline" size={size} color={color} />
+    </TestWrapper>
+  ),
+  cancel: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="cancelIcon" {...otherProps}>
+      <MaterialIcons name="cancel" size={size} color={color} />
+    </TestWrapper>
+  ),
+  blankSpace: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="blankSpaceIcon" {...otherProps}>
+      <MaterialIcons
+        name="check-box-outline-blank"
+        size={size}
+        color="transparent"
+      />
     </TestWrapper>
   ),
 };

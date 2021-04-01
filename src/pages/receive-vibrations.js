@@ -84,12 +84,12 @@ const ViewStyles = StyleSheet.create({
     alignItems: "center",
   },
   currentVibrationHeader: {
-    color: "white",
+    color: "black",
     fontSize: 22,
     textAlign: "center",
   },
   currentVibrationText: {
-    color: "white",
+    color: "black",
     fontSize: 24,
     textAlign: "center",
     fontWeight: "bold",
