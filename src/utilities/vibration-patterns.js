@@ -21,6 +21,7 @@ export const patterns = mapValues(
       newVibrationPattern("Constant", [Number.MAX_SAFE_INTEGER]),
       newVibrationPattern(RANDOM_PATTERN_NAME, []),
       newVibrationPattern("Pulse", [0.5, 0.5]),
+      newVibrationPattern("Rapid Pulse", [0.5, 0.1]),
       newVibrationPattern("Increasing", [
         0.1,
         0.2,
@@ -75,6 +76,7 @@ export const patterns = mapValues(
         0.05,
         0.5,
       ]),
+      newVibrationPattern("Triplet", [0.15, 0.05, 0.15, 0.05, 0.15, 0.5]),
     ],
     ({ name }) => name
   ),
