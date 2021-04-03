@@ -1,6 +1,27 @@
-import { w3cwebsocket as W3CWebSocket } from "websocket";
+import { reject } from "lodash";
+import { newWebsocketClient } from "./establish-websocket-connection/new-websocket-client";
 
-const websocketServer = `ws://remote-vibration-server.herokuapp.com/`;
+export const establishWebsocketConnection = () => {
+  const client = newWebsocketClient();
 
-export const establishWebsocketConnection = () =>
-  new W3CWebSocket(websocketServer);
+  let onMessageEventHandlers = [];
+
+  client.onmessage = (message) => {
+    const parsedData = JSON.parse(message.data);
+    onMessageEventHandlers.forEach(({ eventHandler }) =>
+      eventHandler({ ...message, parsedData })
+    );
+  };
+
+  client.addOnMessageEventListener = (key, eventHandler) =>
+    onMessageEventHandlers.push({ key, eventHandler });
+
+  client.removeOnMessageEventListener = (keyToRemove) => {
+    onMessageEventHandlers = reject(
+      onMessageEventHandlers,
+      ({ key }) => key === keyToRemove
+    );
+  };
+
+  return client;
+};

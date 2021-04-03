@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext, useMemo } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react/cjs/react.development";
+import { AppContext } from "../../app-context";
 import { Background } from "../shared/background";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useCreateRoom } from "../shared/use-create-room";
@@ -54,17 +55,30 @@ export const SendVibrations = ({ navigation }) => {
 };
 
 const Page = ({ connectionKey, client }) => {
+  const { isAppActive } = useContext(AppContext);
   const [isSendingVibration, setIsSendingVibration] = useState(false);
   const [selectedPattern, setSelectedPattern] = useState(null);
   const [vibrationSpeed, setVibrationSpeed] = useState(1);
 
   useEffect(() => {
-    client.onmessage = ({ data }) => {
-      const parsedResponse = JSON.parse(data);
-      if (parsedResponse.type === "confirmVibrationPatternSent")
-        setIsSendingVibration(false);
+    let isSendingVibrationTimeout = null;
+    client.addOnMessageEventListener(
+      "confirmVibrationPatternSent",
+      ({ parsedData }) => {
+        if (parsedData.type === "confirmVibrationPatternSent")
+          // delay so the message does not flash on the screen to quickly
+          isSendingVibrationTimeout = setTimeout(
+            () => setIsSendingVibration(false),
+            250
+          );
+      }
+    );
+
+    return () => {
+      clearTimeout(isSendingVibrationTimeout);
+      client.removeOnMessageEventListener("confirmVibrationPatternSent");
     };
-  }, [setIsSendingVibration]);
+  }, [client]);
 
   useEffect(() => {
     client.send(
@@ -79,6 +93,14 @@ const Page = ({ connectionKey, client }) => {
   }, [selectedPattern, vibrationSpeed]);
 
   const currentPatterName = selectedPattern && selectedPattern.name;
+
+  const sendingMessageStyle = useMemo(
+    () => ({
+      ...ViewStyles.sendingTextContainer,
+      opacity: selectedPattern && isSendingVibration ? 1 : 0,
+    }),
+    [selectedPattern, isSendingVibration]
+  );
 
   return (
     <>
@@ -95,18 +117,12 @@ const Page = ({ connectionKey, client }) => {
           setSelectedPattern(vibrationPatternToSet(pattern, selectedPattern));
         }}
       />
-      {selectedPattern && isSendingVibration && (
-        <View style={ViewStyles.sendingTextContainer}>
-          <Text style={ViewStyles.sendingText}>
-            Sending "{currentPatterName}" to others
-          </Text>
-          <ActivityIndicator
-            testID="loadingIndicator"
-            size={20}
-            color="white"
-          />
-        </View>
-      )}
+      <View style={sendingMessageStyle}>
+        <Text style={ViewStyles.sendingText}>
+          Sending "{currentPatterName}" to others
+        </Text>
+        <ActivityIndicator testID="loadingIndicator" size={20} color={cyan} />
+      </View>
     </>
   );
 };
@@ -132,11 +148,12 @@ const ViewStyles = StyleSheet.create({
     color: "black",
   },
   sendingTextContainer: {
-    paddingTop: 20,
     flexDirection: "row",
+    margin: 20,
   },
   sendingText: {
-    color: "white",
+    color: "black",
     paddingRight: 10,
+    fontSize: 18,
   },
 });

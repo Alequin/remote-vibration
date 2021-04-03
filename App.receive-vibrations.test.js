@@ -34,7 +34,7 @@ import { Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
 import * as pageNames from "./src/pages/page-names";
-import * as establishWebsocketConnection from "./src/utilities/establish-websocket-connection";
+import * as newWebsocketClient from "./src/utilities/establish-websocket-connection/new-websocket-client";
 import { newVibrationPattern } from "./src/utilities/new-vibration-pattern";
 
 const MOCK_DEVICE_ID = "123";
@@ -44,8 +44,8 @@ describe("App - receive vibrations", () => {
   const mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
 
   const establishWebsocketSpy = jest
-    .spyOn(establishWebsocketConnection, "establishWebsocketConnection")
-    .mockImplementation(() => mockWebsocketClient);
+    .spyOn(newWebsocketClient, "newWebsocketClient")
+    .mockReturnValue(mockWebsocketClient);
 
   beforeEach(() => {
     jest.clearAllMocks();

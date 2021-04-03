@@ -56,7 +56,6 @@ export const ReceiveVibrations = ({ navigation }) => {
 };
 
 const Page = ({ connectionKey, testID, currentVibrationPattern }) => {
-  console.log("page");
   return (
     <Background testID={testID}>
       <View>

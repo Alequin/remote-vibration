@@ -9,9 +9,8 @@ export const useConnectToRoom = (connectionKey) => {
   const [client, setClient] = useState(null);
 
   useEffect(() => {
-    if (connectionKey) {
+    if (isAppActive && connectionKey) {
       const client = establishWebsocketConnection();
-
       client.onopen = () => {
         client.send(
           JSON.stringify({
@@ -23,13 +22,13 @@ export const useConnectToRoom = (connectionKey) => {
         setClient(client);
       };
 
-      client.onmessage = ({ data }) => {
-        const parsedResponse = JSON.parse(data);
-
-        if (parsedResponse.error) setError(parsedResponse.error);
-        if (parsedResponse.type === "confirmRoomConnection")
-          setIsLoading(false);
-      };
+      client.addOnMessageEventListener(
+        "confirmRoomConnection",
+        ({ parsedData }) => {
+          if (parsedData.error) setError(parsedData.error);
+          if (parsedData.type === "confirmRoomConnection") setIsLoading(false);
+        }
+      );
     }
   }, [isAppActive, connectionKey]);
 

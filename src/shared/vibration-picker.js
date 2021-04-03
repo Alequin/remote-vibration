@@ -71,9 +71,6 @@ const SpeedSelector = ({
 };
 
 const ViewStyles = StyleSheet.create({
-  container: {
-    paddingTop: "2%",
-  },
   sliderText: {
     color: "white",
     fontSize: 20,
