@@ -5,11 +5,9 @@ import { StyleSheet, Text, View } from "react-native";
 import { cyan, spaceCadet } from "../utilities/colours";
 import { patterns } from "../utilities/vibration-patterns";
 import { borderRadius } from "./border-radius";
-import { Button, ButtonText } from "./button";
 import { PatternList } from "./pattern-list";
 
 export const VibrationPicker = ({
-  onPressLockScreen,
   onChangeVibrationSpeed,
   onPickPattern,
   listHeight,
@@ -42,9 +40,6 @@ export const VibrationPicker = ({
         onSlidingComplete={() => setHasSpeedModifierBeingPicked(true)}
         onValueChange={(value) => setSpeedModifier(round(value, 1))}
       />
-      <Button onPress={onPressLockScreen} style={ViewStyles.lockButton}>
-        <ButtonText>Lock Screen</ButtonText>
-      </Button>
     </>
   );
 };

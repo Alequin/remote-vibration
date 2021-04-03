@@ -99,22 +99,6 @@ describe("App - Vibrate on current phone", () => {
       );
     });
   });
-
-  it("allows the user to lock the screen", async () => {
-    const { getAllByRole, getByTestId, getByText } = render(<AppRouter />);
-
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
-
-    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
-
-    const lockScreenButton = getAllByRole("button").find((option) =>
-      within(option).queryByText("Lock Screen")
-    );
-
-    act(() => fireEvent.press(lockScreenButton));
-
-    expect(getByTestId("lockedIcon")).toBeDefined();
-  });
 });
 
 const moveToVibrateOnCurrentPhonePage = (getAllByRole) => {

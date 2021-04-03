@@ -8,7 +8,6 @@ import {
   patterns,
   RANDOM_PATTERN_NAME,
 } from "../utilities/vibration-patterns";
-import { LockScreen } from "./lock-screen";
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
   const [
@@ -47,7 +46,6 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
       <VibrationPicker
         listHeight="90%"
         activeVibrationName={activeVibrationName}
-        onPressLockScreen={() => setIsScreenLocked(true)}
         onChangeVibrationSpeed={setSpeedModifier}
         onPickPattern={(pattern) => {
           if (activeVibrationName === pattern.name) {
