@@ -1,19 +1,17 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const DEVICE_ID_KEY = "DEVICE_ID_KEY";
-export const deviceId = {
-  save: async (id) => AsyncStorage.setItem(DEVICE_ID_KEY, id),
-  read: async () => AsyncStorage.getItem(DEVICE_ID_KEY),
-};
+const newStorageItem = (storageKey) => ({
+  save: async (valueToSave) => AsyncStorage.setItem(storageKey, valueToSave),
+  read: async () => AsyncStorage.getItem(storageKey),
+  clear: async () => AsyncStorage.removeItem(storageKey),
+});
 
-const SESSION_ID_KEY = "SESSION_ID_KEY";
-export const sessionId = {
-  save: async (id) => AsyncStorage.setItem(SESSION_ID_KEY, id),
-  read: async () => AsyncStorage.getItem(SESSION_ID_KEY),
-};
+export const deviceId = newStorageItem("DEVICE_ID_KEY");
 
-const MOST_RECENT_ROOM_KEY = "MOST_RECENT_ROOM_KEY";
-export const mostRecentRoomKey = {
-  save: async (key) => AsyncStorage.setItem(MOST_RECENT_ROOM_KEY, key),
-  read: async () => AsyncStorage.getItem(MOST_RECENT_ROOM_KEY),
-};
+export const sessionId = newStorageItem("SESSION_ID_KEY");
+
+export const mostRecentRoomKey = newStorageItem("MOST_RECENT_ROOM_KEY");
+
+export const lastActiveVibrationPattern = newStorageItem(
+  "LAST_ACTIVE_LOCAL_VIBRATION"
+);

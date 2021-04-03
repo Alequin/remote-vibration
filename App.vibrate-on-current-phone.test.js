@@ -9,19 +9,26 @@ jest.mock("react-native/Libraries/Vibration/Vibration", () => ({
   cancel: jest.fn(),
 }));
 
-import React from "React";
+jest.mock("@react-native-async-storage/async-storage", () => ({
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+  removeItem: jest.fn(),
+}));
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
+  act,
   fireEvent,
   render,
-  within,
-  act,
   waitFor,
+  within,
 } from "@testing-library/react-native";
-import { AppRouter } from "./App";
-
+import React from "React";
 import { Vibration } from "react-native";
-import * as vibrationPatterns from "./src/utilities/vibration-patterns";
+import waitForExpect from "wait-for-expect";
+import { AppRouter } from "./App";
 import { newVibrationPattern } from "./src/utilities/new-vibration-pattern";
+import * as vibrationPatterns from "./src/utilities/vibration-patterns";
 
 describe("App - Vibrate on current phone", () => {
   beforeEach(() => {
@@ -45,6 +52,42 @@ describe("App - Vibrate on current phone", () => {
     act(() => fireEvent.press(exampleConstantVibrationButton));
 
     expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith(
+      vibrationPatterns.patterns["Constant"].pattern,
+      true
+    );
+  });
+
+  it("plays a second pattern when selects a different one after a first is active", async () => {
+    const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
+
+    moveToVibrateOnCurrentPhonePage(getAllByRole);
+
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+
+    const constantVibrationButton = getAllByTestId(
+      "vibration-pattern-option"
+    ).find((option) => within(option).queryByText("Constant"));
+
+    // 1. Press first pattern
+    act(() => fireEvent.press(constantVibrationButton));
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith(
+      vibrationPatterns.patterns["Constant"].pattern,
+      true
+    );
+
+    const pulseVibrationButton = getAllByTestId(
+      "vibration-pattern-option"
+    ).find((option) => within(option).queryByText("Pulse"));
+
+    // 1. Press second pattern
+    act(() => fireEvent.press(pulseVibrationButton));
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(2);
+    expect(Vibration.vibrate).toHaveBeenCalledWith(
+      vibrationPatterns.patterns["Pulse"].pattern,
+      true
+    );
   });
 
   it("stops vibrating when same option is selected twice", async () => {
@@ -99,6 +142,88 @@ describe("App - Vibrate on current phone", () => {
       );
     });
   });
+
+  it("saves the current vibration pattern name when returning to the main menu", async () => {
+    const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
+
+    moveToVibrateOnCurrentPhonePage(getAllByRole);
+
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+
+    const exampleConstantVibrationButton = getAllByTestId(
+      "vibration-pattern-option"
+    ).find((option) => within(option).queryByText("Constant"));
+
+    act(() => fireEvent.press(exampleConstantVibrationButton));
+
+    const backButton = getAllByRole("button").find((option) =>
+      within(option).queryByTestId("backArrowIcon")
+    );
+
+    AsyncStorage.setItem.mockClear();
+    act(() => fireEvent.press(backButton));
+
+    await waitForExpect(() => {
+      expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+        "LAST_ACTIVE_LOCAL_VIBRATION",
+        "Constant"
+      );
+    });
+  });
+
+  it("loads the current vibration pattern name when returning to 'Vibrate on current phone'", async () => {
+    const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
+
+    moveToVibrateOnCurrentPhonePage(getAllByRole);
+
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+
+    const exampleConstantVibrationButton = getAllByTestId(
+      "vibration-pattern-option"
+    ).find((option) => within(option).queryByText("Constant"));
+
+    // 1. Start a vibration pattern
+    act(() => fireEvent.press(exampleConstantVibrationButton));
+    const backButton = getAllByRole("button").find((option) =>
+      within(option).queryByTestId("backArrowIcon")
+    );
+
+    AsyncStorage.setItem.mockClear();
+    // 2. Move off the current page back to the main menu
+    act(() => fireEvent.press(backButton));
+
+    // 3. Confirm pattern was saved
+    await waitForExpect(() => {
+      expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+        "LAST_ACTIVE_LOCAL_VIBRATION",
+        "Constant"
+      );
+    });
+
+    AsyncStorage.getItem.mockClear();
+    AsyncStorage.getItem.mockResolvedValue("Constant");
+    // 4. Return to current page
+    moveToVibrateOnCurrentPhonePage(getAllByRole);
+
+    Vibration.vibrate.mockClear();
+    // 5. See that the last pattern is loaded
+    await waitForExpect(() => {
+      expect(AsyncStorage.getItem).toHaveBeenCalledTimes(1);
+      expect(AsyncStorage.getItem).toHaveBeenCalledWith(
+        "LAST_ACTIVE_LOCAL_VIBRATION"
+      );
+    });
+
+    await waitForExpect(() => {
+      expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+      expect(Vibration.vibrate).toHaveBeenCalledWith(
+        vibrationPatterns.patterns["Constant"].pattern,
+        true
+      );
+    });
+  }, 20_000);
 });
 
 const moveToVibrateOnCurrentPhonePage = (getAllByRole) => {

@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Vibration } from "react-native";
 import { Background } from "../shared/background";
 import { VibrationPicker } from "../shared/vibration-picker";
+import { lastActiveVibrationPattern } from "../utilities/async-storage";
 import {
   newRandomPattern,
   patterns,
@@ -10,10 +11,10 @@ import {
 } from "../utilities/vibration-patterns";
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
-  const [
+  const {
     activeVibrationName,
-    setNameOfCurrentlyPlayingExampleVibration,
-  ] = useState(null);
+    setActiveVibrationName,
+  } = useActiveVibrationName();
 
   const {
     speedModifier,
@@ -32,7 +33,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
 
       startVibrating(pattern);
     }
-  }, [speedModifier]);
+  }, [activeVibrationName, speedModifier]);
 
   return (
     <Background testID="vibrate-on-current-phone-page">
@@ -43,19 +44,35 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
         onPickPattern={(pattern) => {
           if (activeVibrationName === pattern.name) {
             Vibration.cancel();
-            setNameOfCurrentlyPlayingExampleVibration(null);
+            setActiveVibrationName(null);
             return;
           }
 
-          const patternToUse =
-            pattern.name === RANDOM_PATTERN_NAME ? newRandomPattern() : pattern;
-
-          startVibrating(patternToUse);
-          setNameOfCurrentlyPlayingExampleVibration(pattern.name);
+          setActiveVibrationName(pattern.name);
         }}
       />
     </Background>
   );
+};
+
+const useActiveVibrationName = () => {
+  const [activeVibrationName, setActiveVibrationName] = useState(null);
+
+  useEffect(() => {
+    lastActiveVibrationPattern
+      .read()
+      .then(async (name) => name && setActiveVibrationName(name));
+  }, []);
+
+  useEffect(
+    () => async () => {
+      if (!activeVibrationName) await lastActiveVibrationPattern.clear();
+      else await lastActiveVibrationPattern.save(activeVibrationName);
+    },
+    [activeVibrationName]
+  );
+
+  return { activeVibrationName, setActiveVibrationName };
 };
 
 const useSpeedModifier = () => {
