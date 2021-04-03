@@ -14,7 +14,6 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     activeVibrationName,
     setNameOfCurrentlyPlayingExampleVibration,
   ] = useState(null);
-  const [isScreenLocked, setIsScreenLocked] = useState(false);
 
   const {
     speedModifier,
@@ -35,13 +34,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     }
   }, [speedModifier]);
 
-  return isScreenLocked ? (
-    <LockScreen
-      onUnlock={() => setIsScreenLocked(false)}
-      navigation={navigation}
-      currentVibrationPatternName={activeVibrationName}
-    />
-  ) : (
+  return (
     <Background testID="vibrate-on-current-phone-page">
       <VibrationPicker
         listHeight="90%"
