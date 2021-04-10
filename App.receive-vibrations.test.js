@@ -81,6 +81,93 @@ describe("App - receive vibrations", () => {
     );
   });
 
+  it("allows the user to clear the text in the connection input", async () => {
+    mockCreateARoom();
+
+    const { getByTestId, findAllByRole, getByPlaceholderText } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. Confirms an input is available
+    await waitForExpect(() =>
+      expect(getByPlaceholderText("Password")).toBeDefined()
+    );
+
+    // 4. Enter a password
+    await act(async () =>
+      fireEvent.changeText(getByPlaceholderText("Password"), "fake password")
+    );
+    expect(
+      within(getByPlaceholderText("Password")).queryByText("fake password")
+    );
+
+    // 5. Press the clear text button
+    await act(async () => fireEvent.press(getByTestId("cancelIcon")));
+
+    // 6. Confirm the input was cleared
+    const input = getByPlaceholderText("Password");
+    expect(within(input).queryByText("fake password")).toBeNull();
+    expect(within(input).queryByText("")).toBeDefined();
+  });
+
+  it("allows the user to paste a password and override the current input", async () => {
+    mockCreateARoom();
+
+    const { getByTestId, findAllByRole, getByPlaceholderText } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. Confirms an input is available
+    await waitForExpect(() =>
+      expect(getByPlaceholderText("Password")).toBeDefined()
+    );
+
+    // 4. Enter a password
+    await act(async () =>
+      fireEvent.changeText(getByPlaceholderText("Password"), "fake password")
+    );
+    expect(
+      within(getByPlaceholderText("Password")).queryByText("fake password")
+    );
+
+    // 5. Press the paste text button
+    jest
+      .spyOn(Clipboard, "getStringAsync")
+      .mockResolvedValue("pasted password");
+    await act(async () =>
+      fireEvent.press(getByTestId("pasteFromClipboardIcon"))
+    );
+
+    // 6. Confirm the input was updated
+    const input = getByPlaceholderText("Password");
+    expect(within(input).queryByText("fake password")).toBeNull();
+    expect(within(input).queryByText("pasted password")).toBeDefined();
+  });
+
   it("disables the connect button if the text input is empty", async () => {
     mockCreateARoom();
 

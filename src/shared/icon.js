@@ -73,8 +73,13 @@ const ICON_OPTIONS = {
     </TestWrapper>
   ),
   copyToClipboard: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="connectedPeopleIcon" {...otherProps}>
+    <TestWrapper testID="copyToClipboardIcon" {...otherProps}>
       <MaterialIcons name="content-copy" size={size} color={color} />
+    </TestWrapper>
+  ),
+  pasteFromClipboard: ({ size, color, ...otherProps }) => (
+    <TestWrapper testID="pasteFromClipboardIcon" {...otherProps}>
+      <MaterialIcons name="content-paste" size={size} color={color} />
     </TestWrapper>
   ),
   create: ({ size, color, ...otherProps }) => (

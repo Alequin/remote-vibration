@@ -7,8 +7,9 @@ import { borderRadius } from "../../shared/border-radius";
 import { Button } from "../../shared/button";
 import { Icon } from "../../shared/icon";
 import { mostRecentRoomKey } from "../../utilities/async-storage";
+import Clipboard from "expo-clipboard";
 
-export const EnterKeyContainer = ({ onPressConnect, testID }) => {
+export const EnterPasswordContainer = ({ onPressConnect, testID }) => {
   const { key, setKey } = useKey();
 
   const isButtonDisabled = isEmpty(key);
@@ -46,12 +47,18 @@ const KeyInput = ({ value, onChangeText }) => {
   return (
     <View style={ViewStyles.keyInputWrapper}>
       <Icon icon="blankSpace" size={32} />
+      <Icon icon="blankSpace" size={32} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
         style={ViewStyles.keyInput}
         placeholder="Password"
       />
+      <TouchableOpacity
+        onPress={() => Clipboard.getStringAsync().then(onChangeText)}
+      >
+        <Icon icon="pasteFromClipboard" size={32} />
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => onChangeText("")}>
         <Icon icon="cancel" size={32} />
       </TouchableOpacity>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, Vibration, View } from "react-native";
 import { Background } from "../shared/background";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
-import { EnterKeyContainer } from "./receive-vibrations/enter-key-container";
+import { EnterPasswordContainer } from "./receive-vibrations/enter-password-container";
 import { FullPageLoading } from "./receive-vibrations/full-page-loading";
 import { CopyPasswordButton } from "./send-vibrations/copy-password-button";
 
@@ -39,7 +39,7 @@ export const ReceiveVibrations = ({ navigation }) => {
 
   if (!client)
     return (
-      <EnterKeyContainer
+      <EnterPasswordContainer
         testID="receive-vibrations-page"
         onPressConnect={setConnectionKey}
       />
