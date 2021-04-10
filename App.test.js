@@ -1,4 +1,8 @@
 jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
+jest.mock("react-native/Libraries/Vibration/Vibration", () => ({
+  vibrate: jest.fn(),
+  cancel: jest.fn(),
+}));
 
 import React from "React";
 import { render, waitFor } from "@testing-library/react-native";

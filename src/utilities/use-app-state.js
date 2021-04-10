@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AppState } from "react-native";
+import { AppState, Vibration } from "react-native";
 import { useCallback } from "react/cjs/react.development";
 import { isStateActive } from "./is-state-active";
 import Constants from "expo-constants";
@@ -37,6 +37,11 @@ const useAppActiveState = () => {
     AppState.addEventListener("change", handleAppStateChange);
     return () => AppState.removeEventListener("change", handleAppStateChange);
   }, [handleAppStateChange]);
+
+  useEffect(() => {
+    // Disable all vibration when the app moves to the background
+    if (!isAppActive) Vibration.cancel();
+  }, [isAppActive]);
 
   return { isAppActive, appState };
 };

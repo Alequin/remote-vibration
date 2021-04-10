@@ -65,24 +65,24 @@ const Page = ({ connectionKey, client }) => {
   ] = useState(false);
 
   const {
-    activeVibrationName,
-    setActiveVibrationName,
+    activePattern,
+    setActivePattern,
     speedModifier,
     setSpeedModifier,
-  } = useVibration({ disableVibration: !shouldVibrateOnCurrentPhone });
+  } = useVibration({
+    disableVibration: !shouldVibrateOnCurrentPhone,
+  });
 
   useEffect(() => {
     let isSendingVibrationTimeout = null;
     client.addOnMessageEventListener(
       "confirmVibrationPatternSent",
-      ({ parsedData }) => {
-        if (parsedData.type === "confirmVibrationPatternSent")
-          // delay so the message does not flash on the screen to quickly
-          isSendingVibrationTimeout = setTimeout(
-            () => setIsSendingVibration(false),
-            250
-          );
-      }
+      () =>
+        // delay so the message does not flash on the screen too quickly
+        (isSendingVibrationTimeout = setTimeout(
+          () => setIsSendingVibration(false),
+          250
+        ))
     );
 
     return () => {
@@ -96,21 +96,19 @@ const Page = ({ connectionKey, client }) => {
       JSON.stringify({
         type: "sendVibrationPattern",
         data: {
-          vibrationPattern: vibrationPatternToSend(
-            patterns[activeVibrationName]
-          ),
+          vibrationPattern: vibrationPatternToSend(activePattern),
           speed: speedModifier,
         },
       })
     );
-  }, [activeVibrationName, speedModifier]);
+  }, [activePattern, speedModifier]);
 
   const sendingMessageStyle = useMemo(
     () => ({
       ...ViewStyles.sendingTextContainer,
-      opacity: activeVibrationName && isSendingVibration ? 1 : 0,
+      opacity: activePattern && isSendingVibration ? 1 : 0,
     }),
-    [activeVibrationName, isSendingVibration]
+    [activePattern, isSendingVibration]
   );
 
   return (
@@ -118,17 +116,17 @@ const Page = ({ connectionKey, client }) => {
       <CopyPasswordButton label="Password" connectionKey={connectionKey} />
       <VibrationPicker
         listHeight="100%"
-        activeVibrationName={activeVibrationName}
+        activeVibrationName={activePattern?.name}
         onChangeVibrationSpeed={setSpeedModifier}
         onPickPattern={(pattern) => {
           setIsSendingVibration(true);
 
-          if (activeVibrationName === pattern.name) {
-            setActiveVibrationName(null);
+          if (activePattern?.name === pattern.name) {
+            setActivePattern(null);
             return;
           }
 
-          setActiveVibrationName(pattern.name);
+          setActivePattern(pattern);
         }}
       />
       <AlsoVibrateOnCurrentDeviceCheckBox
@@ -139,7 +137,7 @@ const Page = ({ connectionKey, client }) => {
       />
       <View style={sendingMessageStyle}>
         <Text style={ViewStyles.sendingText}>
-          Sending "{activeVibrationName}" to others
+          Sending "{activePattern?.name}" to others
         </Text>
         <ActivityIndicator testID="loadingIndicator" size={20} color={cyan} />
       </View>

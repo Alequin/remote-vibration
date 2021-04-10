@@ -8,13 +8,17 @@ export const establishWebsocketConnection = () => {
 
   client.onmessage = (message) => {
     const parsedData = JSON.parse(message.data);
-    onMessageEventHandlers.forEach(({ eventHandler }) =>
-      eventHandler({ ...message, parsedData })
-    );
+    onMessageEventHandlers.forEach(({ key, eventHandler, errorHandler }) => {
+      if (parsedData.error) {
+        errorHandler && errorHandler({ ...message, parsedData });
+        return;
+      }
+      if (key === parsedData.type) eventHandler({ ...message, parsedData });
+    });
   };
 
-  client.addOnMessageEventListener = (key, eventHandler) =>
-    onMessageEventHandlers.push({ key, eventHandler });
+  client.addOnMessageEventListener = (key, eventHandler, errorHandler) =>
+    onMessageEventHandlers.push({ key, eventHandler, errorHandler });
 
   client.removeOnMessageEventListener = (keyToRemove) => {
     onMessageEventHandlers = reject(

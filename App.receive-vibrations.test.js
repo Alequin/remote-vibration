@@ -340,7 +340,7 @@ describe("App - receive vibrations", () => {
     expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
     expect(AsyncStorage.setItem).toHaveBeenCalledWith(
       "MOST_RECENT_ROOM_KEY",
-      MOCK_ROOM_KEY
+      JSON.stringify(MOCK_ROOM_KEY)
     );
   });
 
@@ -398,7 +398,11 @@ describe("App - receive vibrations", () => {
     );
 
     // 3. start the connection
-    await makeAConnection(getAllByRole, getByPlaceholderText);
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
 
     // 4. Fake receiving a vibration pattern message
     const mockVibrationPattern = newVibrationPattern("mockPattern", [0.1]);
@@ -440,9 +444,14 @@ describe("App - receive vibrations", () => {
     );
 
     // 3. start the connection
-    await makeAConnection(getAllByRole, getByPlaceholderText);
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
 
     // 4. Fake receiving a vibration pattern message
+    Vibration.cancel.mockClear();
     await act(async () =>
       mockWebsocketClient.onmessage({
         data: JSON.stringify({
@@ -482,7 +491,11 @@ describe("App - receive vibrations", () => {
     );
 
     // 3. start the connection
-    await makeAConnection(getAllByRole, getByPlaceholderText);
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
 
     // 4. Confirm the Password is on screen
     await waitForExpect(() => {
@@ -529,7 +542,11 @@ describe("App - receive vibrations", () => {
     );
 
     // 3. start the connection
-    await makeAConnection(getAllByRole, getByPlaceholderText);
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
 
     // 4. Fake receiving a vibration pattern message
     const mockVibrationPattern = newVibrationPattern("mockPattern", [0.1]);
@@ -546,45 +563,51 @@ describe("App - receive vibrations", () => {
     expect(getByText(mockVibrationPattern.name)).toBeDefined();
   });
 
-  const moveToReceiveVibrationsPage = async (findAllByRole) => {
-    const mainMenuButtons = await findAllByRole("button");
-
-    const receiveVibrationsButton = mainMenuButtons.find((button) =>
-      within(button).queryByText(pageNames.receiveVibrations)
-    );
-
-    await act(async () => fireEvent.press(receiveVibrationsButton));
-  };
-
-  const makeAConnection = async (getAllByRole, getByPlaceholderText) => {
-    // 1. User enters text into the input
-    await act(async () =>
-      fireEvent.changeText(getByPlaceholderText("Password"), MOCK_ROOM_KEY)
-    );
-
-    // 2. Submit the given key
-    await act(async () =>
-      fireEvent.press(
-        getAllByRole("button").find((button) =>
-          within(button).queryByText("Connect")
-        )
-      )
-    );
-
-    // 3. Fake the connection to the websocket
-    expect(mockWebsocketClient.onopen).toBeDefined();
-    await act(async () => mockWebsocketClient.onopen());
-
-    // 4. Fake receiving a message confirming the room connection
-    await act(async () =>
-      mockWebsocketClient.onmessage({
-        data: JSON.stringify({
-          type: "confirmRoomConnection",
-        }),
-      })
-    );
-  };
+  it.todo("handles errors when room password does not exist");
 });
+
+const moveToReceiveVibrationsPage = async (findAllByRole) => {
+  const mainMenuButtons = await findAllByRole("button");
+
+  const receiveVibrationsButton = mainMenuButtons.find((button) =>
+    within(button).queryByText(pageNames.receiveVibrations)
+  );
+
+  await act(async () => fireEvent.press(receiveVibrationsButton));
+};
+
+const makeAConnection = async (
+  getAllByRole,
+  getByPlaceholderText,
+  mockWebsocketClient
+) => {
+  // 1. User enters text into the input
+  await act(async () =>
+    fireEvent.changeText(getByPlaceholderText("Password"), MOCK_ROOM_KEY)
+  );
+
+  // 2. Submit the given key
+  await act(async () =>
+    fireEvent.press(
+      getAllByRole("button").find((button) =>
+        within(button).queryByText("Connect")
+      )
+    )
+  );
+
+  // 3. Fake the connection to the websocket
+  expect(mockWebsocketClient.onopen).toBeDefined();
+  await act(async () => mockWebsocketClient.onopen());
+
+  // 4. Fake receiving a message confirming the room connection
+  await act(async () =>
+    mockWebsocketClient.onmessage({
+      data: JSON.stringify({
+        type: "confirmRoomConnection",
+      }),
+    })
+  );
+};
 
 const mockCreateARoom = ({ delayTime } = {}) =>
   nock("http://remote-vibration-server.herokuapp.com", {

@@ -27,13 +27,6 @@ export const MainMenu = ({ navigation }) => (
     >
       {pageNames.sendVibrations}
     </MenuButton>
-    <MenuButton
-      style={ViewStyles.middleButton}
-      icon="create"
-      onPress={() => navigation.navigate(pageNames.sendVibrations)}
-    >
-      {pageNames.createACustomPattern}
-    </MenuButton>
     <MenuButton style={ViewStyles.middleButton} icon="stop">
       Turn Off Ads
     </MenuButton>

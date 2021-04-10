@@ -1,29 +1,43 @@
-import React from "react";
-import { Vibration } from "react-native";
+import React, { useEffect } from "react";
 import { Background } from "../shared/background";
 import { useVibration } from "../shared/use-vibration";
 import { VibrationPicker } from "../shared/vibration-picker";
+import { lastActiveVibrationPattern } from "../utilities/async-storage";
 
 export const VibrateOnCurrentPhone = ({ navigation }) => {
-  const {
-    activeVibrationName,
-    setActiveVibrationName,
-    setSpeedModifier,
-  } = useVibration({ disableVibration: false });
+  const { activePattern, setActivePattern, setSpeedModifier } = useVibration({
+    disableVibration: false,
+  });
+
+  useEffect(() => {
+    lastActiveVibrationPattern
+      .read()
+      .then(
+        async (savedPattern) => savedPattern && setActivePattern(savedPattern)
+      );
+  }, []);
+
+  useEffect(
+    () => async () => {
+      if (!activePattern) await lastActiveVibrationPattern.clear();
+      else await lastActiveVibrationPattern.save(activePattern);
+    },
+    [activePattern]
+  );
 
   return (
     <Background testID="vibrate-on-current-phone-page">
       <VibrationPicker
         listHeight="90%"
-        activeVibrationName={activeVibrationName}
+        activeVibrationName={activePattern?.name}
         onChangeVibrationSpeed={setSpeedModifier}
         onPickPattern={(pattern) => {
-          if (activeVibrationName === pattern.name) {
-            setActiveVibrationName(null);
+          if (activePattern?.name === pattern.name) {
+            setActivePattern(null);
             return;
           }
 
-          setActiveVibrationName(pattern.name);
+          setActivePattern(pattern);
         }}
       />
     </Background>

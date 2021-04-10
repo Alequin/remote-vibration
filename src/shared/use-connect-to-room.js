@@ -24,10 +24,8 @@ export const useConnectToRoom = (connectionKey) => {
 
       client.addOnMessageEventListener(
         "confirmRoomConnection",
-        ({ parsedData }) => {
-          if (parsedData.error) setError(parsedData.error);
-          if (parsedData.type === "confirmRoomConnection") setIsLoading(false);
-        }
+        () => setIsLoading(false),
+        ({ parsedData }) => setError(parsedData.error)
       );
     }
   }, [isAppActive, connectionKey]);

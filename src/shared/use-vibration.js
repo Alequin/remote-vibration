@@ -1,18 +1,13 @@
 import { round } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { Vibration } from "react-native";
-import { lastActiveVibrationPattern } from "../utilities/async-storage";
 import {
   newRandomPattern,
-  patterns,
   RANDOM_PATTERN_NAME,
 } from "../utilities/vibration-patterns";
 
 export const useVibration = ({ disableVibration }) => {
-  const {
-    activeVibrationName,
-    setActiveVibrationName,
-  } = useActiveVibrationName();
+  const [activePattern, setActivePattern] = useState(null);
 
   const {
     speedModifier,
@@ -20,46 +15,24 @@ export const useVibration = ({ disableVibration }) => {
     applySpeedModifier,
   } = useSpeedModifier();
 
-  const startVibrating = useStartVibrating(applySpeedModifier);
-
   useEffect(() => {
     Vibration.cancel();
-    if (activeVibrationName && !disableVibration) {
+    if (activePattern && !disableVibration) {
       const pattern =
-        activeVibrationName === RANDOM_PATTERN_NAME
+        activePattern?.name === RANDOM_PATTERN_NAME
           ? newRandomPattern()
-          : patterns[activeVibrationName];
+          : activePattern;
 
-      startVibrating(pattern);
+      Vibration.vibrate(applySpeedModifier(pattern), true);
     }
-  }, [activeVibrationName, speedModifier, disableVibration]);
+  }, [activePattern, speedModifier, disableVibration]);
 
   return {
-    activeVibrationName,
-    setActiveVibrationName,
+    activePattern,
+    setActivePattern,
     speedModifier,
     setSpeedModifier,
   };
-};
-
-const useActiveVibrationName = () => {
-  const [activeVibrationName, setActiveVibrationName] = useState(null);
-
-  useEffect(() => {
-    lastActiveVibrationPattern
-      .read()
-      .then(async (name) => name && setActiveVibrationName(name));
-  }, []);
-
-  useEffect(
-    () => async () => {
-      if (!activeVibrationName) await lastActiveVibrationPattern.clear();
-      else await lastActiveVibrationPattern.save(activeVibrationName);
-    },
-    [activeVibrationName]
-  );
-
-  return { activeVibrationName, setActiveVibrationName };
 };
 
 const useSpeedModifier = () => {
@@ -78,8 +51,3 @@ const useSpeedModifier = () => {
     applySpeedModifier,
   };
 };
-
-const useStartVibrating = (applySpeedModifier) =>
-  useCallback((pattern) =>
-    Vibration.vibrate(applySpeedModifier(pattern), true)
-  );
