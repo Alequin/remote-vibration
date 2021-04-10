@@ -11,7 +11,7 @@ import {
   newRandomPattern,
   RANDOM_PATTERN_NAME,
 } from "../utilities/vibration-patterns";
-import { CopyConnectionKeyButton } from "./send-vibrations/copy-connection-key-button";
+import { CopyPasswordButton } from "./send-vibrations/copy-password-button";
 import { useHasEnoughTimePassedToHideLoadingIndicator } from "./send-vibrations/use-has-enough-time-to-hide-loading-indicator";
 
 export const SendVibrations = ({ navigation }) => {
@@ -104,10 +104,7 @@ const Page = ({ connectionKey, client }) => {
 
   return (
     <>
-      <CopyConnectionKeyButton
-        label="Connection Key"
-        connectionKey={connectionKey}
-      />
+      <CopyPasswordButton label="Password" connectionKey={connectionKey} />
       <VibrationPicker
         listHeight="100%"
         activeVibrationName={currentPatterName}

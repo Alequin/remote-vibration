@@ -77,7 +77,7 @@ describe("App - receive vibrations", () => {
 
     // 3. Confirms an input is available
     await waitForExpect(() =>
-      expect(getByPlaceholderText("Enter a key")).toBeDefined()
+      expect(getByPlaceholderText("Password")).toBeDefined()
     );
   });
 
@@ -134,7 +134,7 @@ describe("App - receive vibrations", () => {
 
     // 3. User enters text into the input
     await act(async () =>
-      fireEvent.changeText(getByPlaceholderText("Enter a key"), "mockKey")
+      fireEvent.changeText(getByPlaceholderText("Password"), "mockKey")
     );
 
     // 4. Confirm the button is enabled
@@ -171,7 +171,7 @@ describe("App - receive vibrations", () => {
 
     // 3. User enters text into the input
     await act(async () =>
-      fireEvent.changeText(getByPlaceholderText("Enter a key"), MOCK_ROOM_KEY)
+      fireEvent.changeText(getByPlaceholderText("Password"), MOCK_ROOM_KEY)
     );
 
     // 4. Submit the given key
@@ -202,7 +202,7 @@ describe("App - receive vibrations", () => {
     );
   });
 
-  it("saves the connection key when the connect button is pressed", async () => {
+  it("saves the Password when the connect button is pressed", async () => {
     mockCreateARoom();
 
     const {
@@ -228,7 +228,7 @@ describe("App - receive vibrations", () => {
 
     // 3. User enters text into the input
     await act(async () =>
-      fireEvent.changeText(getByPlaceholderText("Enter a key"), MOCK_ROOM_KEY)
+      fireEvent.changeText(getByPlaceholderText("Password"), MOCK_ROOM_KEY)
     );
 
     // 4. Submit the given key
@@ -249,7 +249,7 @@ describe("App - receive vibrations", () => {
     expect(mockWebsocketClient.onopen).toBeDefined();
     await act(async () => mockWebsocketClient.onopen());
 
-    // 7. Confirm the connection key is saved
+    // 7. Confirm the Password is saved
     expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
     expect(AsyncStorage.setItem).toHaveBeenCalledWith(
       "MOST_RECENT_ROOM_KEY",
@@ -257,7 +257,7 @@ describe("App - receive vibrations", () => {
     );
   });
 
-  it("attempts to load a saved connection key when the page is mounted", async () => {
+  it("attempts to load a saved Password when the page is mounted", async () => {
     mockCreateARoom();
 
     const {
@@ -281,7 +281,7 @@ describe("App - receive vibrations", () => {
       expect(getByTestId("receive-vibrations-page")).toBeDefined()
     );
 
-    // 3. Confirm the connection key is saved
+    // 3. Confirm the Password is saved
     expect(AsyncStorage.getItem).toHaveBeenCalledTimes(1);
     expect(AsyncStorage.getItem).toHaveBeenCalledWith("MOST_RECENT_ROOM_KEY");
   });
@@ -368,7 +368,7 @@ describe("App - receive vibrations", () => {
     expect(Vibration.cancel).toHaveBeenCalledTimes(1);
   });
 
-  it("shows the connection key when connection is established and allows it to be copied", async () => {
+  it("shows the Password when connection is established and allows it to be copied", async () => {
     mockCreateARoom();
 
     const {
@@ -397,7 +397,7 @@ describe("App - receive vibrations", () => {
     // 3. start the connection
     await makeAConnection(getAllByRole, getByPlaceholderText);
 
-    // 4. Confirm the connection key is on screen
+    // 4. Confirm the Password is on screen
     await waitForExpect(() => {
       const page = getByTestId("receive-vibrations-page");
       expect(within(page).queryByText(/connect to/i)).toBeDefined();
@@ -472,7 +472,7 @@ describe("App - receive vibrations", () => {
   const makeAConnection = async (getAllByRole, getByPlaceholderText) => {
     // 1. User enters text into the input
     await act(async () =>
-      fireEvent.changeText(getByPlaceholderText("Enter a key"), MOCK_ROOM_KEY)
+      fireEvent.changeText(getByPlaceholderText("Password"), MOCK_ROOM_KEY)
     );
 
     // 2. Submit the given key

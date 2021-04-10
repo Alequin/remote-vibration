@@ -5,7 +5,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "../../shared/icon";
 import { cyan } from "../../utilities/colours";
 
-export const CopyConnectionKeyButton = ({ label, connectionKey }) => {
+export const CopyPasswordButton = ({ label, connectionKey }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const fadeOut = () => {

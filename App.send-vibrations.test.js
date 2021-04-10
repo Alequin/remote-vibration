@@ -124,12 +124,12 @@ describe("App - send vibrations", () => {
       })
     );
 
-    // 8. Confirm the connection key is presented to the user
-    expect(await findByText(`Connection Key:`));
+    // 8. Confirm the Password is presented to the user
+    expect(await findByText(`Password:`));
     expect(await findByText(`${MOCK_ROOM_KEY}`));
   });
 
-  it("allows the user to copy the connection key to the clipboard", async () => {
+  it("allows the user to copy the Password to the clipboard", async () => {
     jest.spyOn(Clipboard, "setString");
     const createARoomInterceptor = mockCreateARoom();
 
@@ -154,7 +154,7 @@ describe("App - send vibrations", () => {
     );
 
     // 3. Confirm connection is established
-    expect(await findByText(`Connection Key:`));
+    expect(await findByText(`Password:`));
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
     // 4. Press button to copy key
@@ -192,7 +192,7 @@ describe("App - send vibrations", () => {
     );
 
     // 3. Confirm connection is established
-    expect(await findByText(`Connection Key:`));
+    expect(await findByText(`Password:`));
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
     // 4. Press play on a vibration pattern
@@ -245,7 +245,7 @@ describe("App - send vibrations", () => {
     );
 
     // 3. Confirm connection is established
-    expect(await findByText(`Connection Key:`));
+    expect(await findByText(`Password:`));
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
     // 4. Press play on a vibration pattern
@@ -294,7 +294,7 @@ describe("App - send vibrations", () => {
     );
 
     // 3. Confirm connection is established
-    expect(await findByText(/connection key/i));
+    expect(await findByText(/Password/i));
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
     // 4. Press play on a vibration pattern
@@ -348,7 +348,7 @@ describe("App - send vibrations", () => {
     );
 
     // 3. Confirm connection is established
-    expect(await findByText(/connection key/i));
+    expect(await findByText(/Password/i));
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
     const patternOptions = await findAllByTestId("vibration-pattern-option");

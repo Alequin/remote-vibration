@@ -4,7 +4,7 @@ import { Background } from "../shared/background";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { EnterKeyContainer } from "./receive-vibrations/enter-key-container";
 import { FullPageLoading } from "./receive-vibrations/full-page-loading";
-import { CopyConnectionKeyButton } from "./send-vibrations/copy-connection-key-button";
+import { CopyPasswordButton } from "./send-vibrations/copy-password-button";
 
 export const ReceiveVibrations = ({ navigation }) => {
   const [connectionKey, setConnectionKey] = useState(false);
@@ -59,7 +59,7 @@ const Page = ({ connectionKey, testID, currentVibrationPattern }) => {
   return (
     <Background testID={testID}>
       <View>
-        <CopyConnectionKeyButton
+        <CopyPasswordButton
           label="Connected To"
           connectionKey={connectionKey}
         />

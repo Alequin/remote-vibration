@@ -24,7 +24,7 @@ export const EnterKeyContainer = ({ onPressConnect, testID }) => {
     <Background testID={testID}>
       <View style={ViewStyles.keyInputContainer}>
         <Text style={ViewStyles.keyText}>
-          Enter the other persons connection key
+          Enter a password to receive vibrations
         </Text>
         <KeyInput value={key} onChangeText={setKey} />
         <Button
@@ -50,7 +50,7 @@ const KeyInput = ({ value, onChangeText }) => {
         value={value}
         onChangeText={onChangeText}
         style={ViewStyles.keyInput}
-        placeholder="Enter a key"
+        placeholder="Password"
       />
       <TouchableOpacity onPress={() => onChangeText("")}>
         <Icon icon="cancel" size={32} />
