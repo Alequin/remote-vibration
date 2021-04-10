@@ -77,7 +77,8 @@ const ViewStyles = StyleSheet.create({
   listButtonWrapper: {
     width: "100%",
     justifyContent: "center",
-    padding: 10,
+    paddingBottom: 3,
+    paddingHorizontal: 10,
   },
   listButton: {
     borderRadius,

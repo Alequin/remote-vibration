@@ -106,6 +106,7 @@ describe("App - Vibrate on current phone", () => {
     expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
 
     // Assert vibration stops on the second press
+    Vibration.cancel.mockClear();
     act(() => fireEvent.press(exampleConstantVibrationButton));
     expect(Vibration.cancel).toHaveBeenCalledTimes(1);
   });

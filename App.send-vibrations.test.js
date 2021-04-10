@@ -25,6 +25,7 @@ import {
 import Clipboard from "expo-clipboard";
 import nock from "nock";
 import React, { useState } from "React";
+import { Vibration } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
@@ -168,7 +169,6 @@ describe("App - send vibrations", () => {
   });
 
   it("sends a vibration pattern when one is selected", async () => {
-    jest.spyOn(Clipboard, "setString");
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
@@ -215,14 +215,59 @@ describe("App - send vibrations", () => {
     );
   });
 
-  it("creates a new random pattern when the 'Random' option is selected", async () => {
-    jest.spyOn(Clipboard, "setString");
+  it("also vibrates on the current device if check box is ticked", async () => {
     const createARoomInterceptor = mockCreateARoom();
 
-    const mockPattern = newVibrationPattern("mockRandom", [1, 1, 1]);
-    const spyOfNewRandomPattern = jest
-      .spyOn(vibrationPatterns, "newRandomPattern")
-      .mockReturnValue(mockPattern);
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToSendVibrationsPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
+    });
+
+    await mockCallsToCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(`Password:`));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    // 4. Press the enable vibration on device button
+    const allButtons = getAllByRole("button");
+    await act(async () =>
+      fireEvent.press(
+        allButtons.find((button) =>
+          within(button).queryByText("Also vibrate on this device")
+        )
+      )
+    );
+
+    // 5. Press play on a vibration pattern
+    const constantVibrationButton = (
+      await findAllByTestId("vibration-pattern-option")
+    ).find((button) => within(button).getByText("Constant"));
+    act(() => fireEvent.press(constantVibrationButton));
+
+    // 6. Confirm vibration has started
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith(
+      vibrationPatterns.patterns["Constant"].pattern,
+      true
+    );
+  });
+
+  it("starts vibrating on the current device if check box is ticked after a vibration is selected", async () => {
+    const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
@@ -249,11 +294,124 @@ describe("App - send vibrations", () => {
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
     // 4. Press play on a vibration pattern
-    const exampleRandomVibrationButton = (
+    const constantVibrationButton = (
+      await findAllByTestId("vibration-pattern-option")
+    ).find((button) => within(button).getByText("Constant"));
+    act(() => fireEvent.press(constantVibrationButton));
+
+    // 5. Press the enable vibration on device button
+    const allButtons = getAllByRole("button");
+    await act(async () =>
+      fireEvent.press(
+        allButtons.find((button) =>
+          within(button).queryByText("Also vibrate on this device")
+        )
+      )
+    );
+
+    // 6. Confirm vibration has started
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith(
+      vibrationPatterns.patterns["Constant"].pattern,
+      true
+    );
+  });
+
+  it("stops vibrating if vibration is enabled and then the checkbox is un-ticked", async () => {
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToSendVibrationsPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
+    });
+
+    await mockCallsToCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(`Password:`));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    // 4. Press the enable vibration on device button
+    const allButtons = getAllByRole("button");
+    const enableVibrationOnDeviceButton = allButtons.find((button) =>
+      within(button).queryByText("Also vibrate on this device")
+    );
+    await act(async () => fireEvent.press(enableVibrationOnDeviceButton));
+
+    // 5. Press play on a vibration pattern
+    const constantVibrationButton = (
+      await findAllByTestId("vibration-pattern-option")
+    ).find((button) => within(button).getByText("Constant"));
+    act(() => fireEvent.press(constantVibrationButton));
+
+    // 6. Confirm vibration has started
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith(
+      vibrationPatterns.patterns["Constant"].pattern,
+      true
+    );
+
+    // 7. Disable vibration on current device
+    Vibration.cancel.mockClear();
+    await act(async () => fireEvent.press(enableVibrationOnDeviceButton));
+
+    // 8. Confirm vibration has stopped
+    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("creates a new random pattern when the 'Random' option is selected", async () => {
+    jest.spyOn(Clipboard, "setString");
+    const createARoomInterceptor = mockCreateARoom();
+
+    const mockPattern = newVibrationPattern("mockRandom", [1, 1, 1]);
+
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToSendVibrationsPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
+    });
+
+    await mockCallsToCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(`Password:`));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    // 4. Press play on a vibration pattern
+    const spyOfNewRandomPattern = jest
+      .spyOn(vibrationPatterns, "newRandomPattern")
+      .mockReturnValue(mockPattern);
+
+    const randomVibrationButton = (
       await findAllByTestId("vibration-pattern-option")
     ).find((button) => within(button).queryByText("Random"));
 
-    await act(async () => fireEvent.press(exampleRandomVibrationButton));
+    await act(async () => fireEvent.press(randomVibrationButton));
 
     // 5. Confirm the random pattern was sent
     expect(spyOfNewRandomPattern).toHaveBeenCalledTimes(1);

@@ -86,7 +86,6 @@ const ViewStyles = StyleSheet.create({
     padding: 20,
     marginTop: 20,
   },
-
   speedSelectorContainer: {
     width: "100%",
     backgroundColor: spaceCadet,

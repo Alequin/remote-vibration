@@ -1,16 +1,19 @@
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react/cjs/react.development";
-import { AppContext } from "../../app-context";
 import { Background } from "../shared/background";
+import { borderRadius } from "../shared/border-radius";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useCreateRoom } from "../shared/use-create-room";
+import { useVibration } from "../shared/use-vibration";
 import { VibrationPicker } from "../shared/vibration-picker";
-import { cyan } from "../utilities/colours";
+import { cyan, spaceCadet } from "../utilities/colours";
 import {
   newRandomPattern,
+  patterns,
   RANDOM_PATTERN_NAME,
 } from "../utilities/vibration-patterns";
+import { AlsoVibrateOnCurrentDeviceCheckBox } from "./send-vibrations/also-vibrate-on-current-device-check-box";
 import { CopyPasswordButton } from "./send-vibrations/copy-password-button";
 import { useHasEnoughTimePassedToHideLoadingIndicator } from "./send-vibrations/use-has-enough-time-to-hide-loading-indicator";
 
@@ -55,10 +58,18 @@ export const SendVibrations = ({ navigation }) => {
 };
 
 const Page = ({ connectionKey, client }) => {
-  const { isAppActive } = useContext(AppContext);
   const [isSendingVibration, setIsSendingVibration] = useState(false);
-  const [selectedPattern, setSelectedPattern] = useState(null);
-  const [vibrationSpeed, setVibrationSpeed] = useState(1);
+  const [
+    shouldVibrateOnCurrentPhone,
+    setShouldVibrateOnCurrentPhone,
+  ] = useState(false);
+
+  const {
+    activeVibrationName,
+    setActiveVibrationName,
+    speedModifier,
+    setSpeedModifier,
+  } = useVibration({ disableVibration: !shouldVibrateOnCurrentPhone });
 
   useEffect(() => {
     let isSendingVibrationTimeout = null;
@@ -85,21 +96,21 @@ const Page = ({ connectionKey, client }) => {
       JSON.stringify({
         type: "sendVibrationPattern",
         data: {
-          vibrationPattern: vibrationPatternToSend(selectedPattern),
-          speed: vibrationSpeed,
+          vibrationPattern: vibrationPatternToSend(
+            patterns[activeVibrationName]
+          ),
+          speed: speedModifier,
         },
       })
     );
-  }, [selectedPattern, vibrationSpeed]);
-
-  const currentPatterName = selectedPattern && selectedPattern.name;
+  }, [activeVibrationName, speedModifier]);
 
   const sendingMessageStyle = useMemo(
     () => ({
       ...ViewStyles.sendingTextContainer,
-      opacity: selectedPattern && isSendingVibration ? 1 : 0,
+      opacity: activeVibrationName && isSendingVibration ? 1 : 0,
     }),
-    [selectedPattern, isSendingVibration]
+    [activeVibrationName, isSendingVibration]
   );
 
   return (
@@ -107,27 +118,33 @@ const Page = ({ connectionKey, client }) => {
       <CopyPasswordButton label="Password" connectionKey={connectionKey} />
       <VibrationPicker
         listHeight="100%"
-        activeVibrationName={currentPatterName}
-        onChangeVibrationSpeed={setVibrationSpeed}
+        activeVibrationName={activeVibrationName}
+        onChangeVibrationSpeed={setSpeedModifier}
         onPickPattern={(pattern) => {
           setIsSendingVibration(true);
-          setSelectedPattern(vibrationPatternToSet(pattern, selectedPattern));
+
+          if (activeVibrationName === pattern.name) {
+            setActiveVibrationName(null);
+            return;
+          }
+
+          setActiveVibrationName(pattern.name);
         }}
+      />
+      <AlsoVibrateOnCurrentDeviceCheckBox
+        isActive={shouldVibrateOnCurrentPhone}
+        onPress={() =>
+          setShouldVibrateOnCurrentPhone(!shouldVibrateOnCurrentPhone)
+        }
       />
       <View style={sendingMessageStyle}>
         <Text style={ViewStyles.sendingText}>
-          Sending "{currentPatterName}" to others
+          Sending "{activeVibrationName}" to others
         </Text>
         <ActivityIndicator testID="loadingIndicator" size={20} color={cyan} />
       </View>
     </>
   );
-};
-
-const vibrationPatternToSet = (pattern, currentPattern) => {
-  const shouldSendStopVibratingMessage =
-    currentPattern && currentPattern.name === pattern.name;
-  return !shouldSendStopVibratingMessage ? pattern : null;
 };
 
 const vibrationPatternToSend = (selectedPattern) => {
