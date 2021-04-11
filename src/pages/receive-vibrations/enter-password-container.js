@@ -44,8 +44,12 @@ export const EnterPasswordContainer = ({
         </Button>
         {error && (
           <>
-            <Text>{`There is no one with the password "${password}"`}</Text>
-            <Text>Check the password is correct and try again</Text>
+            <Text
+              style={ViewStyles.errorText}
+            >{`There is no one with the password "${password}"`}</Text>
+            <Text style={ViewStyles.errorText}>
+              Check the password is correct and try again
+            </Text>
           </>
         )}
       </View>
@@ -104,7 +108,6 @@ const ViewStyles = StyleSheet.create({
     padding: 5,
     flex: 1,
   },
-
   connectButton: {
     margin: 15,
     borderRadius: borderRadius,
@@ -115,5 +118,8 @@ const ViewStyles = StyleSheet.create({
     padding: 10,
     textAlign: "center",
     fontSize: 20,
+  },
+  errorText: {
+    fontSize: 18,
   },
 });
