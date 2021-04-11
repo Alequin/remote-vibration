@@ -5,7 +5,7 @@ import { AppContext } from "../../app-context";
 export const useCreateRoom = () => {
   const { deviceId, isAppActive } = useContext(AppContext);
   const [error, setError] = useState(null);
-  const [connectionKey, setConnectionKey] = useState(null);
+  const [password, setPassword] = useState(null);
 
   useEffect(() => {
     if (isAppActive) {
@@ -15,7 +15,7 @@ export const useCreateRoom = () => {
       })
         .then(async (response) => {
           const { roomKey } = await response.json();
-          setConnectionKey(roomKey);
+          setPassword(roomKey);
         })
         .catch((error) => {
           console.error(error);
@@ -24,5 +24,5 @@ export const useCreateRoom = () => {
     }
   }, [isAppActive]);
 
-  return { connectionKey, isLoading: !connectionKey, error };
+  return { password, isLoading: !password, error };
 };

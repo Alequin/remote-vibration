@@ -108,13 +108,15 @@ describe("App - send vibrations", () => {
     await waitFor(() => mockWebsocketClient.onopen());
 
     // 6. Confirm a message is send to connect to the new room
-    expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
-    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
-      JSON.stringify({
-        type: "connectToRoom",
-        data: { roomKey: MOCK_ROOM_KEY },
-      })
-    );
+    await waitForExpect(() => {
+      expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
+      expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          type: "connectToRoom",
+          data: { roomKey: MOCK_ROOM_KEY },
+        })
+      );
+    });
 
     // 7. Fake receiving a message confirming the room connection
     await act(async () =>
@@ -644,13 +646,15 @@ const mockCallsToCreateConnection = async (
   act(() => mockWebsocketClient.onopen());
 
   // 4. Confirm a message is send to connect to the new room
-  expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
-  expect(mockWebsocketClient.send).toHaveBeenCalledWith(
-    JSON.stringify({
-      type: "connectToRoom",
-      data: { roomKey: MOCK_ROOM_KEY },
-    })
-  );
+  await waitForExpect(() => {
+    expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
+    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+      JSON.stringify({
+        type: "connectToRoom",
+        data: { roomKey: MOCK_ROOM_KEY },
+      })
+    );
+  });
 
   // 5. Fake receiving a message confirming the room connection
   await act(async () =>

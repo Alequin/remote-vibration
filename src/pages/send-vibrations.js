@@ -23,17 +23,23 @@ export const SendVibrations = ({ navigation }) => {
   const canHideIndicator = useHasEnoughTimePassedToHideLoadingIndicator();
 
   const {
-    connectionKey,
+    password,
     isLoading: isStillCreatingRoom,
     error: createRoomError,
   } = useCreateRoom();
+
   const {
     client,
-    isLoading: isStillConnectingToRoom,
+    isConnected,
     error: connectToRoomError,
-  } = useConnectToRoom(connectionKey);
+    connectToRoom,
+  } = useConnectToRoom();
 
-  const isLoading = isStillCreatingRoom || isStillConnectingToRoom;
+  useEffect(() => {
+    if (password && client) connectToRoom(password);
+  }, [password, client]);
+
+  const isLoading = isStillCreatingRoom || !isConnected;
 
   // TODO make the error handling better (error page maybe?)
   if (createRoomError) return <Text>An error occurred</Text>;
@@ -51,7 +57,7 @@ export const SendVibrations = ({ navigation }) => {
           <Text style={ViewStyles.loadingText}>Setting up connection</Text>
         </>
       ) : (
-        <Page connectionKey={connectionKey} client={client} />
+        <Page connectionKey={password} client={client} />
       )}
     </Background>
   );

@@ -30,7 +30,6 @@ export const establishWebsocketConnection = async () => {
   return new Promise(
     (resolve) =>
       (client.onopen = () => {
-        console.log("open");
         resolve(client);
       })
   );
