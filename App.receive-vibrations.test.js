@@ -87,6 +87,10 @@ describe("App - receive vibrations", () => {
     ).toBeDefined();
   });
 
+  it.todo(
+    "returns the user to the menu from the error page when the button is pressed"
+  );
+
   it("shows a text input to allow the user to request a connection to a room", async () => {
     mockCreateARoom();
 

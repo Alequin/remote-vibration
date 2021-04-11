@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react/cjs/react.development";
 import { Background } from "../shared/background";
-import { CannotConnectToClient } from "../shared/cannot-connect-to-client";
+import { CannotConnectErrorPage } from "../shared/cannot-connect-error-page";
 import { CopyPasswordButton } from "../shared/copy-password-button";
 import { FullPageLoading } from "../shared/full-page-loading";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
@@ -43,7 +43,12 @@ export const SendVibrations = ({ navigation }) => {
   const isLoading = isStillCreatingRoom || !isConnected;
 
   if (createRoomError || websocketError || connectToRoomError)
-    return <CannotConnectToClient testID="send-vibrations-page" />;
+    return (
+      <CannotConnectErrorPage
+        testID="send-vibrations-page"
+        onPress={() => navigation.navigate(pageNames.mainMenu)}
+      />
+    );
 
   if (isLoading || !canHideIndicator)
     return <FullPageLoading testID="send-vibrations-page" />;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CannotConnectToClient } from "../shared/cannot-connect-to-client";
+import { CannotConnectErrorPage } from "../shared/cannot-connect-error-page";
 import { FullPageLoading } from "../shared/full-page-loading";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useVibration } from "../shared/use-vibration";
@@ -41,7 +41,7 @@ export const ReceiveVibrations = ({ navigation }) => {
 
   if (websocketError) {
     return (
-      <CannotConnectToClient
+      <CannotConnectErrorPage
         onPress={() => navigation.navigate(pageNames.mainMenu)}
       />
     );

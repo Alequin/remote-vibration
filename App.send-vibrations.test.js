@@ -198,6 +198,10 @@ describe("App - send vibrations", () => {
     ).toBeDefined();
   });
 
+  it.todo(
+    "returns the user to the menu from the error page when the button is pressed"
+  );
+
   it("creates a new connection on visiting the 'send-vibration' page", async () => {
     const createARoomInterceptor = mockCreateARoom();
 
