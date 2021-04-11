@@ -1,47 +1,59 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, Vibration, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { Background } from "../shared/background";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useVibration } from "../shared/use-vibration";
+import { mostRecentRoomKey } from "../utilities/async-storage";
 import { EnterPasswordContainer } from "./receive-vibrations/enter-password-container";
 import { FullPageLoading } from "./receive-vibrations/full-page-loading";
 import { CopyPasswordButton } from "./send-vibrations/copy-password-button";
 
 export const ReceiveVibrations = ({ navigation }) => {
-  const [password, setPassword] = useState("");
+  const { password, setPassword } = usePassword();
+
+  const {
+    client,
+    isLoading,
+    isConnected,
+    error,
+    clearError,
+    connectToRoom,
+  } = useConnectToRoom();
+
   const { activePattern, setActivePattern, setSpeedModifier } = useVibration({
     disableVibration: false,
   });
 
-  const { client, isLoading, error } = useConnectToRoom(password);
-
   useEffect(() => {
-    if (client && !isLoading) {
-      client.addOnMessageEventListener(
-        "receivedVibrationPattern",
-        ({ parsedData: { data } }) => {
-          setActivePattern(data.vibrationPattern);
-          setSpeedModifier(data.speed);
-        }
-      );
-    }
+    client?.addOnMessageEventListener(
+      "receivedVibrationPattern",
+      ({ parsedData: { data } }) => {
+        setActivePattern(data.vibrationPattern);
+        setSpeedModifier(data.speed);
+      }
+    );
 
     return () => {
       client?.removeOnMessageEventListener("receivedVibrationPattern");
     };
-  }, [client, isLoading]);
+  }, [client]);
 
-  // TODO make the error handling better (error page maybe?)
-  if (error) return <Text>An error occurred</Text>;
-
-  if (!client)
+  if (!isLoading && (!isConnected || error))
     return (
       <EnterPasswordContainer
         testID="receive-vibrations-page"
-        onPressConnect={setPassword}
+        password={password}
+        error={error}
+        onChangeText={(newPassword) => {
+          setPassword(newPassword);
+          clearError();
+        }}
+        onPressConnect={() => connectToRoom(password)}
       />
     );
-  if (isLoading) return <FullPageLoading testID="receive-vibrations-page" />;
+
+  if (!isConnected && isLoading)
+    return <FullPageLoading testID="receive-vibrations-page" />;
 
   return (
     <Page
@@ -50,6 +62,20 @@ export const ReceiveVibrations = ({ navigation }) => {
       currentVibrationPattern={activePattern}
     />
   );
+};
+
+const usePassword = () => {
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    mostRecentRoomKey
+      .read()
+      .then(
+        (recordedKey) => !password && recordedKey && setPassword(recordedKey)
+      );
+  }, []);
+
+  return { password, setPassword };
 };
 
 const Page = ({ connectionKey, testID, currentVibrationPattern }) => {

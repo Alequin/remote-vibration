@@ -256,12 +256,21 @@ describe("App - receive vibrations", () => {
       expect(getByTestId("receive-vibrations-page")).toBeDefined()
     );
 
-    // 3. User enters text into the input
+    // 3. Makes the call to open a websocket
+    await waitForExpect(async () => {
+      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
+    });
+
+    // 4. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 5. User enters text into the input
     await act(async () =>
       fireEvent.changeText(getByPlaceholderText("Password"), MOCK_ROOM_KEY)
     );
 
-    // 4. Submit the given key
+    // 6. Submit the given key
     await act(async () =>
       fireEvent.press(
         getAllByRole("button").find((button) =>
@@ -269,15 +278,6 @@ describe("App - receive vibrations", () => {
         )
       )
     );
-
-    // 5. Makes the call to open a websocket
-    await waitForExpect(async () => {
-      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
-    });
-
-    // 6. Fake the connection to the websocket
-    expect(mockWebsocketClient.onopen).toBeDefined();
-    await act(async () => mockWebsocketClient.onopen());
 
     // 7. Confirm a message is send to connect to the new room
     expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
@@ -287,6 +287,81 @@ describe("App - receive vibrations", () => {
         data: { roomKey: MOCK_ROOM_KEY },
       })
     );
+  });
+
+  it("shows an error message when the room password cannot be found", async () => {
+    mockCreateARoom();
+
+    const {
+      getByTestId,
+      getAllByRole,
+      findAllByRole,
+      getByPlaceholderText,
+      getByText,
+    } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. Makes the call to open a websocket
+    await waitForExpect(async () => {
+      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
+    });
+
+    // 4. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 5. User enters text into the input
+    await act(async () =>
+      fireEvent.changeText(getByPlaceholderText("Password"), MOCK_ROOM_KEY)
+    );
+
+    // 6. Submit the given key
+    await act(async () =>
+      fireEvent.press(
+        getAllByRole("button").find((button) =>
+          within(button).queryByText("Connect")
+        )
+      )
+    );
+
+    // 7. Confirm a message is sent to connect to the new room
+    await waitForExpect(() => {
+      expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
+      expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          type: "connectToRoom",
+          data: { roomKey: MOCK_ROOM_KEY },
+        })
+      );
+    });
+
+    // 8. Fake receiving an error message about the password not being found
+    await act(async () =>
+      mockWebsocketClient.onmessage({
+        data: JSON.stringify({
+          error: "There is no room for the given key",
+        }),
+      })
+    );
+
+    // 9. Confirm an error message is shown
+    await waitForExpect(() => {
+      expect(getByText(`There is no one with the password "${MOCK_ROOM_KEY}"`));
+      expect(getByText(`Check the password is correct and try again`));
+    });
   });
 
   it("saves the Password when the connect button is pressed", async () => {
@@ -562,8 +637,6 @@ describe("App - receive vibrations", () => {
     expect(getByText("Current Vibration Pattern")).toBeDefined();
     expect(getByText(mockVibrationPattern.name)).toBeDefined();
   });
-
-  it.todo("handles errors when room password does not exist");
 });
 
 const moveToReceiveVibrationsPage = async (findAllByRole) => {
@@ -581,12 +654,16 @@ const makeAConnection = async (
   getByPlaceholderText,
   mockWebsocketClient
 ) => {
-  // 1. User enters text into the input
+  // 1. Fake the connection to the websocket
+  expect(mockWebsocketClient.onopen).toBeDefined();
+  await act(async () => mockWebsocketClient.onopen());
+
+  // 2. User enters text into the input
   await act(async () =>
     fireEvent.changeText(getByPlaceholderText("Password"), MOCK_ROOM_KEY)
   );
 
-  // 2. Submit the given key
+  // 3. Submit the given key
   await act(async () =>
     fireEvent.press(
       getAllByRole("button").find((button) =>
@@ -594,10 +671,6 @@ const makeAConnection = async (
       )
     )
   );
-
-  // 3. Fake the connection to the websocket
-  expect(mockWebsocketClient.onopen).toBeDefined();
-  await act(async () => mockWebsocketClient.onopen());
 
   // 4. Fake receiving a message confirming the room connection
   await act(async () =>

@@ -1,42 +1,59 @@
-import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../app-context";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { establishWebsocketConnection } from "../utilities/establish-websocket-connection";
 
-export const useConnectToRoom = (connectionKey) => {
-  const { isAppActive } = useContext(AppContext);
+export const useConnectToRoom = () => {
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [client, setClient] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+
+  const clearError = useCallback(() => setError(null), [setError]);
 
   useEffect(() => {
-    if (isAppActive && connectionKey) {
-      const client = establishWebsocketConnection();
-      client.onopen = () => {
-        client.send(
-          JSON.stringify({
-            type: "connectToRoom",
-            data: { roomKey: connectionKey },
-          })
+    if (!client) {
+      establishWebsocketConnection().then((newClient) => {
+        newClient.addOnMessageEventListener(
+          "confirmRoomConnection",
+          () => {
+            setIsLoading(false);
+            setIsConnected(true);
+          },
+          ({ parsedData }) => {
+            setIsLoading(false);
+            setError(parsedData.error);
+          }
         );
 
-        setClient(client);
-      };
-
-      client.addOnMessageEventListener(
-        "confirmRoomConnection",
-        () => setIsLoading(false),
-        ({ parsedData }) => setError(parsedData.error)
-      );
+        setClient(newClient);
+      });
     }
-  }, [isAppActive, connectionKey]);
 
-  // Clean up the client on unmount assuming there is one
-  useEffect(() => () => client && client.close(), [client]);
+    return () => client?.close();
+  }, []);
+
+  const connectToRoom = useCallback(
+    (password) => {
+      if (client) {
+        client?.send(
+          JSON.stringify({
+            type: "connectToRoom",
+            data: { roomKey: password },
+          })
+        );
+        setIsLoading(true);
+      }
+    },
+    [client]
+  );
 
   return {
     client,
-    connectionKey,
+    isConnected,
     isLoading,
     error,
+    clearError,
+    connectToRoom,
   };
 };
+
+const sendConnectToRoomMessage = () => {};

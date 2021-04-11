@@ -1,5 +1,6 @@
+import Clipboard from "expo-clipboard";
 import { isEmpty } from "lodash";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Background } from "../../shared/background";
@@ -7,12 +8,15 @@ import { borderRadius } from "../../shared/border-radius";
 import { Button } from "../../shared/button";
 import { Icon } from "../../shared/icon";
 import { mostRecentRoomKey } from "../../utilities/async-storage";
-import Clipboard from "expo-clipboard";
 
-export const EnterPasswordContainer = ({ onPressConnect, testID }) => {
-  const { key, setKey } = useKey();
-
-  const isButtonDisabled = isEmpty(key);
+export const EnterPasswordContainer = ({
+  onPressConnect,
+  testID,
+  password,
+  error,
+  onChangeText,
+}) => {
+  const isButtonDisabled = isEmpty(password);
 
   const buttonTextStyle = useMemo(() => {
     return {
@@ -27,17 +31,23 @@ export const EnterPasswordContainer = ({ onPressConnect, testID }) => {
         <Text style={ViewStyles.keyText}>
           Enter a password to receive vibrations
         </Text>
-        <KeyInput value={key} onChangeText={setKey} />
+        <KeyInput value={password} onChangeText={onChangeText} />
         <Button
           style={ViewStyles.connectButton}
           disabled={isButtonDisabled}
           onPress={async () => {
-            await mostRecentRoomKey.save(key);
-            if (onPressConnect) onPressConnect(key);
+            await mostRecentRoomKey.save(password);
+            if (onPressConnect) onPressConnect(password);
           }}
         >
           <Text style={buttonTextStyle}>Connect</Text>
         </Button>
+        {error && (
+          <>
+            <Text>{`There is no one with the password "${password}"`}</Text>
+            <Text>Check the password is correct and try again</Text>
+          </>
+        )}
       </View>
     </Background>
   );
@@ -64,18 +74,6 @@ const KeyInput = ({ value, onChangeText }) => {
       </TouchableOpacity>
     </View>
   );
-};
-
-const useKey = () => {
-  const [key, setKey] = useState(null);
-
-  useEffect(() => {
-    mostRecentRoomKey
-      .read()
-      .then((recordedKey) => !key && recordedKey && setKey(recordedKey));
-  }, []);
-
-  return { key, setKey };
 };
 
 const ViewStyles = StyleSheet.create({
