@@ -32,11 +32,5 @@ describe("App - Menu", () => {
     );
     expect(sendVibrationsButton).toBeDefined();
     expect(within(sendVibrationsButton).getByTestId("wifiIcon")).toBeDefined();
-
-    const disableAdsButton = buttons.find((button) =>
-      within(button).queryByText("Turn Off Ads")
-    );
-    expect(disableAdsButton).toBeDefined();
-    expect(within(disableAdsButton).getByTestId("stopIcon")).toBeDefined();
   });
 });

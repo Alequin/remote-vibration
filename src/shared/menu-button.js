@@ -27,7 +27,7 @@ export const MenuButton = ({ icon, children, style, ...otherProps }) => {
 const ViewStyles = StyleSheet.create({
   menuButton: {
     width: "100%",
-    flex: 1,
+    height: "20%",
   },
   innerButton: {
     height: "100%",

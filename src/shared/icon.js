@@ -17,11 +17,6 @@ export const Icon = ({ icon, ...otherProps }) => {
   return <IconToRender {...otherProps} />;
 };
 const ICON_OPTIONS = {
-  stop: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="stopIcon" {...otherProps}>
-      <MaterialCommunityIcons name="cancel" size={size} color={color} />
-    </TestWrapper>
-  ),
   vibrate: ({ size, color, ...otherProps }) => (
     <TestWrapper testID="vibrateIcon" {...otherProps}>
       <MaterialCommunityIcons name="vibrate" size={size} color={color} />
