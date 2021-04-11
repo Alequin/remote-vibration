@@ -2,8 +2,8 @@ import Clipboard from "expo-clipboard";
 import React, { useRef } from "react";
 import { Animated, StyleSheet, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Icon } from "../../shared/icon";
-import { cyan } from "../../utilities/colours";
+import { Icon } from "./icon";
+import { cyan } from "../utilities/colours";
 
 export const CopyPasswordButton = ({ label, connectionKey }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;

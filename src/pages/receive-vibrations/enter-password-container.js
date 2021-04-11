@@ -121,5 +121,6 @@ const ViewStyles = StyleSheet.create({
   },
   errorText: {
     fontSize: 18,
+    textAlign: "center",
   },
 });

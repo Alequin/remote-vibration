@@ -56,6 +56,37 @@ describe("App - receive vibrations", () => {
     nock.abortPendingRequests();
   });
 
+  it("shows the full page error if there is an error connecting to the websocket", async () => {
+    mockCreateARoom();
+
+    const { getByTestId, findAllByRole, getByText } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. Fake the failure to connect to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await waitFor(() => mockWebsocketClient.onerror("unable to connect"));
+
+    // 4. Confirm the error page is shown
+    expect(
+      getByText(
+        "Sorry but it looks like there was a connection issue. Return to the menu and try again"
+      )
+    ).toBeDefined();
+  });
+
   it("shows a text input to allow the user to request a connection to a room", async () => {
     mockCreateARoom();
 

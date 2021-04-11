@@ -27,10 +27,8 @@ export const establishWebsocketConnection = async () => {
     );
   };
 
-  return new Promise(
-    (resolve) =>
-      (client.onopen = () => {
-        resolve(client);
-      })
-  );
+  return new Promise((resolve, reject) => {
+    client.onopen = () => resolve(client);
+    client.onerror = reject;
+  });
 };

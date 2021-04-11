@@ -14,13 +14,16 @@ export const useCreateRoom = () => {
         headers: { deviceId },
       })
         .then(async (response) => {
+          if (response.status >= 400) {
+            throw new Error(
+              `Received an error status while creating a room / ${response.status}`
+            );
+          }
+
           const { roomKey } = await response.json();
           setPassword(roomKey);
         })
-        .catch((error) => {
-          console.error(error);
-          setError(error);
-        });
+        .catch(setError);
     }
   }, [isAppActive]);
 

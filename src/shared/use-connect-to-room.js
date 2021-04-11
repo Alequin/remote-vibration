@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { establishWebsocketConnection } from "../utilities/establish-websocket-connection";
 
 export const useConnectToRoom = () => {
+  const [websocketError, setWebsocketError] = useState(null);
   const [error, setError] = useState(null);
   const [client, setClient] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -11,21 +12,23 @@ export const useConnectToRoom = () => {
 
   useEffect(() => {
     if (!client) {
-      establishWebsocketConnection().then((newClient) => {
-        newClient.addOnMessageEventListener(
-          "confirmRoomConnection",
-          () => {
-            setIsLoading(false);
-            setIsConnected(true);
-          },
-          ({ parsedData }) => {
-            setIsLoading(false);
-            setError(parsedData.error);
-          }
-        );
+      establishWebsocketConnection()
+        .then((newClient) => {
+          newClient.addOnMessageEventListener(
+            "confirmRoomConnection",
+            () => {
+              setIsLoading(false);
+              setIsConnected(true);
+            },
+            ({ parsedData }) => {
+              setIsLoading(false);
+              setError(parsedData.error);
+            }
+          );
 
-        setClient(newClient);
-      });
+          setClient(newClient);
+        })
+        .catch(setWebsocketError);
     }
 
     return () => client?.close();
@@ -51,6 +54,7 @@ export const useConnectToRoom = () => {
     isConnected,
     isLoading,
     error,
+    websocketError,
     clearError,
     connectToRoom,
   };

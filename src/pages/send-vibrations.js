@@ -2,19 +2,19 @@ import React, { useMemo } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react/cjs/react.development";
 import { Background } from "../shared/background";
-import { borderRadius } from "../shared/border-radius";
+import { CannotConnectToClient } from "../shared/cannot-connect-to-client";
+import { CopyPasswordButton } from "../shared/copy-password-button";
+import { FullPageLoading } from "../shared/full-page-loading";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useCreateRoom } from "../shared/use-create-room";
 import { useVibration } from "../shared/use-vibration";
 import { VibrationPicker } from "../shared/vibration-picker";
-import { cyan, spaceCadet } from "../utilities/colours";
+import { cyan } from "../utilities/colours";
 import {
   newRandomPattern,
-  patterns,
   RANDOM_PATTERN_NAME,
 } from "../utilities/vibration-patterns";
 import { AlsoVibrateOnCurrentDeviceCheckBox } from "./send-vibrations/also-vibrate-on-current-device-check-box";
-import { CopyPasswordButton } from "./send-vibrations/copy-password-button";
 import { useHasEnoughTimePassedToHideLoadingIndicator } from "./send-vibrations/use-has-enough-time-to-hide-loading-indicator";
 
 export const SendVibrations = ({ navigation }) => {
@@ -32,6 +32,7 @@ export const SendVibrations = ({ navigation }) => {
     client,
     isConnected,
     error: connectToRoomError,
+    websocketError,
     connectToRoom,
   } = useConnectToRoom();
 
@@ -41,24 +42,15 @@ export const SendVibrations = ({ navigation }) => {
 
   const isLoading = isStillCreatingRoom || !isConnected;
 
-  // TODO make the error handling better (error page maybe?)
-  if (createRoomError) return <Text>An error occurred</Text>;
-  if (connectToRoomError) return <Text>An error occurred</Text>;
+  if (createRoomError || websocketError || connectToRoomError)
+    return <CannotConnectToClient testID="send-vibrations-page" />;
+
+  if (isLoading || !canHideIndicator)
+    return <FullPageLoading testID="send-vibrations-page" />;
 
   return (
     <Background style={ViewStyles.container} testID="send-vibrations-page">
-      {isLoading || !canHideIndicator ? (
-        <>
-          <ActivityIndicator
-            testID="loadingIndicator"
-            size={100}
-            color={cyan}
-          />
-          <Text style={ViewStyles.loadingText}>Setting up connection</Text>
-        </>
-      ) : (
-        <Page connectionKey={password} client={client} />
-      )}
+      <Page connectionKey={password} client={client} />
     </Background>
   );
 };

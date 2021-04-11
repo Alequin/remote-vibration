@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { Background } from "../shared/background";
+import { CannotConnectToClient } from "../shared/cannot-connect-to-client";
+import { FullPageLoading } from "../shared/full-page-loading";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useVibration } from "../shared/use-vibration";
 import { mostRecentRoomKey } from "../utilities/async-storage";
+import * as pageNames from "./page-names";
 import { EnterPasswordContainer } from "./receive-vibrations/enter-password-container";
-import { FullPageLoading } from "./receive-vibrations/full-page-loading";
-import { CopyPasswordButton } from "./send-vibrations/copy-password-button";
+import { ReceivePage } from "./receive-vibrations/receive-page";
 
 export const ReceiveVibrations = ({ navigation }) => {
   const { password, setPassword } = usePassword();
@@ -16,6 +16,7 @@ export const ReceiveVibrations = ({ navigation }) => {
     isLoading,
     isConnected,
     error,
+    websocketError,
     clearError,
     connectToRoom,
   } = useConnectToRoom();
@@ -38,6 +39,14 @@ export const ReceiveVibrations = ({ navigation }) => {
     };
   }, [client]);
 
+  if (websocketError) {
+    return (
+      <CannotConnectToClient
+        onPress={() => navigation.navigate(pageNames.mainMenu)}
+      />
+    );
+  }
+
   if (!isLoading && (!isConnected || error))
     return (
       <EnterPasswordContainer
@@ -56,7 +65,7 @@ export const ReceiveVibrations = ({ navigation }) => {
     return <FullPageLoading testID="receive-vibrations-page" />;
 
   return (
-    <Page
+    <ReceivePage
       testID="receive-vibrations-page"
       connectionKey={password}
       currentVibrationPattern={activePattern}
@@ -77,43 +86,3 @@ const usePassword = () => {
 
   return { password, setPassword };
 };
-
-const Page = ({ connectionKey, testID, currentVibrationPattern }) => {
-  return (
-    <Background testID={testID}>
-      <View>
-        <CopyPasswordButton
-          label="Connected To"
-          connectionKey={connectionKey}
-        />
-      </View>
-      <View style={ViewStyles.currentVibrationContainer}>
-        <Text style={ViewStyles.currentVibrationHeader}>
-          Current Vibration Pattern
-        </Text>
-        <Text style={ViewStyles.currentVibrationText}>
-          {currentVibrationPattern ? currentVibrationPattern.name : "Nothing"}
-        </Text>
-      </View>
-    </Background>
-  );
-};
-
-const ViewStyles = StyleSheet.create({
-  currentVibrationContainer: {
-    height: "60%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  currentVibrationHeader: {
-    color: "black",
-    fontSize: 22,
-    textAlign: "center",
-  },
-  currentVibrationText: {
-    color: "black",
-    fontSize: 24,
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-});
