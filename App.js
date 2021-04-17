@@ -10,8 +10,8 @@ import { SendVibrations } from "./src/pages/send-vibrations";
 import { VibrateOnCurrentPhone } from "./src/pages/vibrate-on-current-phone";
 import { Background } from "./src/shared/background";
 import { Icon } from "./src/shared/icon";
+import { useAppState } from "./src/shared/use-app-state";
 import { spaceCadet } from "./src/utilities/colours";
-import { useAppState } from "./src/utilities/use-app-state";
 
 const Stack = createStackNavigator();
 

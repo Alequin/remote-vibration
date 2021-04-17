@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import Constants from "expo-constants";
+import { useEffect, useState } from "react";
 import { AppState, Vibration } from "react-native";
 import { useCallback } from "react/cjs/react.development";
-import { isStateActive } from "./is-state-active";
-import Constants from "expo-constants";
 import * as asyncStorage from "../utilities/async-storage";
-import { newDeviceKey } from "./new-device-key";
+import { newDeviceKey } from "./use-app-state/new-device-key";
+import { isStateActive } from "./use-app-state/is-state-active";
 
 export const useAppState = () => {
   const { isAppActive, appState } = useAppActiveState();
@@ -39,6 +39,12 @@ const useAppActiveState = () => {
   }, [handleAppStateChange]);
 
   useEffect(() => {
+    if (!isAppActive) {
+      asyncStorage.lastActiveVibrationPattern.clear();
+    }
+  }, [isAppActive]);
+
+  useEffect(() => {
     // Disable all vibration when the app moves to the background
     if (!isAppActive) Vibration.cancel();
   }, [isAppActive]);
@@ -52,7 +58,7 @@ const useIsNewSession = () => {
   const [isNewSession, setIsNewSession] = useState(false);
 
   useEffect(() => {
-    asyncStorage.sessionId.read().then(async (recordedSessionId) => {
+    asyncStorage.sessionId.read().then((recordedSessionId) => {
       const currentSessionId = Constants.sessionId;
       const isNewSession = currentSessionId !== recordedSessionId;
 
@@ -85,5 +91,3 @@ const useDeviceId = () => {
 
   return { deviceId };
 };
-
-Constants.sessionId;

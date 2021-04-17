@@ -323,11 +323,16 @@ describe("App - send vibrations", () => {
     expect(await findByText(`Password:`));
     expect(await findByText(`${MOCK_ROOM_KEY}`));
 
-    // 4. Press play on a vibration pattern
     const exampleConstantVibrationButton = (
       await findAllByTestId("vibration-pattern-option")
     ).find((button) => within(button).getByText("Constant"));
 
+    // 4. Confirm the vibration icon is not showing before pressing the button
+    expect(
+      within(exampleConstantVibrationButton).queryByTestId("vibrateIcon")
+    ).toBe(null);
+
+    // 4. Press play on a vibration pattern
     await act(async () => fireEvent.press(exampleConstantVibrationButton));
 
     // 5. Confirm the pattern was sent
@@ -341,6 +346,11 @@ describe("App - send vibrations", () => {
         },
       })
     );
+
+    // 6. Confirm the vibration icon is showing after pressing the button
+    expect(
+      within(exampleConstantVibrationButton).queryByTestId("vibrateIcon")
+    ).toBeDefined();
   });
 
   it("also vibrates on the current device if check box is ticked", async () => {

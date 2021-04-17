@@ -36,26 +36,38 @@ describe("App - Vibrate on current phone", () => {
     Vibration.cancel.mockClear();
   });
 
-  it.todo("shows the expected buttons");
-
   it("allows the user to play a vibration pattern", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
     moveToVibrateOnCurrentPhonePage(getAllByRole);
 
+    // 1. goes to expected page
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
+    // 2. Find the button to press
     const exampleConstantVibrationButton = getAllByTestId(
       "vibration-pattern-option"
     ).find((option) => within(option).queryByText("Constant"));
 
+    // 3. Confirm the vibration icon is not showing before pressing the button
+    expect(
+      within(exampleConstantVibrationButton).queryByTestId("vibrateIcon")
+    ).toBe(null);
+
+    // 4. Press the button
     act(() => fireEvent.press(exampleConstantVibrationButton));
 
+    // 5. Confirm vibration has started
     expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
     expect(Vibration.vibrate).toHaveBeenCalledWith(
       vibrationPatterns.patterns["Constant"].pattern,
       true
     );
+
+    // 6. Confirm the vibration icon is showing after pressing the button
+    expect(
+      within(exampleConstantVibrationButton).queryByTestId("vibrateIcon")
+    ).toBeDefined();
   });
 
   it("plays a second pattern when selects a different one after a first is active", async () => {
@@ -226,7 +238,7 @@ describe("App - Vibrate on current phone", () => {
         true
       );
     });
-  }, 20_000);
+  });
 });
 
 const moveToVibrateOnCurrentPhonePage = (getAllByRole) => {
