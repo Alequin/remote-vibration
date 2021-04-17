@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react/cjs/react.development";
 import { CopyPasswordButton } from "../../shared/copy-password-button";
 import { Page } from "../../shared/page";
+import { StyledText } from "../../shared/styled-text";
 import { useVibration } from "../../shared/use-vibration";
 import { VibrationPicker } from "../../shared/vibration-picker";
 import { cyan } from "../../utilities/colours";
@@ -15,8 +16,8 @@ import { AlsoVibrateOnCurrentDeviceCheckBox } from "./also-vibrate-on-current-de
 export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
   const [isSendingVibration, setIsSendingVibration] = useState(false);
   const [
-    shouldvibrateOnCurrentDevice,
-    setShouldvibrateOnCurrentDevice,
+    shouldVibrateOnCurrentDevice,
+    setShouldVibrateOnCurrentDevice,
   ] = useState(false);
 
   const {
@@ -25,7 +26,7 @@ export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
     speedModifier,
     setSpeedModifier,
   } = useVibration({
-    disableVibration: !shouldvibrateOnCurrentDevice,
+    disableVibration: !shouldVibrateOnCurrentDevice,
   });
 
   useEffect(() => {
@@ -85,17 +86,11 @@ export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
         }}
       />
       <AlsoVibrateOnCurrentDeviceCheckBox
-        isActive={shouldvibrateOnCurrentDevice}
+        isActive={shouldVibrateOnCurrentDevice}
         onPress={() =>
-          setShouldvibrateOnCurrentDevice(!shouldvibrateOnCurrentDevice)
+          setShouldVibrateOnCurrentDevice(!shouldVibrateOnCurrentDevice)
         }
       />
-      <View style={sendingMessageStyle}>
-        <Text style={ViewStyles.sendingText}>
-          Sending "{activePattern?.name}" to others
-        </Text>
-        <ActivityIndicator testID="loadingIndicator" size={20} color={cyan} />
-      </View>
     </Page>
   );
 };
@@ -109,11 +104,11 @@ const vibrationPatternToSend = (selectedPattern) => {
 
 const ViewStyles = StyleSheet.create({
   container: {
-    paddingTop: 5,
+    paddingTop: 10,
+    paddingBottom: 20,
     alignItems: "center",
   },
   sendingText: {
-    color: "black",
     paddingRight: 10,
     fontSize: 18,
   },

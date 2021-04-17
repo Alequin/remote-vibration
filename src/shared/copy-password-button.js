@@ -3,7 +3,8 @@ import React, { useRef } from "react";
 import { Animated, StyleSheet, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "./icon";
-import { cyan } from "../utilities/colours";
+import { cyan, darkCyan, spaceCadet } from "../utilities/colours";
+import { StyledText } from "./styled-text";
 
 export const CopyPasswordButton = ({ label, connectionKey }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -18,13 +19,6 @@ export const CopyPasswordButton = ({ label, connectionKey }) => {
   };
   return (
     <>
-      <Animated.View
-        style={{
-          opacity: fadeAnim,
-        }}
-      >
-        <Text style={ViewStyles.connectionKeyCopiedMessage}>Copied</Text>
-      </Animated.View>
       <TouchableOpacity
         testID="copyConnectionKeyButton"
         accessibilityRole="button"
@@ -34,10 +28,19 @@ export const CopyPasswordButton = ({ label, connectionKey }) => {
           fadeOut();
         }}
       >
-        <Text style={ViewStyles.connectionKeyTitleText}>{label}:</Text>
+        <StyledText style={ViewStyles.connectionKeyTitleText}>
+          {label}:
+        </StyledText>
         <Text style={ViewStyles.connectionKeyText}>{connectionKey}</Text>
-        <Icon icon="copyToClipboard" size={24} color="black" />
+        <Icon icon="copyToClipboard" size={24} color="white" />
       </TouchableOpacity>
+      <Animated.View
+        style={{
+          opacity: fadeAnim,
+        }}
+      >
+        <Text style={ViewStyles.connectionKeyCopiedMessage}>Copied</Text>
+      </Animated.View>
     </>
   );
 };
@@ -50,20 +53,20 @@ const ViewStyles = StyleSheet.create({
     paddingTop: 5,
   },
   connectionKeyCopiedMessage: {
-    color: cyan,
+    color: spaceCadet,
     fontSize: 14,
   },
   connectionKeyTitleText: {
     marginRight: 5,
-    color: "black",
     fontSize: 20,
   },
   connectionKeyText: {
     marginRight: 5,
-    color: "black",
+    color: darkCyan,
     fontSize: 20,
-    backgroundColor: cyan,
+    backgroundColor: spaceCadet,
     padding: 8,
     borderRadius: 15,
+    fontWeight: "bold",
   },
 });

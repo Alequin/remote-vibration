@@ -1,39 +1,39 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { borderRadius } from "../../shared/border-radius";
+import { StyleSheet, View } from "react-native";
 import { Button } from "../../shared/button";
 import { Icon } from "../../shared/icon";
-import { spaceCadet } from "../../utilities/colours";
+import { textShadow } from "../../shared/text-shadow-style";
+import { StyledText } from "../../shared/styled-text";
 
-export const AlsoVibrateOnCurrentDeviceCheckBox = ({ isActive, onPress }) => {
-  return (
-    <Button style={ViewStyles.container} onPress={onPress}>
-      <View style={ViewStyles.wrapper}>
-        <Text style={ViewStyles.text}>Also vibrate on this device</Text>
-        <Icon
-          icon={isActive ? "checkBoxActive" : "checkBoxInactive"}
-          color="white"
-          size={24}
-        />
-      </View>
-    </Button>
-  );
-};
+export const AlsoVibrateOnCurrentDeviceCheckBox = ({ isActive, onPress }) => (
+  <Button style={ViewStyles.container} onPress={onPress}>
+    <View style={ViewStyles.wrapper}>
+      <StyledText style={ViewStyles.text}>
+        Also vibrate on this device
+      </StyledText>
+      <Icon
+        icon={isActive ? "checkBoxActive" : "checkBoxInactive"}
+        color="white"
+        size={30}
+      />
+    </View>
+  </Button>
+);
 
 const ViewStyles = StyleSheet.create({
   container: {
-    borderRadius,
-    backgroundColor: spaceCadet,
     width: "100%",
-    paddingVertical: 10,
+    padding: 10,
   },
   wrapper: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     padding: 10,
   },
   text: {
     color: "white",
     fontSize: 18,
+    ...textShadow,
   },
 });
