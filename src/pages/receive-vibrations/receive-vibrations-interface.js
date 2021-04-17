@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { CopyPasswordButton } from "../../shared/copy-password-button";
 import { Page } from "../../shared/page";
+import { StyledText } from "../../shared/styled-text";
 
 export const ReceiveVibrationInterface = ({
   connectionKey,
@@ -10,19 +11,14 @@ export const ReceiveVibrationInterface = ({
 }) => {
   return (
     <Page testID={testID} style={ViewStyles.container}>
-      <View>
-        <CopyPasswordButton
-          label="Connected To"
-          connectionKey={connectionKey}
-        />
-      </View>
+      <CopyPasswordButton label="Connected To" connectionKey={connectionKey} />
       <View style={ViewStyles.currentVibrationContainer}>
-        <Text style={ViewStyles.currentVibrationHeader}>
+        <StyledText style={ViewStyles.currentVibrationHeader}>
           Current Vibration Pattern
-        </Text>
-        <Text style={ViewStyles.currentVibrationText}>
+        </StyledText>
+        <StyledText style={ViewStyles.currentVibrationText}>
           {currentVibrationPattern ? currentVibrationPattern.name : "Nothing"}
-        </Text>
+        </StyledText>
       </View>
     </Page>
   );
@@ -31,6 +27,7 @@ export const ReceiveVibrationInterface = ({
 const ViewStyles = StyleSheet.create({
   container: {
     alignItems: "center",
+    padding: "5%",
   },
   currentVibrationContainer: {
     height: "60%",
@@ -38,12 +35,10 @@ const ViewStyles = StyleSheet.create({
     alignItems: "center",
   },
   currentVibrationHeader: {
-    color: "black",
     fontSize: 22,
     textAlign: "center",
   },
   currentVibrationText: {
-    color: "black",
     fontSize: 24,
     textAlign: "center",
     fontWeight: "bold",
