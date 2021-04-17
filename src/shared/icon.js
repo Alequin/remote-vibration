@@ -7,8 +7,9 @@ import {
   MaterialIcons,
   SimpleLineIcons,
 } from "@expo/vector-icons";
+import { camelCase } from "lodash";
 import React from "react";
-import { Text } from "react-native";
+import { View } from "react-native";
 
 export const Icon = ({ icon, ...otherProps }) => {
   const IconToRender = ICON_OPTIONS[icon];
@@ -16,86 +17,49 @@ export const Icon = ({ icon, ...otherProps }) => {
     throw new Error(`Unable to find an icon by the name ${icon}`);
   return <IconToRender {...otherProps} />;
 };
+
+const customIcon = (IconSourceElement, iconName) => ({
+  size,
+  color,
+  style,
+  ...otherProps
+}) => (
+  <TestIdElement testID={`${camelCase(iconName)}Icon`} style={style}>
+    <IconSourceElement
+      name={iconName}
+      size={size}
+      color={color}
+      {...otherProps}
+    />
+  </TestIdElement>
+);
+
 const ICON_OPTIONS = {
-  vibrate: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="vibrateIcon" {...otherProps}>
-      <MaterialCommunityIcons name="vibrate" size={size} color={color} />
-    </TestWrapper>
-  ),
-  link: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="linkIcon" {...otherProps}>
-      <Entypo name="link" size={size} color={color} />
-    </TestWrapper>
-  ),
-  backArrow: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="backArrowIcon" {...otherProps}>
-      <Ionicons name="arrow-back-sharp" size={size} color={color} />
-    </TestWrapper>
-  ),
-  play: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="playIcon" {...otherProps}>
-      <Feather name="play" size={size} color={color} />
-    </TestWrapper>
-  ),
-  checkBoxActive: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="checkBoxActiveIcon" {...otherProps}>
-      <MaterialIcons name="check-box" size={size} color={color} />
-    </TestWrapper>
-  ),
-  checkBoxInactive: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="checkBoxInactiveIcon" {...otherProps}>
-      <MaterialIcons name="check-box-outline-blank" size={size} color={color} />
-    </TestWrapper>
-  ),
-  locked: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="lockedIcon" {...otherProps}>
-      <SimpleLineIcons name="lock" size={size} color={color} />
-    </TestWrapper>
-  ),
-  unlocked: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="unlockedIcon" {...otherProps}>
-      <SimpleLineIcons name="lock-open" size={size} color={color} />
-    </TestWrapper>
-  ),
-  wifi: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="wifiIcon" {...otherProps}>
-      <FontAwesome5 name="wifi" size={size} color={color} />
-    </TestWrapper>
-  ),
-  connectedPeople: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="connectedPeopleIcon" {...otherProps}>
-      <MaterialIcons name="connect-without-contact" size={size} color={color} />
-    </TestWrapper>
-  ),
-  copyToClipboard: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="copyToClipboardIcon" {...otherProps}>
-      <MaterialIcons name="content-copy" size={size} color={color} />
-    </TestWrapper>
-  ),
-  pasteFromClipboard: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="pasteFromClipboardIcon" {...otherProps}>
-      <MaterialIcons name="content-paste" size={size} color={color} />
-    </TestWrapper>
-  ),
-  create: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="createIcon" {...otherProps}>
-      <Ionicons name="create-outline" size={size} color={color} />
-    </TestWrapper>
-  ),
-  cancel: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="cancelIcon" {...otherProps}>
-      <MaterialIcons name="cancel" size={size} color={color} />
-    </TestWrapper>
-  ),
+  vibrate: customIcon(MaterialCommunityIcons, "vibrate"),
+  link: customIcon(Entypo, "link"),
+  backArrow: customIcon(Ionicons, "arrow-back-sharp"),
+  play: customIcon(Feather, "play"),
+  checkBoxActive: customIcon(MaterialIcons, "check-box"),
+
+  checkBoxInactive: customIcon(MaterialIcons, "check-box-outline-blank"),
+
+  locked: customIcon(SimpleLineIcons, "lock"),
+  unlocked: customIcon(SimpleLineIcons, "lock-open"),
+  wifi: customIcon(FontAwesome5, "wifi"),
+  connectedPeople: customIcon(MaterialIcons, "connect-without-contact"),
+  copyToClipboard: customIcon(MaterialIcons, "content-copy"),
+  pasteFromClipboard: customIcon(MaterialIcons, "content-paste"),
+  create: customIcon(Ionicons, "create-outline"),
+  cancel: customIcon(MaterialIcons, "cancel"),
   blankSpace: ({ size, color, ...otherProps }) => (
-    <TestWrapper testID="blankSpaceIcon" {...otherProps}>
-      <MaterialIcons
-        name="check-box-outline-blank"
-        size={size}
-        color="transparent"
-      />
-    </TestWrapper>
+    <MaterialIcons
+      name="check-box-outline-blank"
+      size={size}
+      color="transparent"
+    >
+      <TestIdElement testID="blankSpaceIcon" {...otherProps} />
+    </MaterialIcons>
   ),
 };
 
-const TestWrapper = (props) => <Text {...props} />;
+const TestIdElement = (props) => <View {...props} />;

@@ -7,7 +7,7 @@ import * as pageNames from "./src/pages/page-names";
 
 describe("App - Menu", () => {
   it("displays the expected menu buttons by default", async () => {
-    const { getAllByRole } = render(<AppRouter />);
+    const { getAllByRole, getAllByTestId, debug } = render(<AppRouter />);
 
     const buttons = getAllByRole("button");
 
@@ -15,16 +15,14 @@ describe("App - Menu", () => {
       within(button).queryByText(pageNames.vibrateOnCurrentPhone)
     );
     expect(makeCurrentPhoneVibrateButton).toBeDefined();
-    expect(
-      within(makeCurrentPhoneVibrateButton).getByTestId("vibrateIcon")
-    ).toBeDefined();
+    expect(getAllByTestId("vibrateIcon")).toBeDefined();
 
     const receiveVibrationsButton = buttons.find((button) =>
       within(button).queryByText(pageNames.receiveVibrations)
     );
     expect(receiveVibrationsButton).toBeDefined();
     expect(
-      within(receiveVibrationsButton).getByTestId("connectedPeopleIcon")
+      within(receiveVibrationsButton).getByTestId("connectWithoutContactIcon")
     ).toBeDefined();
 
     const sendVibrationsButton = buttons.find((button) =>

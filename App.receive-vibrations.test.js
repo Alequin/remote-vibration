@@ -193,9 +193,7 @@ describe("App - receive vibrations", () => {
     jest
       .spyOn(Clipboard, "getStringAsync")
       .mockResolvedValue("pasted password");
-    await act(async () =>
-      fireEvent.press(getByTestId("pasteFromClipboardIcon"))
-    );
+    await act(async () => fireEvent.press(getByTestId("contentPasteIcon")));
 
     // 6. Confirm the input was updated
     const input = getByPlaceholderText("Password");

@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { Icon } from "./icon";
 import { Button, ButtonText } from "./button";
 import { useMemo } from "react";
+import { spaceCadet } from "../utilities/colours";
 
 export const MenuButton = ({ icon, children, style, ...otherProps }) => {
   const buttonStyle = useMemo(() => ({ ...ViewStyles.menuButton, ...style }), [
@@ -11,31 +12,31 @@ export const MenuButton = ({ icon, children, style, ...otherProps }) => {
 
   return (
     <Button style={buttonStyle} {...otherProps}>
-      <View style={ViewStyles.innerButton}>
-        <Icon
-          color="white"
-          icon={icon}
-          style={ViewStyles.buttonIcon}
-          size={32}
-        />
-        <ButtonText>{children}</ButtonText>
-      </View>
+      <Icon style={ViewStyles.buttonIcon} color="white" icon={icon} size={50} />
+      <ButtonText style={ViewStyles.buttonText}>{children}</ButtonText>
     </Button>
   );
 };
 
 const ViewStyles = StyleSheet.create({
   menuButton: {
-    width: "100%",
-    height: "20%",
-  },
-  innerButton: {
-    height: "100%",
-    flexDirection: "column",
+    width: "60%",
+    alignItems: "center",
     justifyContent: "center",
   },
   buttonIcon: {
-    textAlign: "center",
-    marginBottom: "3%",
+    backgroundColor: spaceCadet,
+    width: 125,
+    height: 125,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 100,
+    marginBottom: "5%",
+  },
+  buttonText: {
+    fontWeight: "bold",
+    fontSize: 19,
+    textShadowColor: "black",
+    textShadowRadius: 4,
   },
 });

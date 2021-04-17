@@ -2,20 +2,12 @@ import React, { useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SerifText } from "./serif-text";
 import { spaceCadet } from "../utilities/colours";
-import { borderRadius } from "./border-radius";
 
-export const Button = ({ style: customStyles, children, ...otherProps }) => {
-  const buttonStyle = useMemo(
-    () => ({ ...ViewStyles.button, ...customStyles }),
-    [customStyles]
-  );
-
+export const Button = ({ children, ...otherProps }) => {
   return (
-    <View style={buttonStyle} accessibilityRole="button">
-      <TouchableOpacity {...otherProps} style={ViewStyles.innerButton}>
-        {children}
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity accessibilityRole="button" {...otherProps}>
+      {children}
+    </TouchableOpacity>
   );
 };
 
@@ -28,15 +20,6 @@ export const ButtonText = ({ style, ...otherProps }) => {
 };
 
 const ViewStyles = StyleSheet.create({
-  button: {
-    backgroundColor: spaceCadet,
-    borderColor: "white",
-    borderWidth: 1,
-    borderRadius,
-  },
-  innerButton: {
-    width: "100%",
-  },
   buttonText: {
     color: "white",
     textAlign: "center",

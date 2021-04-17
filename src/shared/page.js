@@ -17,5 +17,5 @@ const usePageStyles = (style = {}) =>
   );
 
 const ViewStyles = StyleSheet.create({
-  page: { height: "100%" },
+  page: { height: "100%", width: "100%" },
 });

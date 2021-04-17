@@ -167,16 +167,16 @@ describe("App - Vibrate on current phone", () => {
       "vibration-pattern-option"
     ).find((option) => within(option).queryByText("Constant"));
 
-    act(() => fireEvent.press(exampleConstantVibrationButton));
+    await act(async () => fireEvent.press(exampleConstantVibrationButton));
 
     const backButton = getAllByRole("button").find((option) =>
-      within(option).queryByTestId("backArrowIcon")
+      within(option).queryByTestId("arrowBackSharpIcon")
     );
 
     AsyncStorage.setItem.mockClear();
-    act(() => fireEvent.press(backButton));
+    await act(async () => fireEvent.press(backButton));
 
-    await waitForExpect(() => {
+    await waitFor(() => {
       expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         "LAST_ACTIVE_LOCAL_VIBRATION",
@@ -199,39 +199,37 @@ describe("App - Vibrate on current phone", () => {
     // 1. Start a vibration pattern
     await act(async () => fireEvent.press(exampleConstantVibrationButton));
     const backButton = getAllByRole("button").find((option) =>
-      within(option).queryByTestId("backArrowIcon")
+      within(option).queryByTestId("arrowBackSharpIcon")
     );
 
     AsyncStorage.setItem.mockClear();
     // 2. Move off the current page back to the main menu
-    act(() => fireEvent.press(backButton));
+    await act(async () => fireEvent.press(backButton));
 
     // 3. Confirm pattern was saved
     const expectedSavedData =
       '{"name":"Constant","pattern":[0,9007199254740991000],"runTime":9007199254740991000}';
-    await waitForExpect(() => {
+    await waitFor(() => {
       expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         "LAST_ACTIVE_LOCAL_VIBRATION",
         expectedSavedData
       );
+
+      AsyncStorage.getItem.mockClear();
+      AsyncStorage.getItem.mockResolvedValue(expectedSavedData);
     });
 
-    AsyncStorage.getItem.mockClear();
-    AsyncStorage.getItem.mockResolvedValue(expectedSavedData);
     // 4. Return to current page
     moveToVibrateOnCurrentPhonePage(getAllByRole);
 
-    Vibration.vibrate.mockClear();
     // 5. See that the last pattern is loaded
-    await waitForExpect(() => {
+    Vibration.vibrate.mockClear();
+    await waitFor(() => {
       expect(AsyncStorage.getItem).toHaveBeenCalledTimes(1);
       expect(AsyncStorage.getItem).toHaveBeenCalledWith(
         "LAST_ACTIVE_LOCAL_VIBRATION"
       );
-    });
-
-    await waitForExpect(() => {
       expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
       expect(Vibration.vibrate).toHaveBeenCalledWith(
         vibrationPatterns.patterns["Constant"].pattern,
