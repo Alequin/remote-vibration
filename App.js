@@ -26,37 +26,39 @@ const App = () => {
 };
 
 export const AppRouter = ({ appState }) => (
-  <AppContext.Provider value={{ ...appState }}>
-    <View style={{ width: "100%", height: "100%" }}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={pageNames.mainMenu}
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: spaceCadet,
-            },
-            headerTitleStyle: {
-              color: "white",
-            },
-            headerBackImage: () => (
-              <Icon icon="backArrow" size={32} color="white" />
-            ),
-          }}
-        >
-          {menuPage()}
-          {vibrateOnCurrentPhonePage()}
-          {sendVibrationsPage()}
-          {receiveVibrationsPage()}
-        </Stack.Navigator>
-      </NavigationContainer>
-      {/* <AdMobBanner
+  <Background>
+    <AppContext.Provider value={{ ...appState }}>
+      <View style={{ width: "100%", height: "100%" }}>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName={pageNames.mainMenu}
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: spaceCadet,
+              },
+              headerTitleStyle: {
+                color: "white",
+              },
+              headerBackImage: () => (
+                <Icon icon="backArrow" size={32} color="white" />
+              ),
+            }}
+          >
+            {menuPage()}
+            {vibrateOnCurrentPhonePage()}
+            {sendVibrationsPage()}
+            {receiveVibrationsPage()}
+          </Stack.Navigator>
+        </NavigationContainer>
+        {/* <AdMobBanner
         bannerSize="fullBanner"
         adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
         servePersonalizedAds // true or false
         onDidFailToReceiveAdWithError={this.bannerError}
       /> */}
-    </View>
-  </AppContext.Provider>
+      </View>
+    </AppContext.Provider>
+  </Background>
 );
 
 const menuPage = () => (

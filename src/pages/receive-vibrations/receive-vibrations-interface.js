@@ -1,15 +1,15 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Background } from "../../shared/background";
 import { CopyPasswordButton } from "../../shared/copy-password-button";
+import { Page } from "../../shared/page";
 
-export const ReceivePage = ({
+export const ReceiveVibrationInterface = ({
   connectionKey,
   testID,
   currentVibrationPattern,
 }) => {
   return (
-    <Background testID={testID}>
+    <Page testID={testID} style={ViewStyles.container}>
       <View>
         <CopyPasswordButton
           label="Connected To"
@@ -24,11 +24,14 @@ export const ReceivePage = ({
           {currentVibrationPattern ? currentVibrationPattern.name : "Nothing"}
         </Text>
       </View>
-    </Background>
+    </Page>
   );
 };
 
 const ViewStyles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+  },
   currentVibrationContainer: {
     height: "60%",
     justifyContent: "center",

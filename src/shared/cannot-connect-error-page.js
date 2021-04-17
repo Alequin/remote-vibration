@@ -1,14 +1,14 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Background } from "./background";
 import { Button, ButtonText } from "./button";
+import { Page } from "./page";
 import { useCheckInternetAccessOnMount } from "./use-check-internet-access-on-mount";
 
 export const CannotConnectErrorPage = ({ testID, onPress }) => {
   const hasInternetAccess = useCheckInternetAccessOnMount();
 
   return (
-    <Background testID={testID}>
+    <Page testID={testID}>
       <View style={ViewStyles.container}>
         <Text style={ViewStyles.headerText}>Oops</Text>
         <Text style={ViewStyles.text}>
@@ -24,7 +24,7 @@ export const CannotConnectErrorPage = ({ testID, onPress }) => {
           </Text>
         )}
       </View>
-    </Background>
+    </Page>
   );
 };
 

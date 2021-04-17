@@ -6,16 +6,63 @@ import { useVibration } from "../shared/use-vibration";
 import { mostRecentRoomKey } from "../utilities/async-storage";
 import * as pageNames from "./page-names";
 import { EnterPasswordContainer } from "./receive-vibrations/enter-password-container";
-import { ReceivePage } from "./receive-vibrations/receive-page";
+import { ReceiveVibrationInterface } from "./receive-vibrations/receive-vibrations-interface";
 
 export const ReceiveVibrations = ({ navigation }) => {
+  const {
+    activePattern,
+    password,
+    setPassword,
+    clearError,
+    connectToRoom,
+    connectToRoomError,
+    shouldShowErrorPage,
+    shouldShowPasswordInput,
+    shouldShowLoadingIndicator,
+  } = useReceiveVibrations();
+
+  if (shouldShowErrorPage) {
+    return (
+      <CannotConnectErrorPage
+        onPress={() => navigation.navigate(pageNames.mainMenu)}
+      />
+    );
+  }
+
+  if (shouldShowPasswordInput)
+    return (
+      <EnterPasswordContainer
+        testID="receive-vibrations-page"
+        password={password}
+        error={connectToRoomError}
+        onChangeText={(newPassword) => {
+          setPassword(newPassword);
+          clearError();
+        }}
+        onPressConnect={() => connectToRoom(password)}
+      />
+    );
+
+  if (shouldShowLoadingIndicator)
+    return <FullPageLoading testID="receive-vibrations-page" />;
+
+  return (
+    <ReceiveVibrationInterface
+      testID="receive-vibrations-page"
+      connectionKey={password}
+      currentVibrationPattern={activePattern}
+    />
+  );
+};
+
+const useReceiveVibrations = () => {
   const { password, setPassword } = usePassword();
 
   const {
     client,
     isLoading,
     isConnected,
-    error,
+    error: connectToRoomError,
     websocketError,
     clearError,
     connectToRoom,
@@ -39,38 +86,27 @@ export const ReceiveVibrations = ({ navigation }) => {
     };
   }, [client]);
 
-  if (websocketError) {
-    return (
-      <CannotConnectErrorPage
-        onPress={() => navigation.navigate(pageNames.mainMenu)}
-      />
-    );
-  }
+  const shouldShowErrorPage = websocketError;
 
-  if (!isLoading && (!isConnected || error))
-    return (
-      <EnterPasswordContainer
-        testID="receive-vibrations-page"
-        password={password}
-        error={error}
-        onChangeText={(newPassword) => {
-          setPassword(newPassword);
-          clearError();
-        }}
-        onPressConnect={() => connectToRoom(password)}
-      />
-    );
+  const shouldShowPasswordInput =
+    !isLoading && (!isConnected || connectToRoomError);
 
-  if (!isConnected && isLoading)
-    return <FullPageLoading testID="receive-vibrations-page" />;
+  const shouldShowLoadingIndicator = !isConnected && isLoading;
 
-  return (
-    <ReceivePage
-      testID="receive-vibrations-page"
-      connectionKey={password}
-      currentVibrationPattern={activePattern}
-    />
-  );
+  return {
+    activePattern,
+    password,
+    setPassword,
+    clearError,
+    connectToRoomError,
+    connectToRoom,
+    shouldShowErrorPage: shouldShowErrorPage,
+    shouldShowPasswordInput: !shouldShowErrorPage && shouldShowPasswordInput,
+    shouldShowLoadingIndicator:
+      !shouldShowErrorPage &&
+      !shouldShowPasswordInput &&
+      shouldShowLoadingIndicator,
+  };
 };
 
 const usePassword = () => {

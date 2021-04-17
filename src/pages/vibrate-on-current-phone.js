@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Background } from "../shared/background";
+import { Page } from "../shared/page";
 import { useVibration } from "../shared/use-vibration";
 import { VibrationPicker } from "../shared/vibration-picker";
 import { lastActiveVibrationPattern } from "../utilities/async-storage";
@@ -26,7 +26,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
   );
 
   return (
-    <Background testID="vibrate-on-current-phone-page">
+    <Page testID="vibrate-on-current-phone-page">
       <VibrationPicker
         listHeight="90%"
         activeVibrationName={activePattern?.name}
@@ -40,6 +40,6 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
           setActivePattern(pattern);
         }}
       />
-    </Background>
+    </Page>
   );
 };

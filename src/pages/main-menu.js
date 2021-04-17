@@ -1,11 +1,10 @@
 import React from "react";
-import { StyleSheet } from "react-native";
-import { Background } from "../shared/background";
+import { StyleSheet, View } from "react-native";
 import { MenuButton } from "../shared/menu-button";
 import * as pageNames from "./page-names";
 
 export const MainMenu = ({ navigation }) => (
-  <Background testID="main-menu-page">
+  <View testID="main-menu-page">
     <MenuButton
       style={ViewStyles.button}
       icon="vibrate"
@@ -27,7 +26,7 @@ export const MainMenu = ({ navigation }) => (
     >
       {pageNames.sendVibrations}
     </MenuButton>
-  </Background>
+  </View>
 );
 
 const ViewStyles = StyleSheet.create({

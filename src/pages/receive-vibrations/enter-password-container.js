@@ -3,10 +3,10 @@ import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Background } from "../../shared/background";
 import { borderRadius } from "../../shared/border-radius";
 import { Button } from "../../shared/button";
 import { Icon } from "../../shared/icon";
+import { Page } from "../../shared/page";
 import { mostRecentRoomKey } from "../../utilities/async-storage";
 
 export const EnterPasswordContainer = ({
@@ -26,7 +26,7 @@ export const EnterPasswordContainer = ({
   }, [isButtonDisabled]);
 
   return (
-    <Background testID={testID}>
+    <Page testID={testID}>
       <View style={ViewStyles.keyInputContainer}>
         <Text style={ViewStyles.keyText}>
           Enter a password to receive vibrations
@@ -53,7 +53,7 @@ export const EnterPasswordContainer = ({
           </>
         )}
       </View>
-    </Background>
+    </Page>
   );
 };
 

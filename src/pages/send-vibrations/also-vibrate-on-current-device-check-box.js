@@ -25,9 +25,7 @@ const ViewStyles = StyleSheet.create({
     borderRadius,
     backgroundColor: spaceCadet,
     width: "100%",
-    marginHorizontal: 20,
-    marginTop: 5,
-    padding: 10,
+    paddingVertical: 10,
   },
   wrapper: {
     flexDirection: "row",

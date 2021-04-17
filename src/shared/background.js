@@ -20,11 +20,8 @@ export const Background = ({ style, children, ...otherProps }) => {
 const ViewStyles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
+    height: "100%",
     backgroundColor: "white",
     alignItems: "center",
-    paddingTop: "2%",
-    paddingBottom: "2%",
-    paddingLeft: "5%",
-    paddingRight: "5%",
   },
 });

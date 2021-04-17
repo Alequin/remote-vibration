@@ -1,12 +1,12 @@
 import React from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 import { cyan } from "../utilities/colours";
-import { Background } from "./background";
+import { Page } from "./page";
 
 export const FullPageLoading = ({ testID }) => (
-  <Background testID={testID} style={ViewStyles.container}>
+  <Page testID={testID} style={ViewStyles.container}>
     <ActivityIndicator testID="loadingIndicator" size={200} color={cyan} />
-  </Background>
+  </Page>
 );
 
 const ViewStyles = StyleSheet.create({
