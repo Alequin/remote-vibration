@@ -7,7 +7,7 @@ import { MainMenu } from "./src/pages/main-menu";
 import * as pageNames from "./src/pages/page-names";
 import { ReceiveVibrations } from "./src/pages/receive-vibrations";
 import { SendVibrations } from "./src/pages/send-vibrations";
-import { VibrateOnCurrentPhone } from "./src/pages/vibrate-on-current-phone";
+import { vibrateOnCurrentDevice } from "./src/pages/vibrate-on-current-phone";
 import { withBackground } from "./src/shared/background";
 import { Icon } from "./src/shared/icon";
 import { useAppState } from "./src/shared/use-app-state";
@@ -49,7 +49,7 @@ export const AppRouter = ({ appState }) => (
           }}
         >
           {menuPage()}
-          {vibrateOnCurrentPhonePage()}
+          {vibrateOnCurrentDevicePage()}
           {sendVibrationsPage()}
           {receiveVibrationsPage()}
         </Stack.Navigator>
@@ -68,10 +68,10 @@ const menuPage = () => (
   <Stack.Screen name={" "} component={withBackground(MainMenu)} />
 );
 
-const vibrateOnCurrentPhonePage = () => (
+const vibrateOnCurrentDevicePage = () => (
   <Stack.Screen
-    name={pageNames.vibrateOnCurrentPhone}
-    component={withBackground(VibrateOnCurrentPhone)}
+    name={pageNames.vibrateOnCurrentDevice}
+    component={withBackground(vibrateOnCurrentDevice)}
   />
 );
 

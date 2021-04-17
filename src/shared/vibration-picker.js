@@ -2,10 +2,12 @@ import Slider from "@react-native-community/slider";
 import { round } from "lodash";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { cyan, spaceCadet } from "../utilities/colours";
+import { cyan } from "../utilities/colours";
 import { patterns } from "../utilities/vibration-patterns";
 import { borderRadius } from "./border-radius";
+import { Icon } from "./icon";
 import { PatternList } from "./pattern-list";
+import { textShadow } from "./text-shadow-style";
 
 export const VibrationPicker = ({
   onChangeVibrationSpeed,
@@ -50,15 +52,20 @@ const SpeedSelector = ({
   onSlidingComplete,
   onValueChange,
 }) => {
+  const sliderText = `Speed ${speedModifier.toFixed(1)}X`;
+
   return (
     <View style={ViewStyles.speedSelectorContainer}>
-      <Text style={ViewStyles.sliderText}>{`Speed ${speedModifier}X`}</Text>
+      <View style={ViewStyles.sliderTextContainer}>
+        <Icon icon={pickSpeedIcon(speedModifier)} color="white" size={32} />
+        <Text style={ViewStyles.sliderText}>{sliderText}</Text>
+      </View>
       <Slider
         testID="speed-slider"
         style={ViewStyles.slider}
         minimumValue={0.1}
         value={speedModifier}
-        maximumValue={4}
+        maximumValue={3}
         thumbTintColor={cyan}
         minimumTrackTintColor="white"
         maximumTrackTintColor="white"
@@ -70,11 +77,25 @@ const SpeedSelector = ({
   );
 };
 
+const pickSpeedIcon = (speed) => {
+  if (speed < 1) return "speedometerSlow";
+  if (speed >= 2) return "speedometerFast";
+  return "speedometerMedium";
+};
+
 const ViewStyles = StyleSheet.create({
+  sliderTextContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   sliderText: {
     color: "white",
-    fontSize: 20,
+    fontSize: 21,
     textAlign: "center",
+    flexDirection: "row",
+    marginLeft: 5,
+    ...textShadow,
   },
   slider: {
     marginTop: 10,
@@ -88,7 +109,6 @@ const ViewStyles = StyleSheet.create({
   },
   speedSelectorContainer: {
     width: "100%",
-    backgroundColor: spaceCadet,
     borderRadius,
     padding: 20,
   },

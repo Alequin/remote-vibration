@@ -12,7 +12,7 @@ describe("App - Menu", () => {
     const buttons = getAllByRole("button");
 
     const makeCurrentPhoneVibrateButton = buttons.find((button) =>
-      within(button).queryByText(pageNames.vibrateOnCurrentPhone)
+      within(button).queryByText(pageNames.vibrateOnCurrentDevice)
     );
     expect(makeCurrentPhoneVibrateButton).toBeDefined();
     expect(getAllByTestId("vibrateIcon")).toBeDefined();

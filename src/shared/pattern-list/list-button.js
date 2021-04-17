@@ -4,12 +4,12 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { darkSpaceCadet, spaceCadet } from "../../utilities/colours";
 import { borderRadius } from "../border-radius";
 import { Icon } from "../icon";
+import { textShadow } from "../text-shadow-style";
 
 export const ListButton = ({ item, onPress, isActiveButton }) => {
   const buttonStyle = useMemo(
     () => ({
       ...ViewStyles.listButton,
-      backgroundColor: isActiveButton ? darkSpaceCadet : spaceCadet,
     }),
     [isActiveButton]
   );
@@ -18,7 +18,7 @@ export const ListButton = ({ item, onPress, isActiveButton }) => {
     () => ({
       ...ViewStyles.listButtonText,
       fontWeight: isActiveButton ? "bold" : "normal",
-      fontSize: isActiveButton ? 24 : 20,
+      fontSize: isActiveButton ? 22 : 21,
     }),
     [isActiveButton]
   );
@@ -32,7 +32,7 @@ export const ListButton = ({ item, onPress, isActiveButton }) => {
         onPress={() => onPress(item)}
       >
         <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-          <Icon icon="play" color="white" size={24} />
+          <Icon icon="play" color="white" size={26} />
           <Text style={buttonTextStyle}>{item.name}</Text>
         </View>
         <View
@@ -42,7 +42,7 @@ export const ListButton = ({ item, onPress, isActiveButton }) => {
             justifyContent: "flex-end",
           }}
         >
-          {isActiveButton && <Icon icon="vibrate" color="white" size={24} />}
+          {isActiveButton && <Icon icon="vibrate" color="white" size={32} />}
         </View>
       </TouchableWithoutFeedback>
     </View>
@@ -68,7 +68,6 @@ const ViewStyles = StyleSheet.create({
   listButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: spaceCadet,
     height: 60,
     justifyContent: "center",
     paddingHorizontal: "5%",
@@ -76,7 +75,8 @@ const ViewStyles = StyleSheet.create({
   listButtonText: {
     color: "white",
     textAlign: "center",
-    fontSize: 20,
+    fontSize: 22,
     paddingLeft: "5%",
+    ...textShadow,
   },
 });

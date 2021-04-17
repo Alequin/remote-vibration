@@ -10,6 +10,7 @@ import {
 import { camelCase } from "lodash";
 import React from "react";
 import { View } from "react-native";
+import { textShadow } from "./text-shadow-style";
 
 export const Icon = ({ icon, ...otherProps }) => {
   const IconToRender = ICON_OPTIONS[icon];
@@ -29,6 +30,7 @@ const customIcon = (IconSourceElement, iconName) => ({
       name={iconName}
       size={size}
       color={color}
+      style={{ ...textShadow }}
       {...otherProps}
     />
   </TestIdElement>
@@ -40,9 +42,7 @@ const ICON_OPTIONS = {
   backArrow: customIcon(Ionicons, "arrow-back-sharp"),
   play: customIcon(Feather, "play"),
   checkBoxActive: customIcon(MaterialIcons, "check-box"),
-
   checkBoxInactive: customIcon(MaterialIcons, "check-box-outline-blank"),
-
   locked: customIcon(SimpleLineIcons, "lock"),
   unlocked: customIcon(SimpleLineIcons, "lock-open"),
   wifi: customIcon(FontAwesome5, "wifi"),
@@ -51,6 +51,10 @@ const ICON_OPTIONS = {
   pasteFromClipboard: customIcon(MaterialIcons, "content-paste"),
   create: customIcon(Ionicons, "create-outline"),
   cancel: customIcon(MaterialIcons, "cancel"),
+  playSpeed: customIcon(MaterialCommunityIcons, "play-speed"),
+  speedometerSlow: customIcon(MaterialCommunityIcons, "speedometer-slow"),
+  speedometerMedium: customIcon(MaterialCommunityIcons, "speedometer-medium"),
+  speedometerFast: customIcon(MaterialCommunityIcons, "speedometer"),
   blankSpace: ({ size, color, ...otherProps }) => (
     <MaterialIcons
       name="check-box-outline-blank"

@@ -4,6 +4,7 @@ import { Icon } from "./icon";
 import { Button, ButtonText } from "./button";
 import { useMemo } from "react";
 import { spaceCadet } from "../utilities/colours";
+import { textShadow } from "./text-shadow-style";
 
 export const MenuButton = ({ icon, children, style, ...otherProps }) => {
   const buttonStyle = useMemo(() => ({ ...ViewStyles.menuButton, ...style }), [
@@ -36,7 +37,6 @@ const ViewStyles = StyleSheet.create({
   buttonText: {
     fontWeight: "bold",
     fontSize: 19,
-    textShadowColor: "black",
-    textShadowRadius: 4,
+    ...textShadow,
   },
 });

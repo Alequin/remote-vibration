@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { MenuButton } from "../shared/menu-button";
 import { Page } from "../shared/page";
 import * as pageNames from "./page-names";
@@ -9,9 +9,9 @@ export const MainMenu = ({ navigation }) => (
     <MenuButton
       style={ViewStyles.button}
       icon="vibrate"
-      onPress={() => navigation.navigate(pageNames.vibrateOnCurrentPhone)}
+      onPress={() => navigation.navigate(pageNames.vibrateOnCurrentDevice)}
     >
-      {pageNames.vibrateOnCurrentPhone}
+      {pageNames.vibrateOnCurrentDevice}
     </MenuButton>
     <MenuButton
       style={ViewStyles.button}
