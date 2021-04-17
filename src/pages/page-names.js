@@ -1,6 +1,6 @@
 export const mainMenu = "Menu";
 
-export const vibrateOnCurrentPhone = "Vibrate On Current Phone";
+export const vibrateOnCurrentDevice = "Vibrate On Current Device";
 
 export const receiveVibrations = "Receive Vibrations";
 

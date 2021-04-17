@@ -27,6 +27,7 @@ import React from "React";
 import { Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
+import { vibrateOnCurrentDevice } from "./src/pages/page-names";
 import { newVibrationPattern } from "./src/utilities/new-vibration-pattern";
 import * as vibrationPatterns from "./src/utilities/vibration-patterns";
 
@@ -39,7 +40,7 @@ describe("App - Vibrate on current phone", () => {
   it("allows the user to play a vibration pattern", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
+    moveTovibrateOnCurrentDevicePage(getAllByRole);
 
     // 1. goes to expected page
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
@@ -73,7 +74,7 @@ describe("App - Vibrate on current phone", () => {
   it("plays a second pattern when selects a different one after a first is active", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
+    moveTovibrateOnCurrentDevicePage(getAllByRole);
 
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
@@ -105,7 +106,7 @@ describe("App - Vibrate on current phone", () => {
   it("stops vibrating when same option is selected twice", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
+    moveTovibrateOnCurrentDevicePage(getAllByRole);
 
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
@@ -131,7 +132,7 @@ describe("App - Vibrate on current phone", () => {
 
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
+    moveTovibrateOnCurrentDevicePage(getAllByRole);
 
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
@@ -159,7 +160,7 @@ describe("App - Vibrate on current phone", () => {
   it("saves the current vibration pattern name when returning to the main menu", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
+    moveTovibrateOnCurrentDevicePage(getAllByRole);
 
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
@@ -185,10 +186,10 @@ describe("App - Vibrate on current phone", () => {
     });
   });
 
-  it("loads the current vibration pattern when returning to 'Vibrate on current phone'", async () => {
+  it("loads the current vibration pattern when returning to 'Vibrate on current device'", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
+    moveTovibrateOnCurrentDevicePage(getAllByRole);
 
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
@@ -221,7 +222,7 @@ describe("App - Vibrate on current phone", () => {
     });
 
     // 4. Return to current page
-    moveToVibrateOnCurrentPhonePage(getAllByRole);
+    moveTovibrateOnCurrentDevicePage(getAllByRole);
 
     // 5. See that the last pattern is loaded
     Vibration.vibrate.mockClear();
@@ -239,11 +240,11 @@ describe("App - Vibrate on current phone", () => {
   });
 });
 
-const moveToVibrateOnCurrentPhonePage = (getAllByRole) => {
+const moveTovibrateOnCurrentDevicePage = (getAllByRole) => {
   const menuButtons = getAllByRole("button");
 
   const makeCurrentPhoneVibrateButton = menuButtons.find((button) =>
-    within(button).queryByText("Vibrate On Current Phone")
+    within(button).queryByText(vibrateOnCurrentDevice)
   );
 
   return act(() => fireEvent.press(makeCurrentPhoneVibrateButton));

@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
+import { StyleSheet } from "react-native";
 import { Page } from "../shared/page";
 import { useVibration } from "../shared/use-vibration";
 import { VibrationPicker } from "../shared/vibration-picker";
 import { lastActiveVibrationPattern } from "../utilities/async-storage";
 
-export const VibrateOnCurrentPhone = ({ navigation }) => {
+export const vibrateOnCurrentDevice = ({ navigation }) => {
   const { activePattern, setActivePattern, setSpeedModifier } = useVibration({
     disableVibration: false,
   });
@@ -26,7 +27,7 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
   );
 
   return (
-    <Page testID="vibrate-on-current-phone-page">
+    <Page testID="vibrate-on-current-phone-page" style={ViewStyles.container}>
       <VibrationPicker
         listHeight="90%"
         activeVibrationName={activePattern?.name}
@@ -43,3 +44,9 @@ export const VibrateOnCurrentPhone = ({ navigation }) => {
     </Page>
   );
 };
+
+const ViewStyles = StyleSheet.create({
+  container: {
+    paddingBottom: "10%",
+  },
+});

@@ -1,11 +1,12 @@
-import Slider from "@react-native-community/slider";
 import { round } from "lodash";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { cyan, spaceCadet } from "../utilities/colours";
+import { StyleSheet } from "react-native";
+import { lastUsedVibrationSpeed } from "../utilities/async-storage";
 import { patterns } from "../utilities/vibration-patterns";
 import { borderRadius } from "./border-radius";
 import { PatternList } from "./pattern-list";
+import { textShadow } from "./text-shadow-style";
+import { SpeedSelector } from "./vibration-picker/speed-selector";
 
 export const VibrationPicker = ({
   onChangeVibrationSpeed,
@@ -13,18 +14,11 @@ export const VibrationPicker = ({
   listHeight,
   activeVibrationName,
 }) => {
-  const [speedModifier, setSpeedModifier] = useState(1);
-
-  const [
-    hasSpeedModifierBeingPicked,
+  const {
+    speedModifier,
+    setSpeedModifier,
     setHasSpeedModifierBeingPicked,
-  ] = useState(true);
-
-  useEffect(() => {
-    if (hasSpeedModifierBeingPicked && onChangeVibrationSpeed) {
-      onChangeVibrationSpeed(speedModifier);
-    }
-  }, [hasSpeedModifierBeingPicked, speedModifier]);
+  } = useSpeedModifier(onChangeVibrationSpeed);
 
   return (
     <>
@@ -44,51 +38,44 @@ export const VibrationPicker = ({
   );
 };
 
-const SpeedSelector = ({
-  speedModifier,
-  onSlidingStart,
-  onSlidingComplete,
-  onValueChange,
-}) => {
-  return (
-    <View style={ViewStyles.speedSelectorContainer}>
-      <Text style={ViewStyles.sliderText}>{`Speed ${speedModifier}X`}</Text>
-      <Slider
-        testID="speed-slider"
-        style={ViewStyles.slider}
-        minimumValue={0.1}
-        value={speedModifier}
-        maximumValue={4}
-        thumbTintColor={cyan}
-        minimumTrackTintColor="white"
-        maximumTrackTintColor="white"
-        onSlidingStart={onSlidingStart}
-        onSlidingComplete={onSlidingComplete}
-        onValueChange={onValueChange}
-      />
-    </View>
-  );
+const useSpeedModifier = (onChangeVibrationSpeed) => {
+  const [speedModifier, setSpeedModifier] = useState(1);
+
+  const [
+    hasSpeedModifierBeingPicked,
+    setHasSpeedModifierBeingPicked,
+  ] = useState(true);
+
+  useEffect(() => {
+    if (hasSpeedModifierBeingPicked && onChangeVibrationSpeed) {
+      lastUsedVibrationSpeed.save(speedModifier);
+      onChangeVibrationSpeed(speedModifier);
+    }
+  }, [hasSpeedModifierBeingPicked, speedModifier]);
+
+  return { speedModifier, setSpeedModifier, setHasSpeedModifierBeingPicked };
 };
 
 const ViewStyles = StyleSheet.create({
+  sliderTextContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   sliderText: {
     color: "white",
-    fontSize: 20,
+    fontSize: 21,
     textAlign: "center",
+    flexDirection: "row",
+    marginLeft: 5,
+    ...textShadow,
   },
   slider: {
     marginTop: 10,
     width: "100%",
   },
-  lockButton: {
-    borderRadius,
-    width: "100%",
-    padding: 20,
-    marginTop: 20,
-  },
   speedSelectorContainer: {
     width: "100%",
-    backgroundColor: spaceCadet,
     borderRadius,
     padding: 20,
   },

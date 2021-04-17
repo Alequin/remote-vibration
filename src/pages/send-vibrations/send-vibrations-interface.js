@@ -15,8 +15,8 @@ import { AlsoVibrateOnCurrentDeviceCheckBox } from "./also-vibrate-on-current-de
 export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
   const [isSendingVibration, setIsSendingVibration] = useState(false);
   const [
-    shouldVibrateOnCurrentPhone,
-    setShouldVibrateOnCurrentPhone,
+    shouldvibrateOnCurrentDevice,
+    setShouldvibrateOnCurrentDevice,
   ] = useState(false);
 
   const {
@@ -25,7 +25,7 @@ export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
     speedModifier,
     setSpeedModifier,
   } = useVibration({
-    disableVibration: !shouldVibrateOnCurrentPhone,
+    disableVibration: !shouldvibrateOnCurrentDevice,
   });
 
   useEffect(() => {
@@ -85,9 +85,9 @@ export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
         }}
       />
       <AlsoVibrateOnCurrentDeviceCheckBox
-        isActive={shouldVibrateOnCurrentPhone}
+        isActive={shouldvibrateOnCurrentDevice}
         onPress={() =>
-          setShouldVibrateOnCurrentPhone(!shouldVibrateOnCurrentPhone)
+          setShouldvibrateOnCurrentDevice(!shouldvibrateOnCurrentDevice)
         }
       />
       <View style={sendingMessageStyle}>
