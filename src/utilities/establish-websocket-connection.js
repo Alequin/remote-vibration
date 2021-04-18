@@ -1,7 +1,7 @@
 import { reject } from "lodash";
 import { newWebsocketClient } from "./establish-websocket-connection/new-websocket-client";
 
-export const establishWebsocketConnection = async () => {
+export const establishWebsocketConnection = async (onConnect) => {
   const client = newWebsocketClient();
 
   let onMessageEventHandlers = [];
@@ -29,6 +29,6 @@ export const establishWebsocketConnection = async () => {
 
   return new Promise((resolve, reject) => {
     client.onopen = () => resolve(client);
-    client.onerror = reject;
+    client.onerror = (error) => reject(error);
   });
 };

@@ -65,7 +65,10 @@ export const AppRouter = ({ appState }) => (
 );
 
 const menuPage = () => (
-  <Stack.Screen name={" "} component={withBackground(MainMenu)} />
+  <Stack.Screen
+    name={pageNames.mainMenu}
+    component={withBackground(MainMenu)}
+  />
 );
 
 const vibrateOnCurrentDevicePage = () => (

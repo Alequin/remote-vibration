@@ -1,6 +1,6 @@
 import Clipboard from "expo-clipboard";
 import { isEmpty } from "lodash";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { borderRadius } from "../../shared/border-radius";
@@ -17,6 +17,7 @@ export const EnterPasswordContainer = ({
   testID,
   password,
   onChangeText,
+  shouldShowLoadingIndicator,
 }) => {
   const isButtonDisabled = isEmpty(password);
 
@@ -25,7 +26,11 @@ export const EnterPasswordContainer = ({
       <StyledText style={ViewStyles.keyText}>
         {`Enter another person's\npassword to receive vibrations`}
       </StyledText>
-      <KeyInput value={password} onChangeText={onChangeText} />
+      <KeyInput
+        value={password}
+        onChangeText={onChangeText}
+        shouldShowLoadingIndicator={shouldShowLoadingIndicator}
+      />
       <Button
         style={ViewStyles.connectButton}
         disabled={isButtonDisabled}
@@ -69,21 +74,21 @@ const useButtonStyle = (isButtonDisabled) =>
     };
   }, [isButtonDisabled]);
 
-const KeyInput = ({ value, onChangeText }) => {
-  const inputRef = useRef(null);
+const KeyInput = ({ value, onChangeText, shouldShowLoadingIndicator }) => {
+  const [inputRef, setInputRef] = useState(null);
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    inputRef?.focus();
   }, [inputRef]);
+
+  if (shouldShowLoadingIndicator) return null;
 
   return (
     <View style={ViewStyles.keyInputWrapper}>
       <Icon icon="blankSpace" size={32} />
       <Icon icon="blankSpace" size={32} />
       <TextInput
-        ref={inputRef}
+        ref={setInputRef}
         value={value}
         onChangeText={onChangeText}
         style={ViewStyles.keyInput}
@@ -132,15 +137,15 @@ const ViewStyles = StyleSheet.create({
   connectButton: {
     borderRadius: borderRadius,
     width: "100%",
+    borderWidth: 1,
+    borderRadius: borderRadius,
+    borderColor: "white",
   },
   connectButtonText: {
     color: "white",
     padding: 10,
     textAlign: "center",
     fontSize: 20,
-    borderWidth: 1,
-    borderRadius: borderRadius,
-    borderColor: "white",
   },
   errorText: {
     fontSize: 18,

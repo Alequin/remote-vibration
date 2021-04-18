@@ -10,6 +10,7 @@ import { ReceiveVibrationInterface } from "./receive-vibrations/receive-vibratio
 
 export const ReceiveVibrations = ({ navigation }) => {
   const {
+    resetClient,
     activePattern,
     password,
     setPassword,
@@ -24,12 +25,13 @@ export const ReceiveVibrations = ({ navigation }) => {
   if (shouldShowErrorPage) {
     return (
       <CannotConnectErrorPage
-        onPress={() => navigation.navigate(pageNames.mainMenu)}
+        onPress={resetClient}
+        buttonText={"Try to Reconnect"}
       />
     );
   }
 
-  if (shouldShowPasswordInput)
+  if (shouldShowPasswordInput || shouldShowLoadingIndicator)
     return (
       <EnterPasswordContainer
         testID="receive-vibrations-page"
@@ -40,11 +42,9 @@ export const ReceiveVibrations = ({ navigation }) => {
           clearError();
         }}
         onPressConnect={() => connectToRoom(password)}
+        shouldShowLoadingIndicator={shouldShowLoadingIndicator}
       />
     );
-
-  if (shouldShowLoadingIndicator)
-    return <FullPageLoading testID="receive-vibrations-page" />;
 
   return (
     <ReceiveVibrationInterface
@@ -60,9 +60,10 @@ const useReceiveVibrations = () => {
 
   const {
     client,
+    resetClient,
     isLoading,
     isConnected,
-    error: connectToRoomError,
+    connectToRoomError,
     websocketError,
     clearError,
     connectToRoom,
@@ -86,26 +87,24 @@ const useReceiveVibrations = () => {
     };
   }, [client]);
 
-  const shouldShowErrorPage = websocketError;
+  const shouldShowErrorPage =
+    websocketError || connectToRoomError === "timeout";
 
-  const shouldShowPasswordInput =
-    !isLoading && (!isConnected || connectToRoomError);
+  const shouldShowLoadingIndicator = !client || (!isConnected && isLoading);
 
-  const shouldShowLoadingIndicator = !isConnected && isLoading;
+  const shouldShowPasswordInput = !isLoading && !isConnected;
 
   return {
     activePattern,
     password,
     setPassword,
     clearError,
+    resetClient,
     connectToRoomError,
     connectToRoom,
     shouldShowErrorPage: shouldShowErrorPage,
-    shouldShowPasswordInput: !shouldShowErrorPage && shouldShowPasswordInput,
-    shouldShowLoadingIndicator:
-      !shouldShowErrorPage &&
-      !shouldShowPasswordInput &&
-      shouldShowLoadingIndicator,
+    shouldShowPasswordInput: shouldShowPasswordInput,
+    shouldShowLoadingIndicator: shouldShowLoadingIndicator,
   };
 };
 

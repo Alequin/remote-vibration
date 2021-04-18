@@ -81,9 +81,7 @@ describe("App - receive vibrations", () => {
 
     // 4. Confirm the error page is shown
     expect(
-      getByText(
-        "Sorry but it looks like there was a connection issue. Return to the menu and try again"
-      )
+      getByText("Sorry but it looks like there was a connection issue")
     ).toBeDefined();
   });
 
@@ -99,21 +97,18 @@ describe("App - receive vibrations", () => {
     );
 
     // 1. Starts on main menu
-    await waitForExpect(() =>
-      expect(getByTestId("main-menu-page")).toBeDefined()
-    );
-
-    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
     // 2. Moves to expected page
-    await waitForExpect(() =>
-      expect(getByTestId("receive-vibrations-page")).toBeDefined()
-    );
+    await moveToReceiveVibrationsPage(findAllByRole);
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
 
-    // 3. Confirms an input is available
-    await waitForExpect(() =>
-      expect(getByPlaceholderText("Password")).toBeDefined()
-    );
+    // 3. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 4. Confirms an input is available
+    expect(getByPlaceholderText("Password")).toBeDefined();
   });
 
   it("allows the user to clear the text in the connection input", async () => {
@@ -124,23 +119,21 @@ describe("App - receive vibrations", () => {
     );
 
     // 1. Starts on main menu
-    await waitForExpect(() =>
-      expect(getByTestId("main-menu-page")).toBeDefined()
-    );
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+    await moveToReceiveVibrationsPage(findAllByRole);
 
     // 2. Moves to expected page
-    await waitForExpect(() =>
-      expect(getByTestId("receive-vibrations-page")).toBeDefined()
-    );
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
 
-    // 3. Confirms an input is available
-    await waitForExpect(() =>
-      expect(getByPlaceholderText("Password")).toBeDefined()
-    );
+    // 3. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
 
-    // 4. Enter a password
+    // 4. Confirms an input is available
+    expect(getByPlaceholderText("Password")).toBeDefined();
+
+    // 5. Enter a password
     await act(async () =>
       fireEvent.changeText(getByPlaceholderText("Password"), "fake password")
     );
@@ -148,10 +141,10 @@ describe("App - receive vibrations", () => {
       within(getByPlaceholderText("Password")).queryByText("fake password")
     );
 
-    // 5. Press the clear text button
+    // 6. Press the clear text button
     await act(async () => fireEvent.press(getByTestId("cancelIcon")));
 
-    // 6. Confirm the input was cleared
+    // 7. Confirm the input was cleared
     const input = getByPlaceholderText("Password");
     expect(within(input).queryByText("fake password")).toBeNull();
     expect(within(input).queryByText("")).toBeDefined();
@@ -165,23 +158,21 @@ describe("App - receive vibrations", () => {
     );
 
     // 1. Starts on main menu
-    await waitForExpect(() =>
-      expect(getByTestId("main-menu-page")).toBeDefined()
-    );
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+    await moveToReceiveVibrationsPage(findAllByRole);
 
     // 2. Moves to expected page
-    await waitForExpect(() =>
-      expect(getByTestId("receive-vibrations-page")).toBeDefined()
-    );
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
 
-    // 3. Confirms an input is available
-    await waitForExpect(() =>
-      expect(getByPlaceholderText("Password")).toBeDefined()
-    );
+    // 3. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
 
-    // 4. Enter a password
+    // 4. Confirms an input is available
+    expect(getByPlaceholderText("Password")).toBeDefined();
+
+    // 5. Enter a password
     await act(async () =>
       fireEvent.changeText(getByPlaceholderText("Password"), "fake password")
     );
@@ -189,13 +180,13 @@ describe("App - receive vibrations", () => {
       within(getByPlaceholderText("Password")).queryByText("fake password")
     );
 
-    // 5. Press the paste text button
+    // 6. Press the paste text button
     jest
       .spyOn(Clipboard, "getStringAsync")
       .mockResolvedValue("pasted password");
     await act(async () => fireEvent.press(getByTestId("contentPasteIcon")));
 
-    // 6. Confirm the input was updated
+    // 7. Confirm the input was updated
     const input = getByPlaceholderText("Password");
     expect(within(input).queryByText("fake password")).toBeNull();
     expect(within(input).queryByText("pasted password")).toBeDefined();
@@ -209,18 +200,18 @@ describe("App - receive vibrations", () => {
     );
 
     // 1. Starts on main menu
-    await waitForExpect(() =>
-      expect(getByTestId("main-menu-page")).toBeDefined()
-    );
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+    await moveToReceiveVibrationsPage(findAllByRole);
 
     // 2. Moves to expected page
-    await waitForExpect(() =>
-      expect(getByTestId("receive-vibrations-page")).toBeDefined()
-    );
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
 
-    // 3. Confirm the button is disabled
+    // 3. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 4. Confirm the button is disabled
     expect(
       getAllByRole("button").find((button) =>
         within(button).queryByText("Connect")
@@ -241,23 +232,23 @@ describe("App - receive vibrations", () => {
     );
 
     // 1. Starts on main menu
-    await waitForExpect(() =>
-      expect(getByTestId("main-menu-page")).toBeDefined()
-    );
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+    await moveToReceiveVibrationsPage(findAllByRole);
 
     // 2. Moves to expected page
-    await waitForExpect(() =>
-      expect(getByTestId("receive-vibrations-page")).toBeDefined()
-    );
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
 
-    // 3. User enters text into the input
+    // 3. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 4. User enters text into the input
     await act(async () =>
       fireEvent.changeText(getByPlaceholderText("Password"), "mockKey")
     );
 
-    // 4. Confirm the button is enabled
+    // 5. Confirm the button is enabled
     expect(
       getAllByRole("button").find((button) =>
         within(button).queryByText("Connect")
@@ -336,21 +327,15 @@ describe("App - receive vibrations", () => {
     );
 
     // 1. Starts on main menu
-    await waitForExpect(() =>
-      expect(getByTestId("main-menu-page")).toBeDefined()
-    );
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+    await moveToReceiveVibrationsPage(findAllByRole);
 
     // 2. Moves to expected page
-    await waitForExpect(() =>
-      expect(getByTestId("receive-vibrations-page")).toBeDefined()
-    );
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
 
     // 3. Makes the call to open a websocket
-    await waitForExpect(async () => {
-      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
-    });
+    expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
 
     // 4. Fake the connection to the websocket
     expect(mockWebsocketClient.onopen).toBeDefined();
@@ -371,15 +356,13 @@ describe("App - receive vibrations", () => {
     );
 
     // 7. Confirm a message is sent to connect to the new room
-    await waitForExpect(() => {
-      expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
-      expect(mockWebsocketClient.send).toHaveBeenCalledWith(
-        JSON.stringify({
-          type: "connectToRoom",
-          data: { roomKey: MOCK_ROOM_KEY },
-        })
-      );
-    });
+    expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
+    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+      JSON.stringify({
+        type: "connectToRoom",
+        data: { roomKey: MOCK_ROOM_KEY },
+      })
+    );
 
     // 8. Fake receiving an error message about the password not being found
     await act(async () =>
@@ -391,11 +374,19 @@ describe("App - receive vibrations", () => {
     );
 
     // 9. Confirm an error message is shown
-    await waitForExpect(() => {
-      expect(getByText(`There is no one with the password "${MOCK_ROOM_KEY}"`));
-      expect(getByText(`Check the password is correct and try again`));
-    });
+    expect(getByText(`There is no one with the password\n"${MOCK_ROOM_KEY}"`));
+    expect(getByText(`Check the password is correct and try again`));
   });
+
+  it.todo(
+    "shows an error when there is an issue establishing the websocket connection"
+  );
+
+  it.todo("shows the full page error if connection is lost to the client");
+
+  it.todo("Allows the user to reconnect to the client if connection is lost");
+
+  it.todo("shows an error when there is an issue connecting to a room");
 
   it("saves the Password when the connect button is pressed", async () => {
     mockCreateARoom();
@@ -410,23 +401,23 @@ describe("App - receive vibrations", () => {
     );
 
     // 1. Starts on main menu
-    await waitForExpect(() =>
-      expect(getByTestId("main-menu-page")).toBeDefined()
-    );
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+    await moveToReceiveVibrationsPage(findAllByRole);
 
     // 2. Moves to expected page
-    await waitForExpect(() =>
-      expect(getByTestId("receive-vibrations-page")).toBeDefined()
-    );
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
 
-    // 3. User enters text into the input
+    // 3. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 4. User enters text into the input
     await act(async () =>
       fireEvent.changeText(getByPlaceholderText("Password"), MOCK_ROOM_KEY)
     );
 
-    // 4. Submit the given key
+    // 5. Submit the given key
     await act(async () =>
       fireEvent.press(
         getAllByRole("button").find((button) =>
@@ -435,16 +426,14 @@ describe("App - receive vibrations", () => {
       )
     );
 
-    // 5. Makes the call to open a websocket
-    await waitForExpect(async () => {
-      expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
-    });
+    // 6. Makes the call to open a websocket
+    expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
 
-    // 6. Fake the connection to the websocket
+    // 7. Fake the connection to the websocket
     expect(mockWebsocketClient.onopen).toBeDefined();
     await act(async () => mockWebsocketClient.onopen());
 
-    // 7. Confirm the Password is saved
+    // 8. Confirm the Password is saved
     expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
     expect(AsyncStorage.setItem).toHaveBeenCalledWith(
       "MOST_RECENT_ROOM_KEY",

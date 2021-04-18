@@ -9,6 +9,7 @@ import { useHasEnoughTimePassedToHideLoadingIndicator } from "./send-vibrations/
 
 export const SendVibrations = ({ navigation }) => {
   const {
+    resetClient,
     password,
     client,
     shouldShowErrorPage,
@@ -19,7 +20,8 @@ export const SendVibrations = ({ navigation }) => {
     return (
       <CannotConnectErrorPage
         testID="send-vibrations-page"
-        onPress={() => navigation.navigate(pageNames.mainMenu)}
+        buttonText={"Try to Reconnect"}
+        onPress={resetClient}
       />
     );
 
@@ -48,8 +50,9 @@ const useSendVibrations = () => {
 
   const {
     client,
+    resetClient,
     isConnected,
-    error: connectToRoomError,
+    connectToRoomError,
     websocketError,
     connectToRoom,
   } = useConnectToRoom();
@@ -65,6 +68,7 @@ const useSendVibrations = () => {
     !canHideIndicator || isStillCreatingRoom || !isConnected;
 
   return {
+    resetClient,
     password,
     client,
     shouldShowErrorPage: shouldShowErrorPage,
