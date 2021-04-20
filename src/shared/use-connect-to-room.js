@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { establishWebsocketConnection } from "../utilities/establish-websocket-connection";
+import { websocketConnection } from "../utilities/websocket-connection";
 
 const closedWebsocketConnectionStates = [2, 3];
 
@@ -14,43 +14,41 @@ export const useConnectToRoom = () => {
     setConnectedToRoomError,
   ]);
 
-  const connectToClient = useCallback(async () => {
-    try {
-      const newClient = await establishWebsocketConnection();
+  const connectToClient = useCallback(() => {
+    const clientManager = websocketConnection();
 
-      newClient.addOnMessageEventListener(
-        "confirmRoomConnection",
-        () => {
-          setIsLoading(false);
-          setIsConnected(true);
-        },
-        ({ parsedData }) => {
-          setIsLoading(false);
-          setConnectedToRoomError(parsedData.error);
-        }
-      );
+    clientManager
+      .connect()
+      .then((newClient) => {
+        newClient.addOnMessageEventListener(
+          "confirmRoomConnection",
+          () => {
+            setIsLoading(false);
+            setIsConnected(true);
+          },
+          ({ parsedData }) => {
+            setIsLoading(false);
+            setConnectedToRoomError(parsedData.error);
+          }
+        );
 
-      setClient(newClient);
-    } catch (error) {
-      setIsLoading(false);
-      setWebsocketError(error);
-    }
+        // Show error page if client disconnects unexpectedly
+        newClient.addOnCloseEventListener("on-close", () => {
+          setWebsocketError("client connection closed");
+        });
+
+        setClient(newClient);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        setWebsocketError(error);
+      });
+
+    return () => clientManager?.disconnect();
   }, []);
 
-  // Create client and Connect to room
-  useEffect(() => {
-    if (!client) connectToClient();
-    return () => client?.close();
-  }, [client]);
-
-  // Show error page if client disconnects unexpectedly
-  useEffect(() => {
-    if (closedWebsocketConnectionStates.includes(client?.readyState)) {
-      setWebsocketError("client connection closed");
-    } else {
-      setWebsocketError(null);
-    }
-  }, [client?.readyState]);
+  // Create client on mount
+  useEffect(connectToClient, []);
 
   const connectToRoom = useCallback(
     (password) => {

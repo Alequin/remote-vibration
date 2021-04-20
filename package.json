@@ -3,7 +3,7 @@
   "scripts": {
     "refresh-node-modules": "rm -rf node_modules && rm yarn.lock && yarn install",
     "start": "expo start -c",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --forceExit",
     "test-silent": "jest --runInBand --silent",
     "android": "expo start --android",
     "ios": "expo start --ios",

@@ -63,17 +63,16 @@ describe("App - send vibrations", () => {
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
     );
 
-    await waitFor(async () => {
-      // 1. Starts on main menu
-      expect(getByTestId("main-menu-page")).toBeDefined();
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-      await moveToSendVibrationsPage(getAllByRole);
+    await moveToSendVibrationsPage(getAllByRole);
 
-      // 2. Moves to expected page
-      expect(getByTestId("send-vibrations-page")).toBeDefined();
+    // 2. Moves to expected page
+    expect(getByTestId("send-vibrations-page")).toBeDefined();
 
-      expect(getByTestId("loadingIndicator")).toBeDefined();
-    });
+    // 3. Shows the loading indicator
+    expect(getByTestId("loadingIndicator")).toBeDefined();
   });
 
   it("shows the full page error if there is an error creating a room", async () => {
@@ -143,24 +142,20 @@ describe("App - send vibrations", () => {
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
     );
 
-    await waitFor(async () => {
-      // 1. Starts on main menu
-      expect(getByTestId("main-menu-page")).toBeDefined();
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-      await moveToSendVibrationsPage(getAllByRole);
+    await moveToSendVibrationsPage(getAllByRole);
 
-      // 2. Moves to expected page
-      expect(getByTestId("send-vibrations-page")).toBeDefined();
-    });
+    // 2. Moves to expected page
+    expect(getByTestId("send-vibrations-page")).toBeDefined();
 
-    await waitFor(async () => {
-      // 3. Makes the call to the server to create the room
-      expect(createARoomInterceptor.isDone()).toBe(true);
-    });
+    // 3. Makes the call to the server to create the room
+    expect(createARoomInterceptor.isDone()).toBe(true);
 
     // 4. Fake the connection to the websocket
     expect(mockWebsocketClient.onopen).toBeDefined();
-    await waitFor(() => mockWebsocketClient.onopen());
+    await waitFor(async () => mockWebsocketClient.onopen());
 
     // 5. Confirm a message is sent to connect to the new room
     await waitForExpect(() => {
@@ -567,15 +562,12 @@ describe("App - send vibrations", () => {
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
     );
 
-    await waitFor(async () => {
-      // 1. Starts on main menu
-      expect(await findByTestId("main-menu-page")).toBeDefined();
+    // 1. Starts on main menu
+    expect(await findByTestId("main-menu-page")).toBeDefined();
 
-      await moveToSendVibrationsPage(getAllByRole);
-
-      // 2. Moves to expected page
-      expect(await findByTestId("send-vibrations-page")).toBeDefined();
-    });
+    // 2. Moves to expected page
+    await moveToSendVibrationsPage(getAllByRole);
+    expect(await findByTestId("send-vibrations-page")).toBeDefined();
 
     await mockCallsToCreateConnection(
       createARoomInterceptor,
@@ -584,8 +576,10 @@ describe("App - send vibrations", () => {
     );
 
     // 3. Confirm connection is established
-    expect(await findByText(/Password/i));
-    expect(await findByText(`${MOCK_ROOM_KEY}`));
+    await waitForExpect(async () => {
+      expect(await findByText(/Password/i));
+      expect(await findByText(`${MOCK_ROOM_KEY}`));
+    });
 
     // 4. Press play on a vibration pattern
     const constantVibration = (

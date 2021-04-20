@@ -64,20 +64,17 @@ describe("App - receive vibrations", () => {
     );
 
     // 1. Starts on main menu
-    await waitForExpect(() =>
-      expect(getByTestId("main-menu-page")).toBeDefined()
-    );
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
-
+    await moveToReceiveVibrationsPage(findAllByRole);
     // 2. Moves to expected page
-    await waitForExpect(() =>
-      expect(getByTestId("receive-vibrations-page")).toBeDefined()
-    );
+    await waitForExpect(() => {
+      expect(getByTestId("receive-vibrations-page")).toBeDefined();
+    });
 
     // 3. Fake the failure to connect to the websocket
-    expect(mockWebsocketClient.onopen).toBeDefined();
-    await waitFor(() => mockWebsocketClient.onerror("unable to connect"));
+    expect(mockWebsocketClient.onerror).toBeDefined();
+    await act(async () => mockWebsocketClient.onerror("unable to connect"));
 
     // 4. Confirm the error page is shown
     expect(
