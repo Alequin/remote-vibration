@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import { Icon } from "./icon";
-import { Button, ButtonText } from "./button";
+import { Icon } from "../../shared/icon";
+import { Button, ButtonText } from "../../shared/button";
 import { useMemo } from "react";
-import { spaceCadet } from "../utilities/colours";
-import { textShadow } from "./text-shadow-style";
+import { spaceCadet } from "../../utilities/colours";
+import { textShadow } from "../../shared/text-shadow-style";
 
 export const MenuButton = ({ icon, children, style, ...otherProps }) => {
   const buttonStyle = useMemo(() => ({ ...ViewStyles.menuButton, ...style }), [

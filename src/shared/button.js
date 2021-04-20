@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { SerifText } from "./serif-text";
-import { spaceCadet } from "../utilities/colours";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyledText } from "./styled-text";
 
 export const Button = ({ children, ...otherProps }) => {
   return (
@@ -16,7 +15,7 @@ export const ButtonText = ({ style, ...otherProps }) => {
     style,
   ]);
 
-  return <SerifText style={styleToUse} {...otherProps} />;
+  return <StyledText style={styleToUse} {...otherProps} />;
 };
 
 const ViewStyles = StyleSheet.create({

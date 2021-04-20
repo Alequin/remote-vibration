@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { MenuButton } from "../shared/menu-button";
+import { MenuButton } from "./main-menu/menu-button";
 import { Page } from "../shared/page";
 import * as pageNames from "./page-names";
 
