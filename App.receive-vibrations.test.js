@@ -28,6 +28,7 @@ import {
   within,
 } from "@testing-library/react-native";
 import Clipboard from "expo-clipboard";
+import * as Network from "expo-network";
 import nock from "nock";
 import React from "React";
 import { Vibration } from "react-native";
@@ -402,6 +403,36 @@ describe("App - receive vibrations", () => {
     // 5. Confirm the error page is shown
     expect(
       getByText("Sorry but it looks like there was a connection issue")
+    ).toBeDefined();
+  });
+
+  it("checks for an internet connection when there is an issue with the client and lets the user know when not connected", async () => {
+    mockCreateARoom();
+    jest
+      .spyOn(Network, "getNetworkStateAsync")
+      .mockResolvedValue({ isConnected: false, isInternetReachable: false });
+
+    const { getByTestId, findAllByRole, getByText } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
+
+    await moveToReceiveVibrationsPage(findAllByRole);
+    // 2. Moves to expected page
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
+
+    // 3. Fake the failure to connect to the websocket
+    expect(mockWebsocketClient.onerror).toBeDefined();
+    await act(async () => mockWebsocketClient.onerror("unable to connect"));
+
+    // 4. Confirm the internet connection is checked
+    expect(Network.getNetworkStateAsync).toHaveBeenCalledTimes(1);
+
+    // 5. Confirm the error message about a lack of internet is shown
+    expect(
+      getByText("It looks like you might not be connected to the internet")
     ).toBeDefined();
   });
 
