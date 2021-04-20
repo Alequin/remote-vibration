@@ -56,36 +56,6 @@ describe("App - receive vibrations", () => {
     nock.abortPendingRequests();
   });
 
-  it("shows the full page error if there is an error connecting to the websocket", async () => {
-    mockCreateARoom();
-
-    const { getByTestId, findAllByRole, getByText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
-
-    // 1. Starts on main menu
-    expect(getByTestId("main-menu-page")).toBeDefined();
-
-    await moveToReceiveVibrationsPage(findAllByRole);
-    // 2. Moves to expected page
-    await waitForExpect(() => {
-      expect(getByTestId("receive-vibrations-page")).toBeDefined();
-    });
-
-    // 3. Fake the failure to connect to the websocket
-    expect(mockWebsocketClient.onerror).toBeDefined();
-    await act(async () => mockWebsocketClient.onerror("unable to connect"));
-
-    // 4. Confirm the error page is shown
-    expect(
-      getByText("Sorry but it looks like there was a connection issue")
-    ).toBeDefined();
-  });
-
-  it.todo(
-    "returns the user to the menu from the error page when the button is pressed"
-  );
-
   it("shows a text input to allow the user to request a connection to a room", async () => {
     mockCreateARoom();
 
@@ -375,15 +345,122 @@ describe("App - receive vibrations", () => {
     expect(getByText(`Check the password is correct and try again`));
   });
 
-  it.todo(
-    "shows an error when there is an issue establishing the websocket connection"
-  );
+  it("shows the full page error if there is an error connecting to the websocket", async () => {
+    mockCreateARoom();
 
-  it.todo("shows the full page error if connection is lost to the client");
+    const { getByTestId, findAllByRole, getByText } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
 
-  it.todo("Allows the user to reconnect to the client if connection is lost");
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
 
-  it.todo("shows an error when there is an issue connecting to a room");
+    await moveToReceiveVibrationsPage(findAllByRole);
+    // 2. Moves to expected page
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
+
+    // 3. Fake the failure to connect to the websocket
+    expect(mockWebsocketClient.onerror).toBeDefined();
+    await act(async () => mockWebsocketClient.onerror("unable to connect"));
+
+    // 4. Confirm the error page is shown
+    expect(
+      getByText("Sorry but it looks like there was a connection issue")
+    ).toBeDefined();
+  });
+
+  it("shows the full page error if connection is lost to the client", async () => {
+    const {
+      getByTestId,
+      findAllByRole,
+      getAllByRole,
+      getByText,
+      getByPlaceholderText,
+    } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
+
+    await moveToReceiveVibrationsPage(findAllByRole);
+
+    // 2. Moves to expected page
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
+
+    // 3. Makes the call to the server to connect to the room
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
+
+    // 4. Fake client disconnection
+    expect(mockWebsocketClient.onclose).toBeDefined();
+    await act(async () => mockWebsocketClient.onclose());
+
+    // 5. Confirm the error page is shown
+    expect(
+      getByText("Sorry but it looks like there was a connection issue")
+    ).toBeDefined();
+  });
+
+  it("Allows the user to reconnect to the client if connection is lost", async () => {
+    const {
+      getByTestId,
+      findAllByRole,
+      getAllByRole,
+      getByText,
+      getByPlaceholderText,
+    } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
+
+    await moveToReceiveVibrationsPage(findAllByRole);
+
+    // 2. Moves to expected page
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
+
+    // 3. Makes the call to the server to connect to the room
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
+
+    // 4. Fake client disconnection
+    expect(mockWebsocketClient.onclose).toBeDefined();
+    await act(async () => mockWebsocketClient.onclose());
+
+    // 5. Confirm the error page is shown
+    expect(
+      getByText("Sorry but it looks like there was a connection issue")
+    ).toBeDefined();
+
+    // 6. press the reconnect button
+    const reconnectButton = getAllByRole("button").find((button) =>
+      within(button).queryByText("Try to Reconnect")
+    );
+    await act(async () => fireEvent.press(reconnectButton));
+
+    // 7. Confirm the client connection is being made again
+    await waitForExpect(async () => {
+      // 7.1. Make the call to open a websocket
+      expect(establishWebsocketSpy).toHaveBeenCalledTimes(2);
+    });
+
+    // 7.2. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 8. Confirm the page has loaded
+    await waitForExpect(() => {
+      expect(getByPlaceholderText("Password")).toBeDefined();
+    });
+  });
 
   it("saves the Password when the connect button is pressed", async () => {
     mockCreateARoom();

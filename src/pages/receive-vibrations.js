@@ -26,7 +26,7 @@ export const ReceiveVibrations = ({ navigation }) => {
     return (
       <CannotConnectErrorPage
         onPress={resetClient}
-        buttonText={"Try to Reconnect"}
+        buttonText="Try to Reconnect"
       />
     );
   }

@@ -155,7 +155,7 @@ describe("App - send vibrations", () => {
 
     // 4. Fake the connection to the websocket
     expect(mockWebsocketClient.onopen).toBeDefined();
-    await waitFor(async () => mockWebsocketClient.onopen());
+    await act(async () => mockWebsocketClient.onopen());
 
     // 5. Confirm a message is sent to connect to the new room
     await waitForExpect(() => {
@@ -168,7 +168,7 @@ describe("App - send vibrations", () => {
       );
     });
 
-    // 6. Fake receiving a message confirming the room connection
+    // 6. Fake receiving a message saying there is an error connecting to the room
     await act(async () =>
       mockWebsocketClient.onmessage({
         data: JSON.stringify({
@@ -183,13 +183,119 @@ describe("App - send vibrations", () => {
     ).toBeDefined();
   });
 
-  it.todo("shows the full page error if connection is lost to the client");
+  it("shows the full page error if connection is lost to the client after full connection is established", async () => {
+    const createARoomInterceptor = mockCreateARoom();
 
-  it.todo("Allows the user to reconnect to the client if connection is lost");
+    const { getByTestId, getAllByRole, getByText } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
 
-  it.todo(
-    "returns the user to the menu from the error page when the button is pressed"
-  );
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
+
+    await moveToSendVibrationsPage(getAllByRole);
+
+    // 2. Moves to expected page
+    expect(getByTestId("send-vibrations-page")).toBeDefined();
+
+    // 3. Makes the call to the server to create the room
+    expect(createARoomInterceptor.isDone()).toBe(true);
+
+    // 4. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 5. Confirm a message is sent to connect to the new room
+    await waitForExpect(() => {
+      expect(mockWebsocketClient.send).toHaveBeenCalledTimes(1);
+      expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          type: "connectToRoom",
+          data: { roomKey: MOCK_ROOM_KEY },
+        })
+      );
+    });
+
+    // 6. Fake client disconnection
+    expect(mockWebsocketClient.onclose).toBeDefined();
+    await act(async () => mockWebsocketClient.onclose());
+
+    // 7. Confirm the error page is shown
+    expect(
+      getByText("Sorry but it looks like there was a connection issue")
+    ).toBeDefined();
+  });
+
+  it("Allows the user to reconnect to the client if connection is lost", async () => {
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { getByTestId, getAllByRole, getByText } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
+
+    await moveToSendVibrationsPage(getAllByRole);
+
+    // 2. Moves to expected page
+    expect(getByTestId("send-vibrations-page")).toBeDefined();
+
+    // 3. Makes the call to the server to create the room
+    await mockCallsToMakeRoomAndCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 4. Fake client disconnection
+    expect(mockWebsocketClient.onclose).toBeDefined();
+    await act(async () => mockWebsocketClient.onclose());
+
+    // 5. Confirm the error page is shown
+    expect(
+      getByText("Sorry but it looks like there was a connection issue")
+    ).toBeDefined();
+
+    // 6. press the reconnect button
+    const reconnectButton = getAllByRole("button").find((button) =>
+      within(button).queryByText("Try to Reconnect")
+    );
+    await act(async () => fireEvent.press(reconnectButton));
+
+    // 7. Confirm the client connection is being made again
+    await waitForExpect(async () => {
+      // 7.1. Make the call to open a websocket
+      expect(establishWebsocketSpy).toHaveBeenCalledTimes(2);
+    });
+    // 7.2. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+    // 7.3. Confirm a message is send to connect to the new room
+    await waitForExpect(() => {
+      expect(mockWebsocketClient.send).toHaveBeenCalledTimes(2);
+      expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          type: "connectToRoom",
+          data: { roomKey: MOCK_ROOM_KEY },
+        })
+      );
+    });
+
+    // 7.4. Fake receiving a message confirming the room connection
+    await act(async () =>
+      mockWebsocketClient.onmessage({
+        data: JSON.stringify({
+          type: "confirmRoomConnection",
+        }),
+      })
+    );
+
+    // 8. Confirm the page has loaded
+    await waitForExpect(() => {
+      expect(getByText(`Password:`));
+    });
+  });
 
   it("creates a new connection on visiting the 'send-vibration' page", async () => {
     const createARoomInterceptor = mockCreateARoom();
@@ -265,7 +371,7 @@ describe("App - send vibrations", () => {
       expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
-    await mockCallsToCreateConnection(
+    await mockCallsToMakeRoomAndCreateConnection(
       createARoomInterceptor,
       establishWebsocketSpy,
       mockWebsocketClient
@@ -302,7 +408,7 @@ describe("App - send vibrations", () => {
       expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
-    await mockCallsToCreateConnection(
+    await mockCallsToMakeRoomAndCreateConnection(
       createARoomInterceptor,
       establishWebsocketSpy,
       mockWebsocketClient
@@ -359,7 +465,7 @@ describe("App - send vibrations", () => {
       expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
-    await mockCallsToCreateConnection(
+    await mockCallsToMakeRoomAndCreateConnection(
       createARoomInterceptor,
       establishWebsocketSpy,
       mockWebsocketClient
@@ -410,7 +516,7 @@ describe("App - send vibrations", () => {
       expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
-    await mockCallsToCreateConnection(
+    await mockCallsToMakeRoomAndCreateConnection(
       createARoomInterceptor,
       establishWebsocketSpy,
       mockWebsocketClient
@@ -461,7 +567,7 @@ describe("App - send vibrations", () => {
       expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
-    await mockCallsToCreateConnection(
+    await mockCallsToMakeRoomAndCreateConnection(
       createARoomInterceptor,
       establishWebsocketSpy,
       mockWebsocketClient
@@ -519,7 +625,7 @@ describe("App - send vibrations", () => {
       expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
-    await mockCallsToCreateConnection(
+    await mockCallsToMakeRoomAndCreateConnection(
       createARoomInterceptor,
       establishWebsocketSpy,
       mockWebsocketClient
@@ -569,7 +675,7 @@ describe("App - send vibrations", () => {
     await moveToSendVibrationsPage(getAllByRole);
     expect(await findByTestId("send-vibrations-page")).toBeDefined();
 
-    await mockCallsToCreateConnection(
+    await mockCallsToMakeRoomAndCreateConnection(
       createARoomInterceptor,
       establishWebsocketSpy,
       mockWebsocketClient
@@ -625,7 +731,7 @@ describe("App - send vibrations", () => {
       expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
-    await mockCallsToCreateConnection(
+    await mockCallsToMakeRoomAndCreateConnection(
       createARoomInterceptor,
       establishWebsocketSpy,
       mockWebsocketClient
@@ -750,24 +856,21 @@ const moveToSendVibrationsPage = async (getAllByRole) => {
   await act(async () => fireEvent.press(sendVibrationsButton));
 };
 
-const mockCallsToCreateConnection = async (
+const mockCallsToMakeRoomAndCreateConnection = async (
   createARoomInterceptor,
   establishWebsocketSpy,
   mockWebsocketClient
 ) => {
-  await waitFor(async () => {
+  await waitForExpect(async () => {
     // 1. Makes the call to the server to create the room
     expect(createARoomInterceptor.isDone()).toBe(true);
-  });
-
-  await waitForExpect(async () => {
     // 2. Make the call to open a websocket
     expect(establishWebsocketSpy).toHaveBeenCalledTimes(1);
   });
 
   // 3. Fake the connection to the websocket
   expect(mockWebsocketClient.onopen).toBeDefined();
-  act(() => mockWebsocketClient.onopen());
+  await act(async () => mockWebsocketClient.onopen());
 
   // 4. Confirm a message is send to connect to the new room
   await waitForExpect(() => {

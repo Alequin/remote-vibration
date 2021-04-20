@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { websocketConnection } from "../utilities/websocket-connection";
 
-const closedWebsocketConnectionStates = [2, 3];
-
 export const useConnectToRoom = () => {
   const [websocketError, setWebsocketError] = useState(null);
   const [connectToRoomError, setConnectedToRoomError] = useState(null);
@@ -15,6 +13,8 @@ export const useConnectToRoom = () => {
   ]);
 
   const connectToClient = useCallback(() => {
+    setWebsocketError(null);
+    setWebsocketError(null);
     const clientManager = websocketConnection();
 
     clientManager
@@ -34,6 +34,7 @@ export const useConnectToRoom = () => {
 
         // Show error page if client disconnects unexpectedly
         newClient.addOnCloseEventListener("on-close", () => {
+          setIsConnected(false);
           setWebsocketError("client connection closed");
         });
 
