@@ -59,14 +59,6 @@ export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
     );
   }, [activePattern, speedModifier]);
 
-  const sendingMessageStyle = useMemo(
-    () => ({
-      ...ViewStyles.sendingTextContainer,
-      opacity: activePattern && isSendingVibration ? 1 : 0,
-    }),
-    [activePattern, isSendingVibration]
-  );
-
   return (
     <Page style={ViewStyles.container} testID={testID}>
       <CopyPasswordButton label="Password" connectionKey={connectionKey} />
