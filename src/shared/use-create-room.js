@@ -20,8 +20,8 @@ export const useCreateRoom = () => {
             );
           }
 
-          const { roomKey } = await response.json();
-          setPassword(roomKey);
+          const { password } = await response.json();
+          setPassword(password);
         })
         .catch(setError);
     }

@@ -164,7 +164,7 @@ describe("App - send vibrations", () => {
       expect(mockWebsocketClient.send).toHaveBeenCalledWith(
         JSON.stringify({
           type: "connectToRoom",
-          data: { roomKey: MOCK_ROOM_KEY },
+          data: { password: MOCK_ROOM_KEY },
         })
       );
     });
@@ -212,7 +212,7 @@ describe("App - send vibrations", () => {
       expect(mockWebsocketClient.send).toHaveBeenCalledWith(
         JSON.stringify({
           type: "connectToRoom",
-          data: { roomKey: MOCK_ROOM_KEY },
+          data: { password: MOCK_ROOM_KEY },
         })
       );
     });
@@ -313,7 +313,7 @@ describe("App - send vibrations", () => {
       expect(mockWebsocketClient.send).toHaveBeenCalledWith(
         JSON.stringify({
           type: "connectToRoom",
-          data: { roomKey: MOCK_ROOM_KEY },
+          data: { password: MOCK_ROOM_KEY },
         })
       );
     });
@@ -370,7 +370,7 @@ describe("App - send vibrations", () => {
       expect(mockWebsocketClient.send).toHaveBeenCalledWith(
         JSON.stringify({
           type: "connectToRoom",
-          data: { roomKey: MOCK_ROOM_KEY },
+          data: { password: MOCK_ROOM_KEY },
         })
       );
     });
@@ -914,7 +914,7 @@ const mockCallsToMakeRoomAndCreateConnection = async (
     expect(mockWebsocketClient.send).toHaveBeenCalledWith(
       JSON.stringify({
         type: "connectToRoom",
-        data: { roomKey: MOCK_ROOM_KEY },
+        data: { password: MOCK_ROOM_KEY },
       })
     );
   });
@@ -939,5 +939,5 @@ const mockCreateARoom = ({ delayTime, response } = {}) =>
     .delay(delayTime || 1)
     .reply(
       response?.status || 200,
-      response?.body || { roomKey: MOCK_ROOM_KEY }
+      response?.body || { password: MOCK_ROOM_KEY }
     );

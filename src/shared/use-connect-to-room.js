@@ -57,7 +57,7 @@ export const useConnectToRoom = () => {
         client.send(
           JSON.stringify({
             type: "connectToRoom",
-            data: { roomKey: password },
+            data: { password },
           })
         );
 
