@@ -33,6 +33,7 @@ export const MainMenu = ({ navigation }) => (
 const ViewStyles = StyleSheet.create({
   container: {
     alignItems: "center",
+    padding: 15,
   },
   button: {
     margin: "5%",

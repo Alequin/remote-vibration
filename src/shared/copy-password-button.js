@@ -2,8 +2,9 @@ import Clipboard from "expo-clipboard";
 import React, { useRef } from "react";
 import { Animated, StyleSheet, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { darkCyan, spaceCadet } from "../utilities/colours";
+import { dynamicFontSize } from "../utilities/dynamic-font-size";
 import { Icon } from "./icon";
-import { cyan, darkCyan, spaceCadet } from "../utilities/colours";
 import { StyledText } from "./styled-text";
 
 export const CopyPasswordButton = ({ label, connectionKey }) => {
@@ -49,7 +50,6 @@ const ViewStyles = StyleSheet.create({
   connectionKeyButton: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
     paddingTop: 5,
   },
   connectionKeyCopiedMessage: {
@@ -58,12 +58,12 @@ const ViewStyles = StyleSheet.create({
   },
   connectionKeyTitleText: {
     marginRight: 5,
-    fontSize: 20,
+    fontSize: dynamicFontSize(20),
   },
   connectionKeyText: {
     marginRight: 5,
     color: darkCyan,
-    fontSize: 20,
+    fontSize: dynamicFontSize(20),
     backgroundColor: spaceCadet,
     padding: 8,
     borderRadius: 15,

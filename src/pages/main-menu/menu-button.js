@@ -1,10 +1,13 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { Icon } from "../../shared/icon";
 import { Button, ButtonText } from "../../shared/button";
 import { useMemo } from "react";
 import { spaceCadet } from "../../utilities/colours";
 import { textShadow } from "../../shared/text-shadow-style";
+import { dynamicFontSize } from "../../utilities/dynamic-font-size";
+
+const windowHeight = Dimensions.get("window").height;
 
 export const MenuButton = ({ icon, children, style, ...otherProps }) => {
   const buttonStyle = useMemo(() => ({ ...ViewStyles.menuButton, ...style }), [
@@ -21,22 +24,22 @@ export const MenuButton = ({ icon, children, style, ...otherProps }) => {
 
 const ViewStyles = StyleSheet.create({
   menuButton: {
-    width: "60%",
+    height: windowHeight * 0.2,
     alignItems: "center",
     justifyContent: "center",
   },
   buttonIcon: {
     backgroundColor: spaceCadet,
-    width: 125,
-    height: 125,
+    width: windowHeight * 0.18,
+    height: windowHeight * 0.18,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 100,
-    marginBottom: "5%",
+    marginBottom: windowHeight * 0.01,
   },
   buttonText: {
     fontWeight: "bold",
-    fontSize: 19,
+    fontSize: dynamicFontSize(19),
     ...textShadow,
   },
 });

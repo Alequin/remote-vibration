@@ -55,28 +55,3 @@ const useSpeedModifier = (onChangeVibrationSpeed) => {
 
   return { speedModifier, setSpeedModifier, setHasSpeedModifierBeingPicked };
 };
-
-const ViewStyles = StyleSheet.create({
-  sliderTextContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  sliderText: {
-    color: "white",
-    fontSize: 21,
-    textAlign: "center",
-    flexDirection: "row",
-    marginLeft: 5,
-    ...textShadow,
-  },
-  slider: {
-    marginTop: 10,
-    width: "100%",
-  },
-  speedSelectorContainer: {
-    width: "100%",
-    borderRadius,
-    padding: 20,
-  },
-});

@@ -1,7 +1,7 @@
 import Clipboard from "expo-clipboard";
 import { isEmpty } from "lodash";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Dimensions, StyleSheet, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { borderRadius } from "../../shared/border-radius";
 import { Button } from "../../shared/button";
@@ -10,6 +10,9 @@ import { Page } from "../../shared/page";
 import { StyledText } from "../../shared/styled-text";
 import { mostRecentRoomKey } from "../../utilities/async-storage";
 import { darkSpaceCadet, transparency, white } from "../../utilities/colours";
+import { dynamicFontSize } from "../../utilities/dynamic-font-size";
+
+const windowHeight = Dimensions.get("window").height;
 
 export const EnterPasswordContainer = ({
   onPressConnect,
@@ -47,10 +50,7 @@ export const EnterPasswordContainer = ({
         <View>
           <StyledText
             style={ViewStyles.errorText}
-          >{`There is no one with the password\n"${password}"`}</StyledText>
-          <StyledText style={ViewStyles.errorText}>
-            Check the password is correct and try again
-          </StyledText>
+          >{`There is no one with the password\n"${password}". Check the password is correct and try again`}</StyledText>
         </View>
       )}
     </Page>
@@ -113,11 +113,11 @@ const ViewStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     width: "100%",
-    height: "80%",
-    padding: "7.5%",
+    height: "100%",
+    padding: "2.5%",
   },
   keyText: {
-    fontSize: 24,
+    fontSize: dynamicFontSize(20),
     textAlign: "center",
     textAlign: "center",
   },
@@ -130,25 +130,25 @@ const ViewStyles = StyleSheet.create({
   keyInput: {
     textAlign: "center",
     color: "white",
-    fontSize: 24,
+    fontSize: dynamicFontSize(20),
     padding: 5,
     flex: 1,
   },
   connectButton: {
     borderRadius: borderRadius,
-    width: "100%",
+    width: "70%",
     borderWidth: 1,
     borderRadius: borderRadius,
     borderColor: "white",
   },
   connectButtonText: {
     color: "white",
-    padding: 10,
+    padding: windowHeight * 0.01,
     textAlign: "center",
-    fontSize: 20,
+    fontSize: dynamicFontSize(18),
   },
   errorText: {
-    fontSize: 18,
+    fontSize: dynamicFontSize(17),
     textAlign: "center",
     margin: 10,
   },

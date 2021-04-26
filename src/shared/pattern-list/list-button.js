@@ -2,23 +2,17 @@ import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { darkSpaceCadet, spaceCadet } from "../../utilities/colours";
+import { dynamicFontSize } from "../../utilities/dynamic-font-size";
 import { borderRadius } from "../border-radius";
 import { Icon } from "../icon";
 import { textShadow } from "../text-shadow-style";
 
 export const ListButton = ({ item, onPress, isActiveButton }) => {
-  const buttonStyle = useMemo(
-    () => ({
-      ...ViewStyles.listButton,
-    }),
-    [isActiveButton]
-  );
-
   const buttonTextStyle = useMemo(
     () => ({
       ...ViewStyles.listButtonText,
       fontWeight: isActiveButton ? "bold" : "normal",
-      fontSize: isActiveButton ? 22 : 21,
+      fontSize: dynamicFontSize(isActiveButton ? 20 : 19),
     }),
     [isActiveButton]
   );
@@ -28,11 +22,11 @@ export const ListButton = ({ item, onPress, isActiveButton }) => {
       <TouchableWithoutFeedback
         testID="vibration-pattern-option"
         accessibilityRole="button"
-        style={buttonStyle}
+        style={ViewStyles.listButton}
         onPress={() => onPress(item)}
       >
         <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-          <Icon icon="play" color="white" size={26} />
+          <Icon icon="play" color="white" size={dynamicFontSize(22)} />
           <Text style={buttonTextStyle}>{item.name}</Text>
         </View>
         <View
@@ -42,7 +36,9 @@ export const ListButton = ({ item, onPress, isActiveButton }) => {
             justifyContent: "flex-end",
           }}
         >
-          {isActiveButton && <Icon icon="vibrate" color="white" size={32} />}
+          {isActiveButton && (
+            <Icon icon="vibrate" color="white" size={dynamicFontSize(22)} />
+          )}
         </View>
       </TouchableWithoutFeedback>
     </View>
@@ -68,14 +64,13 @@ const ViewStyles = StyleSheet.create({
   listButton: {
     flexDirection: "row",
     alignItems: "center",
-    height: 60,
+    padding: "4%",
     justifyContent: "center",
     paddingHorizontal: "5%",
   },
   listButtonText: {
     color: "white",
     textAlign: "center",
-    fontSize: 22,
     paddingLeft: "5%",
     ...textShadow,
   },

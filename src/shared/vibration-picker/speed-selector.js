@@ -2,6 +2,7 @@ import Slider from "@react-native-community/slider";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { cyan } from "../../utilities/colours";
+import { dynamicFontSize } from "../../utilities/dynamic-font-size";
 import { Icon } from "../icon";
 import { textShadow } from "../text-shadow-style";
 
@@ -16,7 +17,11 @@ export const SpeedSelector = ({
   return (
     <View style={ViewStyles.speedSelectorContainer}>
       <View style={ViewStyles.sliderTextContainer}>
-        <Icon icon={pickSpeedIcon(speedModifier)} color="white" size={32} />
+        <Icon
+          icon={pickSpeedIcon(speedModifier)}
+          color="white"
+          size={dynamicFontSize(28)}
+        />
         <Text style={ViewStyles.sliderText}>{sliderText}</Text>
       </View>
       <Slider
@@ -50,7 +55,7 @@ const ViewStyles = StyleSheet.create({
   },
   sliderText: {
     color: "white",
-    fontSize: 21,
+    fontSize: dynamicFontSize(20),
     textAlign: "center",
     flexDirection: "row",
     marginLeft: 5,
