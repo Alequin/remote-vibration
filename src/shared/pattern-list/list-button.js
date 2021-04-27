@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { darkSpaceCadet, spaceCadet } from "../../utilities/colours";
 import { dynamicFontSize } from "../../utilities/dynamic-font-size";
+import { isSmallScreen } from "../../utilities/is-small-screen";
 import { borderRadius } from "../border-radius";
 import { Icon } from "../icon";
 import { textShadow } from "../text-shadow-style";
@@ -64,7 +64,7 @@ const ViewStyles = StyleSheet.create({
   listButton: {
     flexDirection: "row",
     alignItems: "center",
-    padding: "4%",
+    padding: isSmallScreen() ? "1.5%" : "4%",
     justifyContent: "center",
     paddingHorizontal: "5%",
   },

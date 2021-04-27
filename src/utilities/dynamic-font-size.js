@@ -1,4 +1,5 @@
 import { Dimensions, Platform, PixelRatio } from "react-native";
+import { isSmallScreen } from "./is-small-screen";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -6,7 +7,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const scale = SCREEN_WIDTH / 320;
 
 export const dynamicFontSize = (size) => {
-  const newSize = size * scale;
+  const newSize = (isSmallScreen() ? size - 2 : size) * scale;
   if (Platform.OS === "ios") {
     return Math.round(PixelRatio.roundToNearestPixel(newSize));
   } else {

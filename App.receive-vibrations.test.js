@@ -18,6 +18,9 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
 }));
+jest.mock("react-native/Libraries/Alert/Alert", () => ({
+  alert: jest.fn(),
+}));
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -31,7 +34,7 @@ import Clipboard from "expo-clipboard";
 import * as Network from "expo-network";
 import nock from "nock";
 import React from "React";
-import { Vibration } from "react-native";
+import { Vibration, Alert } from "react-native";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
 import * as pageNames from "./src/pages/page-names";
@@ -342,8 +345,16 @@ describe("App - receive vibrations", () => {
     );
 
     // 9. Confirm an error message is shown
-    expect(getByText(`There is no one with the password\n"${MOCK_ROOM_KEY}"`));
-    expect(getByText(`Check the password is correct and try again`));
+    expect(Alert.alert).toBeCalledWith(
+      "Sorry there was an issue",
+      `There is no one with the password "${MOCK_ROOM_KEY}".\n\nCheck the password is correct and try again`,
+      [
+        {
+          text: "Continue",
+        },
+      ],
+      { cancelable: false }
+    );
   });
 
   it("shows the full page error if there is an error connecting to the websocket", async () => {

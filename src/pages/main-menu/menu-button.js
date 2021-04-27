@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { spaceCadet } from "../../utilities/colours";
 import { textShadow } from "../../shared/text-shadow-style";
 import { dynamicFontSize } from "../../utilities/dynamic-font-size";
+import { isSmallScreen } from "../../utilities/is-small-screen";
 
 const windowHeight = Dimensions.get("window").height;
 
@@ -16,11 +17,18 @@ export const MenuButton = ({ icon, children, style, ...otherProps }) => {
 
   return (
     <Button style={buttonStyle} {...otherProps}>
-      <Icon style={ViewStyles.buttonIcon} color="white" icon={icon} size={50} />
+      <Icon
+        style={ViewStyles.buttonIcon}
+        color="white"
+        icon={icon}
+        size={isSmallScreen() ? 30 : 50}
+      />
       <ButtonText style={ViewStyles.buttonText}>{children}</ButtonText>
     </Button>
   );
 };
+
+const buttonSize = windowHeight * (isSmallScreen() ? 0.14 : 0.18);
 
 const ViewStyles = StyleSheet.create({
   menuButton: {
@@ -30,8 +38,8 @@ const ViewStyles = StyleSheet.create({
   },
   buttonIcon: {
     backgroundColor: spaceCadet,
-    width: windowHeight * 0.18,
-    height: windowHeight * 0.18,
+    width: buttonSize,
+    height: buttonSize,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 100,

@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { cyan } from "../../utilities/colours";
 import { dynamicFontSize } from "../../utilities/dynamic-font-size";
+import { isSmallScreen } from "../../utilities/is-small-screen";
 import { Icon } from "../icon";
 import { textShadow } from "../text-shadow-style";
 
@@ -52,6 +53,7 @@ const ViewStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    paddingTop: 10,
   },
   sliderText: {
     color: "white",
@@ -62,11 +64,10 @@ const ViewStyles = StyleSheet.create({
     ...textShadow,
   },
   slider: {
-    marginTop: 10,
+    marginTop: isSmallScreen() ? 0 : 10,
     width: "100%",
   },
   speedSelectorContainer: {
     width: "100%",
-    padding: 20,
   },
 });

@@ -9,6 +9,6 @@ const ViewStyles = StyleSheet.create({
     width: "100%",
     backgroundColor: gray,
     opacity: 0.5,
-    height: 1,
+    height: 1.5,
   },
 });

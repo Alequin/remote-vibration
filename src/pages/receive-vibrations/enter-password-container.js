@@ -1,7 +1,13 @@
 import Clipboard from "expo-clipboard";
 import { isEmpty } from "lodash";
 import React, { useEffect, useMemo, useState } from "react";
-import { Dimensions, StyleSheet, TextInput, View } from "react-native";
+import {
+  Dimensions,
+  Keyboard,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { borderRadius } from "../../shared/border-radius";
 import { Button } from "../../shared/button";
@@ -11,6 +17,7 @@ import { StyledText } from "../../shared/styled-text";
 import { mostRecentRoomKey } from "../../utilities/async-storage";
 import { darkSpaceCadet, transparency, white } from "../../utilities/colours";
 import { dynamicFontSize } from "../../utilities/dynamic-font-size";
+import { isSmallScreen } from "../../utilities/is-small-screen";
 
 const windowHeight = Dimensions.get("window").height;
 
@@ -22,13 +29,29 @@ export const EnterPasswordContainer = ({
   onChangeText,
   shouldShowLoadingIndicator,
 }) => {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const isButtonDisabled = isEmpty(password);
 
+  useEffect(() => {
+    const setKeyboardIsVisible = () => setIsKeyboardVisible(true);
+    const setKeyboardIsHidden = () => setIsKeyboardVisible(false);
+    Keyboard.addListener("keyboardDidShow", setKeyboardIsVisible);
+    Keyboard.addListener("keyboardDidHide", setKeyboardIsHidden);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener("keyboardDidShow", setKeyboardIsVisible);
+      Keyboard.removeListener("keyboardDidHide", setKeyboardIsHidden);
+    };
+  }, []);
+
   return (
-    <Page testID={testID} style={useContainerStyle(error)}>
-      <StyledText style={ViewStyles.keyText}>
-        {`Enter another person's\npassword to receive vibrations`}
-      </StyledText>
+    <Page testID={testID} style={ViewStyles.keyInputContainer}>
+      {(!isKeyboardVisible || !isSmallScreen()) && (
+        <StyledText style={ViewStyles.keyText}>
+          {`Enter another person's\npassword to receive vibrations`}
+        </StyledText>
+      )}
       <KeyInput
         value={password}
         onChangeText={onChangeText}
@@ -46,25 +69,9 @@ export const EnterPasswordContainer = ({
           Connect
         </StyledText>
       </Button>
-      {error && (
-        <View>
-          <StyledText
-            style={ViewStyles.errorText}
-          >{`There is no one with the password\n"${password}". Check the password is correct and try again`}</StyledText>
-        </View>
-      )}
     </Page>
   );
 };
-
-const useContainerStyle = (error) =>
-  useMemo(
-    () => ({
-      ...ViewStyles.keyInputContainer,
-      height: error ? "100%" : "80%",
-    }),
-    [error]
-  );
 
 const useButtonStyle = (isButtonDisabled) =>
   useMemo(() => {
@@ -75,12 +82,6 @@ const useButtonStyle = (isButtonDisabled) =>
   }, [isButtonDisabled]);
 
 const KeyInput = ({ value, onChangeText, shouldShowLoadingIndicator }) => {
-  const [inputRef, setInputRef] = useState(null);
-
-  useEffect(() => {
-    inputRef?.focus();
-  }, [inputRef]);
-
   if (shouldShowLoadingIndicator) return null;
 
   return (
@@ -88,7 +89,6 @@ const KeyInput = ({ value, onChangeText, shouldShowLoadingIndicator }) => {
       <Icon icon="blankSpace" size={32} />
       <Icon icon="blankSpace" size={32} />
       <TextInput
-        ref={setInputRef}
         value={value}
         onChangeText={onChangeText}
         style={ViewStyles.keyInput}

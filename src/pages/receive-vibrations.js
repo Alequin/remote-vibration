@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import { CannotConnectErrorPage } from "../shared/cannot-connect-error-page";
-import { FullPageLoading } from "../shared/full-page-loading";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useVibration } from "../shared/use-vibration";
 import { mostRecentRoomKey } from "../utilities/async-storage";
-import * as pageNames from "./page-names";
 import { EnterPasswordContainer } from "./receive-vibrations/enter-password-container";
 import { ReceiveVibrationInterface } from "./receive-vibrations/receive-vibrations-interface";
 
@@ -21,6 +20,20 @@ export const ReceiveVibrations = ({ navigation }) => {
     shouldShowPasswordInput,
     shouldShowLoadingIndicator,
   } = useReceiveVibrations();
+
+  useEffect(() => {
+    if (connectToRoomError)
+      Alert.alert(
+        "Sorry there was an issue",
+        `There is no one with the password "${password}".\n\nCheck the password is correct and try again`,
+        [
+          {
+            text: "Continue",
+          },
+        ],
+        { cancelable: false }
+      );
+  }, [connectToRoomError]);
 
   if (shouldShowErrorPage) {
     return (

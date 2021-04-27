@@ -1,12 +1,10 @@
-import React, { useMemo } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { StyleSheet } from "react-native";
 import { useEffect, useState } from "react/cjs/react.development";
 import { CopyPasswordButton } from "../../shared/copy-password-button";
 import { Page } from "../../shared/page";
-import { StyledText } from "../../shared/styled-text";
 import { useVibration } from "../../shared/use-vibration";
 import { VibrationPicker } from "../../shared/vibration-picker";
-import { cyan } from "../../utilities/colours";
 import {
   newRandomPattern,
   RANDOM_PATTERN_NAME,
@@ -14,7 +12,6 @@ import {
 import { AlsoVibrateOnCurrentDeviceCheckBox } from "./also-vibrate-on-current-device-check-box";
 
 export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
-  const [isSendingVibration, setIsSendingVibration] = useState(false);
   const [
     shouldVibrateOnCurrentDevice,
     setShouldVibrateOnCurrentDevice,
@@ -28,24 +25,6 @@ export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
   } = useVibration({
     disableVibration: !shouldVibrateOnCurrentDevice,
   });
-
-  useEffect(() => {
-    let isSendingVibrationTimeout = null;
-    client.addOnMessageEventListener(
-      "confirmVibrationPatternSent",
-      () =>
-        // delay so the message does not flash on the screen too quickly
-        (isSendingVibrationTimeout = setTimeout(
-          () => setIsSendingVibration(false),
-          250
-        ))
-    );
-
-    return () => {
-      clearTimeout(isSendingVibrationTimeout);
-      client.removeOnMessageEventListener("confirmVibrationPatternSent");
-    };
-  }, [client]);
 
   useEffect(() => {
     client.send(
@@ -67,8 +46,6 @@ export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
         activeVibrationName={activePattern?.name}
         onChangeVibrationSpeed={setSpeedModifier}
         onPickPattern={(pattern) => {
-          setIsSendingVibration(true);
-
           if (activePattern?.name === pattern.name) {
             setActivePattern(null);
             return;
@@ -97,11 +74,6 @@ const vibrationPatternToSend = (selectedPattern) => {
 const ViewStyles = StyleSheet.create({
   container: {
     paddingTop: 10,
-    paddingBottom: 20,
     alignItems: "center",
-  },
-  sendingText: {
-    paddingRight: 10,
-    fontSize: 18,
   },
 });

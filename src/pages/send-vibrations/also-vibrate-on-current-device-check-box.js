@@ -4,6 +4,7 @@ import { Button } from "../../shared/button";
 import { Icon } from "../../shared/icon";
 import { textShadow } from "../../shared/text-shadow-style";
 import { StyledText } from "../../shared/styled-text";
+import { dynamicFontSize } from "../../utilities/dynamic-font-size";
 
 export const AlsoVibrateOnCurrentDeviceCheckBox = ({ isActive, onPress }) => (
   <Button style={ViewStyles.container} onPress={onPress}>
@@ -33,7 +34,7 @@ const ViewStyles = StyleSheet.create({
   },
   text: {
     color: "white",
-    fontSize: 18,
+    fontSize: dynamicFontSize(20),
     ...textShadow,
   },
 });

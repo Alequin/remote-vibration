@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { MenuButton } from "./main-menu/menu-button";
 import { Page } from "../shared/page";
 import * as pageNames from "./page-names";
+import { isSmallScreen } from "../utilities/is-small-screen";
 
 export const MainMenu = ({ navigation }) => (
   <Page testID="main-menu-page" style={ViewStyles.container}>
@@ -33,9 +34,9 @@ export const MainMenu = ({ navigation }) => (
 const ViewStyles = StyleSheet.create({
   container: {
     alignItems: "center",
-    padding: 15,
+    padding: "1%",
   },
   button: {
-    margin: "5%",
+    margin: isSmallScreen() ? "3%" : "5%",
   },
 });
