@@ -8,10 +8,11 @@ import * as pageNames from "./src/pages/page-names";
 import { ReceiveVibrations } from "./src/pages/receive-vibrations";
 import { SendVibrations } from "./src/pages/send-vibrations";
 import { vibrateOnCurrentDevice } from "./src/pages/vibrate-on-current-phone";
+import { AdBanner } from "./src/shared/ad-banner";
 import { withBackground } from "./src/shared/background";
 import { Icon } from "./src/shared/icon";
 import { useAppState } from "./src/shared/use-app-state";
-import { darkCyan, spaceCadet } from "./src/utilities/colours";
+import { darkCyan } from "./src/utilities/colours";
 
 const Stack = createStackNavigator();
 
@@ -25,8 +26,8 @@ const App = () => {
   return <AppRouter appState={appState} />;
 };
 
-export const AppRouter = ({ appState }) => (
-  <AppContext.Provider value={{ ...appState }}>
+export const AppRouter = ({ appState = {} }) => (
+  <AppContext.Provider value={appState}>
     <View
       style={{
         width: "100%",
@@ -54,12 +55,7 @@ export const AppRouter = ({ appState }) => (
           {receiveVibrationsPage()}
         </Stack.Navigator>
       </NavigationContainer>
-      {/* <AdMobBanner
-        bannerSize="fullBanner"
-        adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
-        servePersonalizedAds // true or false
-        onDidFailToReceiveAdWithError={this.bannerError}
-      /> */}
+      <AdBanner />
     </View>
   </AppContext.Provider>
 );

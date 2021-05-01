@@ -1,19 +1,14 @@
 import Clipboard from "expo-clipboard";
 import { isEmpty } from "lodash";
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  Dimensions,
-  Keyboard,
-  StyleSheet,
-  TextInput,
-  View,
-} from "react-native";
+import React, { useMemo } from "react";
+import { Dimensions, StyleSheet, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { borderRadius } from "../../shared/border-radius";
 import { Button } from "../../shared/button";
 import { Icon } from "../../shared/icon";
 import { Page } from "../../shared/page";
 import { StyledText } from "../../shared/styled-text";
+import { useIsKeyboardVisible } from "../../shared/use-is-keyboard-visible";
 import { mostRecentRoomKey } from "../../utilities/async-storage";
 import { darkSpaceCadet, transparency, white } from "../../utilities/colours";
 import { dynamicFontSize } from "../../utilities/dynamic-font-size";
@@ -28,21 +23,8 @@ export const EnterPasswordContainer = ({
   onChangeText,
   shouldShowLoadingIndicator,
 }) => {
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const isButtonDisabled = isEmpty(password);
-
-  useEffect(() => {
-    const setKeyboardIsVisible = () => setIsKeyboardVisible(true);
-    const setKeyboardIsHidden = () => setIsKeyboardVisible(false);
-    Keyboard.addListener("keyboardDidShow", setKeyboardIsVisible);
-    Keyboard.addListener("keyboardDidHide", setKeyboardIsHidden);
-
-    // cleanup function
-    return () => {
-      Keyboard.removeListener("keyboardDidShow", setKeyboardIsVisible);
-      Keyboard.removeListener("keyboardDidHide", setKeyboardIsHidden);
-    };
-  }, []);
+  const isKeyboardVisible = useIsKeyboardVisible();
 
   return (
     <Page testID={testID} style={ViewStyles.keyInputContainer}>
