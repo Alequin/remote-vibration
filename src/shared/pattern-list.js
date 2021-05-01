@@ -1,7 +1,6 @@
 import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { borderRadius } from "../shared/border-radius";
-import { gray } from "../utilities/colours";
 import { ListButton } from "./pattern-list/list-button";
 import { ItemSeparator } from "./pattern-list/list-separator";
 

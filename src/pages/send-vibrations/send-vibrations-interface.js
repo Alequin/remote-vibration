@@ -11,7 +11,7 @@ import {
 } from "../../utilities/vibration-patterns";
 import { AlsoVibrateOnCurrentDeviceCheckBox } from "./also-vibrate-on-current-device-check-box";
 
-export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
+export const SendVibrationsInterface = ({ password, client, testID }) => {
   const [
     shouldVibrateOnCurrentDevice,
     setShouldVibrateOnCurrentDevice,
@@ -40,7 +40,7 @@ export const SendVibrationsInterface = ({ connectionKey, client, testID }) => {
 
   return (
     <Page style={ViewStyles.container} testID={testID}>
-      <CopyPasswordButton label="Password" connectionKey={connectionKey} />
+      <CopyPasswordButton label="Password" password={password} />
       <VibrationPicker
         listHeight="100%"
         activeVibrationName={activePattern?.name}

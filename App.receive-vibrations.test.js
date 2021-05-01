@@ -721,7 +721,7 @@ describe("App - receive vibrations", () => {
 
     // 5. Press button to copy key
     await act(async () =>
-      fireEvent.press(await findByTestId("copyConnectionKeyButton"))
+      fireEvent.press(await findByTestId("copyPasswordButton"))
     );
 
     // 6. Confirm the key is copied

@@ -31,7 +31,7 @@ export const SendVibrations = ({ navigation }) => {
   return (
     <SendVibrationsInterface
       testID="send-vibrations-page"
-      connectionKey={password}
+      password={password}
       client={client}
     />
   );

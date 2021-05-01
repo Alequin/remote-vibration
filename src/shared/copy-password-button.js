@@ -7,7 +7,7 @@ import { dynamicFontSize } from "../utilities/dynamic-font-size";
 import { Icon } from "./icon";
 import { StyledText } from "./styled-text";
 
-export const CopyPasswordButton = ({ label, connectionKey }) => {
+export const CopyPasswordButton = ({ label, password }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const fadeOut = () => {
@@ -21,18 +21,16 @@ export const CopyPasswordButton = ({ label, connectionKey }) => {
   return (
     <>
       <TouchableOpacity
-        testID="copyConnectionKeyButton"
+        testID="copyPasswordButton"
         accessibilityRole="button"
-        style={ViewStyles.connectionKeyButton}
+        style={ViewStyles.passwordButton}
         onPress={() => {
-          Clipboard.setString(connectionKey);
+          Clipboard.setString(password);
           fadeOut();
         }}
       >
-        <StyledText style={ViewStyles.connectionKeyTitleText}>
-          {label}:
-        </StyledText>
-        <Text style={ViewStyles.connectionKeyText}>{connectionKey}</Text>
+        <StyledText style={ViewStyles.passwordTitleText}>{label}:</StyledText>
+        <Text style={ViewStyles.passwordText}>{password.toLowerCase()}</Text>
         <Icon icon="copyToClipboard" size={24} color="white" />
       </TouchableOpacity>
       <Animated.View
@@ -40,27 +38,27 @@ export const CopyPasswordButton = ({ label, connectionKey }) => {
           opacity: fadeAnim,
         }}
       >
-        <Text style={ViewStyles.connectionKeyCopiedMessage}>Copied</Text>
+        <Text style={ViewStyles.passwordCopiedMessage}>Copied</Text>
       </Animated.View>
     </>
   );
 };
 
 const ViewStyles = StyleSheet.create({
-  connectionKeyButton: {
+  passwordButton: {
     flexDirection: "row",
     alignItems: "center",
     paddingTop: 5,
   },
-  connectionKeyCopiedMessage: {
+  passwordCopiedMessage: {
     color: spaceCadet,
     fontSize: 14,
   },
-  connectionKeyTitleText: {
+  passwordTitleText: {
     marginRight: 5,
     fontSize: dynamicFontSize(20),
   },
-  connectionKeyText: {
+  passwordText: {
     marginRight: 5,
     color: darkCyan,
     fontSize: dynamicFontSize(20),
