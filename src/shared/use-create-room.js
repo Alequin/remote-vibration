@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../app-context";
+import { authToken } from "../../auth-token.json";
 
 export const useCreateRoom = () => {
   const { deviceId, isAppActive } = useContext(AppContext);
@@ -11,7 +12,7 @@ export const useCreateRoom = () => {
     if (isAppActive) {
       fetch("http://remote-vibration-server.herokuapp.com/room", {
         method: "POST",
-        headers: { deviceId },
+        headers: { deviceId, authToken },
       })
         .then(async (response) => {
           if (response.status >= 400) {

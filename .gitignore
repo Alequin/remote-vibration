@@ -9,5 +9,8 @@ npm-debug.*
 *.orig.*
 web-build/
 
+# do not commit anything related to the authToken
+auth-token.json
+
 # macOS
 .DS_Store
