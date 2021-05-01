@@ -34,7 +34,7 @@ const ViewStyles = StyleSheet.create({
   },
   text: {
     color: "white",
-    fontSize: dynamicFontSize(20),
+    fontSize: dynamicFontSize(18),
     ...textShadow,
   },
 });
