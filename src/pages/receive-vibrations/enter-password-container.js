@@ -23,7 +23,6 @@ const windowHeight = Dimensions.get("window").height;
 
 export const EnterPasswordContainer = ({
   onPressConnect,
-  error,
   testID,
   password,
   onChangeText,

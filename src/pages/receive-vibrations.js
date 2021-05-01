@@ -62,7 +62,7 @@ export const ReceiveVibrations = ({ navigation }) => {
   return (
     <ReceiveVibrationInterface
       testID="receive-vibrations-page"
-      connectionKey={password}
+      password={password}
       currentVibrationPattern={activePattern}
     />
   );

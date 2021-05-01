@@ -5,13 +5,13 @@ import { Page } from "../../shared/page";
 import { StyledText } from "../../shared/styled-text";
 
 export const ReceiveVibrationInterface = ({
-  connectionKey,
+  password,
   testID,
   currentVibrationPattern,
 }) => {
   return (
     <Page testID={testID} style={ViewStyles.container}>
-      <CopyPasswordButton label="Connected To" connectionKey={connectionKey} />
+      <CopyPasswordButton label="Connected To" password={password} />
       <View style={ViewStyles.currentVibrationContainer}>
         <StyledText style={ViewStyles.currentVibrationHeader}>
           Current Vibration Pattern

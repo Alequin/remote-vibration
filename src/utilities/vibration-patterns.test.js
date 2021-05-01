@@ -7,10 +7,7 @@ describe("vibration-patterns - newRandomPattern", () => {
       .spyOn(Math, "random")
       .mockImplementation(() => mockRandomOutput.shift());
 
-    expect(newRandomPattern().pattern).toEqual([
-      0,
-      ...new Array(100).fill(400),
-    ]);
+    expect(newRandomPattern().pattern).toEqual([0, ...new Array(30).fill(400)]);
   });
 
   it("half's all the elements in odd indices so the time between vibrations is not too long", () => {
