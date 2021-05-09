@@ -1,7 +1,6 @@
 import Constants from "expo-constants";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { AppState, Vibration } from "react-native";
-import { useCallback } from "react/cjs/react.development";
 import * as asyncStorage from "../utilities/async-storage";
 import { newDeviceKey } from "./use-app-state/new-device-key";
 import { isStateActive } from "./use-app-state/is-state-active";

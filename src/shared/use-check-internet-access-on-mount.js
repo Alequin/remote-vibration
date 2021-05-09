@@ -1,6 +1,5 @@
 import * as Network from "expo-network";
-import { useState } from "react";
-import { useEffect } from "react/cjs/react.development";
+import { useState, useEffect } from "react";
 
 // TODO - add permission for reading internet access
 export const useCheckInternetAccessOnMount = () => {

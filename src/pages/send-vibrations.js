@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect } from "react/cjs/react.development";
+import React, { useEffect } from "react";
 import { CannotConnectErrorPage } from "../shared/cannot-connect-error-page";
 import { FullPageLoading } from "../shared/full-page-loading";
 import { useConnectToRoom } from "../shared/use-connect-to-room";

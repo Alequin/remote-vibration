@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import { useEffect, useState } from "react/cjs/react.development";
 import { CopyPasswordButton } from "../../shared/copy-password-button";
 import { Page } from "../../shared/page";
 import { useVibration } from "../../shared/use-vibration";
