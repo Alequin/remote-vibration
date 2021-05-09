@@ -12,49 +12,50 @@ export const useConnectToRoom = () => {
     setConnectedToRoomError,
   ]);
 
-  const connectToClient = useCallback(() => {
-    let hasUnmounted = false;
-    setWebsocketError(null);
+  useEffect(() => {
+    hasUnmounted = false;
+
     setWebsocketError(null);
     const clientManager = websocketConnection();
 
-    clientManager
-      .connect()
-      .then((newClient) => {
-        newClient.addOnMessageEventListener(
-          "confirmRoomConnection",
-          () => {
-            setIsLoading(false);
-            setIsConnected(true);
-          },
-          ({ parsedData }) => {
-            setIsLoading(false);
-            setConnectedToRoomError(parsedData.error);
-          }
-        );
+    if (!client) {
+      clientManager
+        .connect()
+        .then((newClient) => {
+          newClient.addOnMessageEventListener(
+            "confirmRoomConnection",
+            () => {
+              if (hasUnmounted) return;
+              setIsLoading(false);
+              setIsConnected(true);
+            },
+            ({ parsedData }) => {
+              if (hasUnmounted) return;
+              setIsLoading(false);
+              setConnectedToRoomError(parsedData.error);
+            }
+          );
 
-        // Show error page if client disconnects unexpectedly
-        newClient.addOnCloseEventListener("on-close", () => {
+          // Show error page if client disconnects unexpectedly
+          newClient.addOnCloseEventListener("on-close", () => {
+            if (hasUnmounted) return;
+            setIsConnected(false);
+            setWebsocketError("client connection closed");
+          });
+
+          setClient(newClient);
+        })
+        .catch((error) => {
           if (hasUnmounted) return;
-          setIsConnected(false);
-          setWebsocketError("client connection closed");
+          setIsLoading(false);
+          setWebsocketError(error);
         });
-
-        setClient(newClient);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        setWebsocketError(error);
-      });
-
+    }
     return () => {
       clientManager?.disconnect();
       hasUnmounted = true;
     };
-  }, []);
-
-  // Create client on mount
-  useEffect(connectToClient, []);
+  }, [client]);
 
   const connectToRoom = useCallback(
     (password) => {
@@ -74,7 +75,7 @@ export const useConnectToRoom = () => {
 
   return {
     client,
-    resetClient: connectToClient,
+    resetClient: useCallback(() => setClient(null), []),
     isLoading,
     isConnected,
     connectToRoomError,
