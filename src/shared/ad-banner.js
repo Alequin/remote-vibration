@@ -3,6 +3,10 @@ import { noop } from "lodash";
 import React from "react";
 import { isSmallScreen } from "../utilities/is-small-screen";
 import { useIsKeyboardVisible } from "./use-is-keyboard-visible";
+import { bannerUnitId } from "../../secrets.json";
+
+// Test admob unit id
+const testBannerId = "ca-app-pub-3940256099942544/6300978111";
 
 export const AdBanner = () => {
   const isKeyboardVisible = useIsKeyboardVisible();
@@ -11,7 +15,7 @@ export const AdBanner = () => {
   return (
     <AdMobBanner
       bannerSize="fullBanner"
-      adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+      adUnitID={bannerUnitId || testBannerId}
       servePersonalizedAds // true or false
       onDidFailToReceiveAdWithError={noop}
     />
