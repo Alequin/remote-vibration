@@ -1,7 +1,8 @@
 import { AdMobBanner } from "expo-ads-admob";
+import { noop } from "lodash";
 import React from "react";
-import { useIsKeyboardVisible } from "./use-is-keyboard-visible";
 import { isSmallScreen } from "../utilities/is-small-screen";
+import { useIsKeyboardVisible } from "./use-is-keyboard-visible";
 
 export const AdBanner = () => {
   const isKeyboardVisible = useIsKeyboardVisible();
@@ -12,7 +13,7 @@ export const AdBanner = () => {
       bannerSize="fullBanner"
       adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
       servePersonalizedAds // true or false
-      onDidFailToReceiveAdWithError={this.bannerError}
+      onDidFailToReceiveAdWithError={noop}
     />
   );
 };

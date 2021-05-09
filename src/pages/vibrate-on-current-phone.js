@@ -11,11 +11,14 @@ export const vibrateOnCurrentDevice = ({ navigation }) => {
   });
 
   useEffect(() => {
+    let hasUnmounted = false;
     lastActiveVibrationPattern
       .read()
       .then(
-        async (savedPattern) => savedPattern && setActivePattern(savedPattern)
+        async (savedPattern) =>
+          !hasUnmounted && savedPattern && setActivePattern(savedPattern)
       );
+    return () => (hasUnmounted = true);
   }, []);
 
   useEffect(

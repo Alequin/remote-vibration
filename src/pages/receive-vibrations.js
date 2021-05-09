@@ -125,12 +125,17 @@ const usePassword = () => {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
+    let hasUnmounted = false;
     mostRecentRoomKey
       .read()
       .then(
-        (recordedKey) => !password && recordedKey && setPassword(recordedKey)
+        (recordedKey) =>
+          !hasUnmounted && !password && recordedKey && setPassword(recordedKey)
       );
+    return () => (hasUnmounted = true);
   }, []);
+
+  useEffect(() => {}, []);
 
   return { password, setPassword };
 };

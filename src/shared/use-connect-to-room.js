@@ -13,6 +13,7 @@ export const useConnectToRoom = () => {
   ]);
 
   const connectToClient = useCallback(() => {
+    let hasUnmounted = false;
     setWebsocketError(null);
     setWebsocketError(null);
     const clientManager = websocketConnection();
@@ -34,6 +35,7 @@ export const useConnectToRoom = () => {
 
         // Show error page if client disconnects unexpectedly
         newClient.addOnCloseEventListener("on-close", () => {
+          if (hasUnmounted) return;
           setIsConnected(false);
           setWebsocketError("client connection closed");
         });
@@ -45,7 +47,10 @@ export const useConnectToRoom = () => {
         setWebsocketError(error);
       });
 
-    return () => clientManager?.disconnect();
+    return () => {
+      clientManager?.disconnect();
+      hasUnmounted = true;
+    };
   }, []);
 
   // Create client on mount

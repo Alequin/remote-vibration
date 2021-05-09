@@ -58,7 +58,9 @@ const useIsNewSession = () => {
   const [isNewSession, setIsNewSession] = useState(false);
 
   useEffect(() => {
+    let hasUnmounted = false;
     asyncStorage.sessionId.read().then((recordedSessionId) => {
+      if (hasUnmounted) return;
       const currentSessionId = Constants.sessionId;
       const isNewSession = currentSessionId !== recordedSessionId;
 
@@ -68,6 +70,7 @@ const useIsNewSession = () => {
       setSessionId(currentSessionId);
       setHasLoadedSession(true);
     });
+    return () => (hasUnmounted = true);
   }, []);
 
   return { sessionId, isNewSession, hasLoadedSession };
