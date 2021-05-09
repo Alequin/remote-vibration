@@ -17,6 +17,10 @@ export const SendVibrationsInterface = ({ password, client, testID }) => {
     setShouldVibrateOnCurrentDevice,
   ] = useState(false);
 
+  const [hasFirstPatternBeingPicked, setHasFirstPatternBeingPicked] = useState(
+    false
+  );
+
   const {
     activePattern,
     setActivePattern,
@@ -27,16 +31,18 @@ export const SendVibrationsInterface = ({ password, client, testID }) => {
   });
 
   useEffect(() => {
-    client.send(
-      JSON.stringify({
-        type: "sendVibrationPattern",
-        data: {
-          vibrationPattern: vibrationPatternToSend(activePattern),
-          speed: speedModifier,
-        },
-      })
-    );
-  }, [activePattern, speedModifier]);
+    if (hasFirstPatternBeingPicked) {
+      client.send(
+        JSON.stringify({
+          type: "sendVibrationPattern",
+          data: {
+            vibrationPattern: vibrationPatternToSend(activePattern),
+            speed: speedModifier,
+          },
+        })
+      );
+    }
+  }, [hasFirstPatternBeingPicked, activePattern, speedModifier]);
 
   return (
     <Page style={ViewStyles.container} testID={testID}>
@@ -52,6 +58,7 @@ export const SendVibrationsInterface = ({ password, client, testID }) => {
           }
 
           setActivePattern(pattern);
+          if (!hasFirstPatternBeingPicked) setHasFirstPatternBeingPicked(true);
         }}
       />
       <AlsoVibrateOnCurrentDeviceCheckBox
