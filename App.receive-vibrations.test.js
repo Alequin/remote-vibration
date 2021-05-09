@@ -775,6 +775,37 @@ describe("App - receive vibrations", () => {
     expect(getByText("Current Vibration Pattern")).toBeDefined();
     expect(getByText(mockVibrationPattern.name)).toBeDefined();
   });
+
+  it("disconnects the websocket client when the page is unmounted", async () => {
+    mockCreateARoom();
+
+    const { getByTestId, findAllByRole, debug } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+    );
+
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
+
+    // 2. Moves to expected page
+    await moveToReceiveVibrationsPage(findAllByRole);
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
+
+    // 3. Confirm the client has not been closed
+    expect(mockWebsocketClient.close).toHaveBeenCalledTimes(0);
+
+    // 4. Return to the main menu
+    const backButton = (await findAllByRole("button")).find((button) =>
+      within(button).queryByTestId("arrowBackSharpIcon")
+    );
+
+    await act(async () => fireEvent.press(backButton));
+    expect(getByTestId("main-menu-page")).toBeDefined();
+
+    // 5. Confirm the websocket client closed the connection
+    await waitForExpect(() =>
+      expect(mockWebsocketClient.close).toHaveBeenCalledTimes(1)
+    );
+  });
 });
 
 const moveToReceiveVibrationsPage = async (findAllByRole) => {

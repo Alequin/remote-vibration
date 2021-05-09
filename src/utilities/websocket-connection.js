@@ -12,7 +12,7 @@ export const websocketConnection = () => {
 
   const connect = async () => {
     return new Promise((resolve, reject) => {
-      const client = newWebsocketClient();
+      client = newWebsocketClient();
 
       applyOnMessageHandlersFunctions(client);
       applyOnCloseHandlersFunctions(client);
