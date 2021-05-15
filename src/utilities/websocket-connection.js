@@ -1,50 +1,41 @@
 import { reject } from "lodash";
 import { newWebsocketClient } from "./establish-websocket-connection/new-websocket-client";
 
-export const websocketConnection = () => {
-  let client = null;
-  let isDisconnected = false;
+export const websocketConnection = async () =>
+  new Promise((resolve, reject) => {
+    let isDisconnected = false;
+    const client = newWebsocketClient();
 
-  const disconnect = () => {
-    isDisconnected = true;
-    client?.close();
-  };
+    applyOnMessageHandlersFunctions(client);
+    applyOnCloseHandlersFunctions(client);
 
-  const connect = async () => {
-    return new Promise((resolve, reject) => {
-      client = newWebsocketClient();
+    let hasTimedOut = false;
+    const timeout = setTimeout(() => {
+      hasTimedOut = true;
+      reject(new Error("connection timeout"));
+    }, 30000);
 
-      applyOnMessageHandlersFunctions(client);
-      applyOnCloseHandlersFunctions(client);
-
-      let hasTimedOut = false;
-      const timeout = setTimeout(() => {
-        hasTimedOut = true;
-        reject("connection timeout");
-      }, 30000);
-
-      client.onopen = () => {
-        // If it connects after timing out or disconnecting close instantly
-        if (hasTimedOut || isDisconnected) client.close();
-        clearTimeout(timeout);
-        resolve(client);
-      };
-      client.onerror = (error) => {
-        clearTimeout(timeout);
-        reject(error);
-      };
-      client.addOnCloseEventListener("reject-on-close", () => {
-        clearTimeout(timeout);
-        reject("connection closed");
+    client.onopen = () => {
+      // If it connects after timing out or disconnecting close instantly
+      if (hasTimedOut || isDisconnected) client.close();
+      clearTimeout(timeout);
+      resolve({
+        client,
+        disconnect: () => {
+          isDisconnected = true;
+          client?.close();
+        },
       });
+    };
+    client.onerror = (error) => {
+      clearTimeout(timeout);
+      reject(error);
+    };
+    client.addOnCloseEventListener("reject-on-close", () => {
+      clearTimeout(timeout);
+      reject("connection closed");
     });
-  };
-
-  return {
-    connect,
-    disconnect,
-  };
-};
+  });
 
 const applyOnMessageHandlersFunctions = (client) => {
   let onMessageEventHandlers = [];

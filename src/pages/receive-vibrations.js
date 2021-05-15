@@ -38,7 +38,9 @@ export const ReceiveVibrations = ({ navigation }) => {
   if (shouldShowErrorPage) {
     return (
       <CannotConnectErrorPage
-        onPress={resetClient}
+        onPress={() => {
+          resetClient();
+        }}
         buttonText="Try to Reconnect"
       />
     );
@@ -75,7 +77,7 @@ const useReceiveVibrations = () => {
     client,
     resetClient,
     isLoading,
-    isConnected,
+    isConnectedToRoom,
     connectToRoomError,
     websocketError,
     clearError,
@@ -103,9 +105,10 @@ const useReceiveVibrations = () => {
   const shouldShowErrorPage =
     websocketError || connectToRoomError === "timeout";
 
-  const shouldShowLoadingIndicator = !client || (!isConnected && isLoading);
+  const shouldShowLoadingIndicator =
+    !client || (!isConnectedToRoom && isLoading);
 
-  const shouldShowPasswordInput = !isLoading && !isConnected;
+  const shouldShowPasswordInput = !isLoading && !isConnectedToRoom;
 
   return {
     activePattern,

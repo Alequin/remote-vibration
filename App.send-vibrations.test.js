@@ -40,15 +40,15 @@ const MOCK_DEVICE_ID = "123";
 const MOCK_ROOM_KEY = "234";
 
 describe("App - send vibrations", () => {
-  const mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
+  let mockWebsocketClient = null;
 
-  const establishWebsocketSpy = jest
-    .spyOn(newWebsocketClient, "newWebsocketClient")
-    .mockReturnValue(mockWebsocketClient);
-
+  let establishWebsocketSpy = null;
   beforeEach(() => {
-    establishWebsocketSpy.mockClear();
     jest.clearAllMocks();
+    mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
+    establishWebsocketSpy = jest
+      .spyOn(newWebsocketClient, "newWebsocketClient")
+      .mockReturnValue(mockWebsocketClient);
   });
 
   afterEach(() => {
@@ -283,6 +283,7 @@ describe("App - send vibrations", () => {
       establishWebsocketSpy,
       mockWebsocketClient
     );
+    console.log(mockWebsocketClient.send.mock.calls);
 
     // 4. Fake client disconnection
     expect(mockWebsocketClient.onclose).toBeDefined();
@@ -299,7 +300,7 @@ describe("App - send vibrations", () => {
     );
     await act(async () => fireEvent.press(reconnectButton));
 
-    // 7. Confirm the client connection is being made again
+    // 7. Confirm the client connection is made again
     await waitForExpect(async () => {
       // 7.1. Make the call to open a websocket
       expect(establishWebsocketSpy).toHaveBeenCalledTimes(2);
@@ -308,6 +309,7 @@ describe("App - send vibrations", () => {
     expect(mockWebsocketClient.onopen).toBeDefined();
     await act(async () => mockWebsocketClient.onopen());
     // 7.3. Confirm a message is send to connect to the new room
+    console.log("7.3");
     await waitForExpect(() => {
       expect(mockWebsocketClient.send).toHaveBeenCalledTimes(2);
       expect(mockWebsocketClient.send).toHaveBeenCalledWith(
@@ -319,6 +321,7 @@ describe("App - send vibrations", () => {
     });
 
     // 7.4. Fake receiving a message confirming the room connection
+    console.log("7.4");
     await act(async () =>
       mockWebsocketClient.onmessage({
         data: JSON.stringify({
@@ -328,6 +331,7 @@ describe("App - send vibrations", () => {
     );
 
     // 8. Confirm the page has loaded
+    console.log("8");
     await waitForExpect(() => {
       expect(getByText(`Password:`));
     });
@@ -895,10 +899,14 @@ describe("App - send vibrations", () => {
     await moveToSendVibrationsPage(getAllByRole);
     expect(getByTestId("send-vibrations-page")).toBeDefined();
 
-    // 3. Confirm the client has not been closed
+    // 3. Fake the connection to the websocket
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 4. Confirm the client has not been closed
     expect(mockWebsocketClient.close).toHaveBeenCalledTimes(0);
 
-    // 4. Return to the main menu
+    // 5. Return to the main menu
     const backButton = (await findAllByRole("button")).find((button) =>
       within(button).queryByTestId("arrowBackSharpIcon")
     );
@@ -906,10 +914,10 @@ describe("App - send vibrations", () => {
     await act(async () => fireEvent.press(backButton));
     expect(getByTestId("main-menu-page")).toBeDefined();
 
-    // 5. Confirm the websocket client closed the connection
-    await waitForExpect(() =>
-      expect(mockWebsocketClient.close).toHaveBeenCalledTimes(1)
-    );
+    // 6. Confirm the websocket client closed the connection
+    await waitForExpect(() => {
+      expect(mockWebsocketClient.close).toHaveBeenCalledTimes(1);
+    });
   });
 });
 

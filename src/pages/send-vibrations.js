@@ -20,7 +20,9 @@ export const SendVibrations = ({ navigation }) => {
       <CannotConnectErrorPage
         testID="send-vibrations-page"
         buttonText={"Try to Reconnect"}
-        onPress={resetClient}
+        onPress={() => {
+          resetClient();
+        }}
       />
     );
 
@@ -50,21 +52,21 @@ const useSendVibrations = () => {
   const {
     client,
     resetClient,
-    isConnected,
+    isConnectedToRoom,
     connectToRoomError,
     websocketError,
     connectToRoom,
   } = useConnectToRoom();
 
   useEffect(() => {
-    if (password && client) connectToRoom(password);
-  }, [password, client]);
+    if (password && client && !isConnectedToRoom) connectToRoom(password);
+  }, [isConnectedToRoom, client, password]);
 
   const shouldShowErrorPage =
     createRoomError || websocketError || connectToRoomError;
 
   const shouldShowLoadingIndicator =
-    !canHideIndicator || isStillCreatingRoom || !isConnected;
+    !canHideIndicator || isStillCreatingRoom || !isConnectedToRoom;
 
   return {
     resetClient,

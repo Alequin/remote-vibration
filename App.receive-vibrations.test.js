@@ -45,14 +45,15 @@ const MOCK_DEVICE_ID = "123";
 const MOCK_ROOM_KEY = "234";
 
 describe("App - receive vibrations", () => {
-  const mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
+  let mockWebsocketClient = null;
 
-  const establishWebsocketSpy = jest
-    .spyOn(newWebsocketClient, "newWebsocketClient")
-    .mockReturnValue(mockWebsocketClient);
-
+  let establishWebsocketSpy = null;
   beforeEach(() => {
     jest.clearAllMocks();
+    mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
+    establishWebsocketSpy = jest
+      .spyOn(newWebsocketClient, "newWebsocketClient")
+      .mockReturnValue(mockWebsocketClient);
   });
 
   afterEach(() => {
@@ -193,14 +194,10 @@ describe("App - receive vibrations", () => {
   it("enables the connect button when the user enters anything into the input", async () => {
     mockCreateARoom();
 
-    const {
-      getByTestId,
-      getAllByRole,
-      findAllByRole,
-      getByPlaceholderText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(
+        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      );
 
     // 1. Starts on main menu
     expect(getByTestId("main-menu-page")).toBeDefined();
@@ -230,14 +227,10 @@ describe("App - receive vibrations", () => {
   it("make a request to connect to a room when the connect button is pressed", async () => {
     mockCreateARoom();
 
-    const {
-      getByTestId,
-      getAllByRole,
-      findAllByRole,
-      getByPlaceholderText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(
+        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      );
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -507,14 +500,10 @@ describe("App - receive vibrations", () => {
   it("saves the Password when the connect button is pressed", async () => {
     mockCreateARoom();
 
-    const {
-      getByTestId,
-      getAllByRole,
-      findAllByRole,
-      getByPlaceholderText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(
+        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      );
 
     // 1. Starts on main menu
     expect(getByTestId("main-menu-page")).toBeDefined();
@@ -560,14 +549,10 @@ describe("App - receive vibrations", () => {
   it("attempts to load a saved Password when the page is mounted", async () => {
     mockCreateARoom();
 
-    const {
-      getByTestId,
-      getAllByRole,
-      findAllByRole,
-      getByPlaceholderText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(
+        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      );
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -589,14 +574,10 @@ describe("App - receive vibrations", () => {
   it("vibrates when a vibration pattern message is received", async () => {
     mockCreateARoom();
 
-    const {
-      getByTestId,
-      getAllByRole,
-      findAllByRole,
-      getByPlaceholderText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(
+        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      );
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -635,14 +616,10 @@ describe("App - receive vibrations", () => {
   it("stops vibrating when an empty vibration pattern message is received", async () => {
     mockCreateARoom();
 
-    const {
-      getByTestId,
-      getAllByRole,
-      findAllByRole,
-      getByPlaceholderText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(
+        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      );
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -787,13 +764,21 @@ describe("App - receive vibrations", () => {
     expect(getByTestId("main-menu-page")).toBeDefined();
 
     // 2. Moves to expected page
+    console.log(mockWebsocketClient.close.mock.calls);
     await moveToReceiveVibrationsPage(findAllByRole);
+
     expect(getByTestId("receive-vibrations-page")).toBeDefined();
 
-    // 3. Confirm the client has not been closed
+    // 3. Fake the websocket opening
+    console.log(mockWebsocketClient.close.mock.calls);
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 4. Confirm the client has not been closed
+    console.log(mockWebsocketClient.close.mock.calls);
     expect(mockWebsocketClient.close).toHaveBeenCalledTimes(0);
 
-    // 4. Return to the main menu
+    // 5. Return to the main menu
     const backButton = (await findAllByRole("button")).find((button) =>
       within(button).queryByTestId("arrowBackSharpIcon")
     );
@@ -801,10 +786,10 @@ describe("App - receive vibrations", () => {
     await act(async () => fireEvent.press(backButton));
     expect(getByTestId("main-menu-page")).toBeDefined();
 
-    // 5. Confirm the websocket client closed the connection
-    await waitForExpect(() =>
-      expect(mockWebsocketClient.close).toHaveBeenCalledTimes(1)
-    );
+    // 6. Confirm the websocket client closed the connection
+    await waitForExpect(() => {
+      expect(mockWebsocketClient.close).toHaveBeenCalledTimes(1);
+    });
   });
 });
 
