@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body style="background: black;">
+    <div id=background>
+        <div id=opacity-container style="">
+        <div class="vibration-line vibration-line-small"></div>
+        <div class="vibration-line vibration-line-medium"></div>
+        <div class="vibration-line vibration-line-large"></div>
+        <div id=phone-background>
+            <div id=phone-top-border></div>
+            <div id=phone-screen-section>
+                <div class="phone-side-border"></div>
+                <div id="phone-screen">
+                    <img id=wifi-icon  src="./wifi.png">
+                </div>
+                <div class="phone-side-border"></div>
+            </div>
+            <div id=phone-bottom>
+                <div id=phone-button></div>
+            </div>
+           
+        </div>
+        <div class="vibration-line vibration-line-large"></div>
+        <div class="vibration-line vibration-line-medium"></div>
+        <div class="vibration-line vibration-line-small"></div>
+    </div>
+    </div>
+
+    <div style="height: 100px;"></div>
+
+    <style>
+        #background {
+            width: 750px; 
+            height: 750px; 
+            background: linear-gradient(0deg, #272749 1%,  #008B8B 100%); 
+        }
+
+        #opacity-container{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: rotate(10deg);
+            width: 100%; 
+            height: 100%; 
+            opacity: 0.8;
+        }
+
+        .vibration-line {
+            width: 7px;
+            background: white;
+            margin: 0 10px;
+            border-radius: 50px;
+        }
+
+        .vibration-line-large {
+            height: 45%;
+        }
+
+        .vibration-line-medium {
+            height: 22.5%;
+        }
+
+        .vibration-line-small {
+            height: 11.75%;
+        }
+
+        #phone-background {
+            width: 240px;
+            height: 400px;
+            margin: 0 10px;
+        }
+
+
+        #phone-top-border {
+            background: white;
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            width: 100%;
+            height: 7.5%;
+        }
+
+        #phone-screen-section {
+            width: 100%;
+            height: 80%;
+            display: flex;
+        }
+
+        #phone-screen {
+            width: 80%;
+            height: 100%;
+            opacity: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #wifi-icon {
+            width: 60%; 
+            height: 30%;
+        }
+
+        .phone-side-border {
+            width: 10%;
+            height: 100%;
+            background: white;
+        }
+
+        #phone-bottom {
+            height: 12.5%;
+            background: white;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #phone-button {
+            margin: auto;
+            width: 30%;
+            height: 40%;
+            border-radius: 50px;
+            background: linear-gradient(0deg, #233150,  #213854); 
+        } 
+    </style>
+</body>
+</html>
