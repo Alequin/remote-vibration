@@ -11,6 +11,7 @@ export const useAppState = () => {
   const { deviceId } = useDeviceId(isNewSession);
 
   return {
+    environment: process.env.NODE_ENV,
     isLoading: !hasLoadedSession || !deviceId,
     isAppActive,
     appState,

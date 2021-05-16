@@ -55,7 +55,7 @@ export const AppRouter = ({ appState = {} }) => (
           {receiveVibrationsPage()}
         </Stack.Navigator>
       </NavigationContainer>
-      <AdBanner />
+      <AdBanner environment={appState.environment} />
     </View>
   </AppContext.Provider>
 );

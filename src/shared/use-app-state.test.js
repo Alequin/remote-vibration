@@ -45,6 +45,7 @@ describe("use-app-state", () => {
       expect(appState).toEqual({
         isLoading: false,
         isAppActive: true,
+        environment: "test",
         appState: ACTIVE_APP_STATE,
         isNewSession: true,
         sessionId: "123",

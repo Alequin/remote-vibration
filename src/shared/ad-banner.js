@@ -4,11 +4,9 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { isSmallScreen } from "../utilities/is-small-screen";
 import { useIsKeyboardVisible } from "./use-is-keyboard-visible";
+import { bannerUnitId } from "../../secrets.json";
 
-// Test admob unit id
-const testBannerId = "ca-app-pub-3940256099942544/6300978111";
-
-export const AdBanner = () => {
+export const AdBanner = (environment) => {
   const isKeyboardVisible = useIsKeyboardVisible();
   // On small screens when the keyboard is visible some elements do not fit on the page
   if (isSmallScreen() && isKeyboardVisible) return null;
@@ -16,7 +14,11 @@ export const AdBanner = () => {
     <View style={ViewStyles.adContainer}>
       <AdMobBanner
         bannerSize="smartBannerPortrait"
-        adUnitID={testBannerId}
+        adUnitID={
+          environment === "production"
+            ? bannerUnitId
+            : "ca-app-pub-3940256099942544/6300978111" // Test admob unit id
+        }
         servePersonalizedAds={false}
         onDidFailToReceiveAdWithError={noop}
       />
