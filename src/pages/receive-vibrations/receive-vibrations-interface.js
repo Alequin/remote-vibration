@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { CopyPasswordButton } from "../../shared/copy-password-button";
 import { Page } from "../../shared/page";
 import { StyledText } from "../../shared/styled-text";
+import { dynamicFontSize } from "../../utilities/dynamic-font-size";
 
 export const ReceiveVibrationInterface = ({
   password,
@@ -35,11 +36,11 @@ const ViewStyles = StyleSheet.create({
     alignItems: "center",
   },
   currentVibrationHeader: {
-    fontSize: 22,
+    fontSize: dynamicFontSize(22),
     textAlign: "center",
   },
   currentVibrationText: {
-    fontSize: 24,
+    fontSize: dynamicFontSize(24),
     textAlign: "center",
     fontWeight: "bold",
   },

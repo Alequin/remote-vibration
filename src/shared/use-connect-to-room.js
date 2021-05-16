@@ -50,10 +50,7 @@ export const useConnectToRoom = () => {
 
   useEffect(() => {
     const activeConnection = startWebsocketConnection();
-    return () => {
-      console.log("disconnect");
-      activeConnection?.then(({ disconnect }) => disconnect());
-    };
+    return () => activeConnection?.then(({ disconnect }) => disconnect());
   }, []);
 
   const connectToRoom = useCallback(
