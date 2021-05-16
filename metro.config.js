@@ -5,6 +5,6 @@ const blacklist = require("metro-config/src/defaults/blacklist");
 
 module.exports = {
   resolver: {
-    blacklistRE: blacklist([/.*icon-html.*/]),
+    blacklistRE: blacklist([/.*icon-html.*|.*google-play.*/]),
   },
 };
