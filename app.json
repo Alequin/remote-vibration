@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "remote-vibration",
-    "slug": "remote-vibration",
+    "name": "Vibration Remote: send vibrations to other devices",
+    "slug": "vibration-remote-send-vibrations-to-other-devices",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
