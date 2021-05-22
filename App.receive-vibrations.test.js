@@ -65,7 +65,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, findAllByRole, getByPlaceholderText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -87,7 +87,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, findAllByRole, getByPlaceholderText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -126,7 +126,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, findAllByRole, getByPlaceholderText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -168,7 +168,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, getAllByRole, findAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -195,9 +195,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
-      render(
-        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-      );
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     expect(getByTestId("main-menu-page")).toBeDefined();
@@ -228,9 +226,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
-      render(
-        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-      );
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -286,9 +282,7 @@ describe("App - receive vibrations", () => {
       findAllByRole,
       getByPlaceholderText,
       getByText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    } = render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     expect(getByTestId("main-menu-page")).toBeDefined();
@@ -354,7 +348,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, findAllByRole, getByText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -381,9 +375,7 @@ describe("App - receive vibrations", () => {
       getAllByRole,
       getByText,
       getByPlaceholderText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    } = render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     expect(getByTestId("main-menu-page")).toBeDefined();
@@ -417,7 +409,7 @@ describe("App - receive vibrations", () => {
       .mockResolvedValue({ isConnected: false, isInternetReachable: false });
 
     const { getByTestId, findAllByRole, getByText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -447,9 +439,7 @@ describe("App - receive vibrations", () => {
       getAllByRole,
       getByText,
       getByPlaceholderText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    } = render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     expect(getByTestId("main-menu-page")).toBeDefined();
@@ -501,9 +491,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
-      render(
-        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-      );
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     expect(getByTestId("main-menu-page")).toBeDefined();
@@ -550,9 +538,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
-      render(
-        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-      );
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -575,9 +561,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
-      render(
-        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-      );
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -617,9 +601,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
-      render(
-        <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-      );
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -664,9 +646,7 @@ describe("App - receive vibrations", () => {
       findByTestId,
       getByPlaceholderText,
       debug,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    } = render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -715,9 +695,7 @@ describe("App - receive vibrations", () => {
       getByText,
       findAllByRole,
       getByPlaceholderText,
-    } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
-    );
+    } = render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
     // 1. Starts on main menu
     await waitForExpect(() =>
@@ -757,7 +735,7 @@ describe("App - receive vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, findAllByRole, debug } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -791,6 +769,8 @@ describe("App - receive vibrations", () => {
       expect(mockWebsocketClient.close).toHaveBeenCalledTimes(1);
     });
   });
+
+  it.todo("stops vibrating when the app state becomes inactive");
 });
 
 const moveToReceiveVibrationsPage = async (findAllByRole) => {

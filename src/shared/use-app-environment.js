@@ -1,55 +1,19 @@
 import Constants from "expo-constants";
-import { useEffect, useState, useCallback } from "react";
-import { AppState, Vibration } from "react-native";
+import { useEffect, useState } from "react";
 import * as asyncStorage from "../utilities/async-storage";
 import { newDeviceKey } from "./use-app-state/new-device-key";
-import { isStateActive } from "./use-app-state/is-state-active";
 
-export const useAppState = () => {
-  const { isAppActive, appState } = useAppActiveState();
+export const useAppEnvironment = () => {
   const { isNewSession, sessionId, hasLoadedSession } = useIsNewSession();
   const { deviceId } = useDeviceId(isNewSession);
 
   return {
     environment: process.env.NODE_ENV,
     isLoading: !hasLoadedSession || !deviceId,
-    isAppActive,
-    appState,
     isNewSession,
     sessionId,
     deviceId,
   };
-};
-
-const useAppActiveState = () => {
-  const [appState, setAppState] = useState(AppState.currentState);
-  const [isAppActive, setIsAppActive] = useState(isStateActive(appState));
-
-  const handleAppStateChange = useCallback(
-    (nextAppState) => {
-      setIsAppActive(isStateActive(nextAppState));
-      setAppState(nextAppState);
-    },
-    [setAppState, setIsAppActive, isStateActive]
-  );
-
-  useEffect(() => {
-    AppState.addEventListener("change", handleAppStateChange);
-    return () => AppState.removeEventListener("change", handleAppStateChange);
-  }, [handleAppStateChange]);
-
-  useEffect(() => {
-    if (!isAppActive) {
-      asyncStorage.lastActiveVibrationPattern.clear();
-    }
-  }, [isAppActive]);
-
-  useEffect(() => {
-    // Disable all vibration when the app moves to the background
-    if (!isAppActive) Vibration.cancel();
-  }, [isAppActive]);
-
-  return { isAppActive, appState };
 };
 
 const useIsNewSession = () => {

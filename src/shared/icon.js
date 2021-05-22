@@ -19,27 +19,26 @@ export const Icon = ({ icon, ...otherProps }) => {
   return <IconToRender {...otherProps} />;
 };
 
-const customIcon = (IconSourceElement, iconName) => ({
-  size,
-  color,
-  style,
-  ...otherProps
-}) => (
-  <TestIdElement testID={`${camelCase(iconName)}Icon`} style={style}>
-    <IconSourceElement
-      name={iconName}
-      size={size}
-      color={color}
-      style={{ ...textShadow }}
-      {...otherProps}
-    />
-  </TestIdElement>
-);
+const customIcon =
+  (IconSourceElement, iconName) =>
+  ({ size, color, style, ...otherProps }) =>
+    (
+      <TestIdElement testID={`${camelCase(iconName)}Icon`} style={style}>
+        <IconSourceElement
+          name={iconName}
+          size={size}
+          color={color}
+          style={{ ...textShadow }}
+          {...otherProps}
+        />
+      </TestIdElement>
+    );
 
 const ICON_OPTIONS = {
   vibrate: customIcon(MaterialCommunityIcons, "vibrate"),
   link: customIcon(Entypo, "link"),
   backArrow: customIcon(Ionicons, "arrow-back-sharp"),
+  backArrow2: customIcon(Ionicons, "return-up-back"),
   play: customIcon(Feather, "play"),
   checkBoxActive: customIcon(MaterialIcons, "check-box"),
   checkBoxInactive: customIcon(MaterialIcons, "check-box-outline-blank"),

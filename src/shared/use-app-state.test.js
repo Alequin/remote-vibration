@@ -16,15 +16,13 @@ jest.mock("expo-constants", () => ({
   sessionId: "123",
 }));
 
-import { AppState, Vibration } from "react-native";
-import { act, render, waitFor } from "@testing-library/react-native";
+import { render, waitFor } from "@testing-library/react-native";
 import React from "react";
-import { useAppState } from "./use-app-state";
-import { ACTIVE_APP_STATE } from "./use-app-state/is-state-active";
-import * as newDeviceKey from "./use-app-state/new-device-key";
 import * as asyncStorage from "../utilities/async-storage";
+import { useAppEnvironment } from "./use-app-environment";
+import * as newDeviceKey from "./use-app-state/new-device-key";
 
-describe("use-app-state", () => {
+describe("use-app-environment", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -32,7 +30,7 @@ describe("use-app-state", () => {
   it("returns the expected properties", async () => {
     let appState = null;
     const MockComponent = () => {
-      appState = useAppState();
+      appState = useAppEnvironment();
       return null;
     };
 
@@ -44,107 +42,12 @@ describe("use-app-state", () => {
     await waitFor(() => {
       expect(appState).toEqual({
         isLoading: false,
-        isAppActive: true,
         environment: "test",
-        appState: ACTIVE_APP_STATE,
         isNewSession: true,
         sessionId: "123",
         deviceId: mockDeviceId,
       });
     });
-  });
-
-  it("updates the appState when an app state event fires", async () => {
-    let appState = null;
-
-    let appStateChangeCallback = null;
-    AppState.addEventListener.mockImplementation((_, callback) => {
-      appStateChangeCallback = callback;
-    });
-
-    const MockComponent = () => {
-      appState = useAppState();
-      return null;
-    };
-
-    render(<MockComponent />);
-
-    // 1. Wait for hook to complete state changes
-    await waitFor(() => {
-      expect(appState.isLoading).toBe(false);
-    });
-
-    // 2. Confirm state starts as active for hook complete state changes
-    expect(appState.appState).toBe(ACTIVE_APP_STATE);
-
-    // 3. Update app state
-    await act(async () => appStateChangeCallback("background"));
-
-    // 4.Confirm the hook caused the state to change
-    expect(appState.appState).toBe("background");
-  });
-
-  it("clears the saved vibration pattern when the app stops being active", async () => {
-    let appState = null;
-
-    let appStateChangeCallback = null;
-    AppState.addEventListener.mockImplementation((_, callback) => {
-      appStateChangeCallback = callback;
-    });
-
-    jest.spyOn(asyncStorage.lastActiveVibrationPattern, "clear");
-
-    const MockComponent = () => {
-      appState = useAppState();
-      return null;
-    };
-
-    render(<MockComponent />);
-
-    // 1. Wait for hook to complete state changes
-    await waitFor(() => {
-      expect(appState.isLoading).toBe(false);
-    });
-
-    // 2. Update app state
-    await act(async () => appStateChangeCallback("background"));
-
-    // 3. Confirm the hook caused the state to change
-    expect(appState.appState).toBe("background");
-
-    // 4. Confirm the saved vibration pattern is cleared
-    expect(asyncStorage.lastActiveVibrationPattern.clear).toHaveBeenCalledTimes(
-      1
-    );
-  });
-
-  it("cancels all vibrations when the app is not active", async () => {
-    let appState = null;
-
-    let appStateChangeCallback = null;
-    AppState.addEventListener.mockImplementation((_, callback) => {
-      appStateChangeCallback = callback;
-    });
-
-    jest.spyOn(Vibration, "cancel");
-
-    const MockComponent = () => {
-      appState = useAppState();
-      return null;
-    };
-
-    render(<MockComponent />);
-
-    // 1. Wait for hook to complete state changes
-    await waitFor(() => {
-      expect(appState.isLoading).toBe(false);
-    });
-
-    // 3. Update app state
-    await act(async () => appStateChangeCallback("background"));
-
-    // 4.Confirm the hook caused the state to change
-    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
   });
 
   it("saves the session Id if the session is new", async () => {
@@ -153,7 +56,7 @@ describe("use-app-state", () => {
     jest.spyOn(asyncStorage.sessionId, "save");
 
     const MockComponent = () => {
-      appState = useAppState();
+      appState = useAppEnvironment();
       return null;
     };
 
@@ -179,7 +82,7 @@ describe("use-app-state", () => {
     jest.spyOn(asyncStorage.sessionId, "read").mockResolvedValue("123");
 
     const MockComponent = () => {
-      appState = useAppState();
+      appState = useAppEnvironment();
       return null;
     };
 
@@ -202,7 +105,7 @@ describe("use-app-state", () => {
     jest.spyOn(asyncStorage.deviceId, "save");
 
     const MockComponent = () => {
-      appState = useAppState();
+      appState = useAppEnvironment();
       return null;
     };
 
@@ -228,7 +131,7 @@ describe("use-app-state", () => {
     jest.spyOn(asyncStorage.deviceId, "read").mockResolvedValue(storedDeviceId);
 
     const MockComponent = () => {
-      appState = useAppState();
+      appState = useAppEnvironment();
       return null;
     };
 

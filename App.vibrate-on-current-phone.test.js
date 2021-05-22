@@ -25,6 +25,7 @@ import {
 } from "@testing-library/react-native";
 import React from "React";
 import { Vibration } from "react-native";
+import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
 import { vibrateOnCurrentDevice } from "./src/pages/page-names";
 import { newVibrationPattern } from "./src/utilities/new-vibration-pattern";
@@ -237,6 +238,89 @@ describe("App - Vibrate on current phone", () => {
       );
     });
   });
+
+  it.todo("stops vibrating when the app state becomes inactive");
+
+  it.todo("clears the saved vibration pattern when the app stops being active");
+
+  it("allows the user to lock and unlock the screen", async () => {
+    const { getAllByRole, getByTestId, queryByTestId } = render(<AppRouter />);
+
+    moveToVibrateOnCurrentDevicePage(getAllByRole);
+
+    // 1. goes to expected page
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+
+    // 2. Presses the lock screen button
+    const lockButton = getAllByRole("button").find((buttons) =>
+      within(buttons).queryByText("Lock The Screen")
+    );
+    await act(async () => fireEvent.press(lockButton));
+
+    // 3. Confirms the lock screen contains the expected content
+    expect(queryByTestId("vibrate-on-current-phone-page")).toBe(null);
+    const lockScreen = getByTestId("lock-screen");
+    expect(within(lockScreen).getByText("Lock Screen")).toBeDefined();
+    expect(within(lockScreen).getByTestId("lockIcon")).toBeDefined();
+    expect(
+      within(lockScreen).getByText("Press the screen\nto unlock")
+    ).toBeDefined();
+
+    // 4. user presses the screen enough times to unlock it
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+
+    // 5. user is returned to the main vibration screen
+    await waitForExpect(async () =>
+      expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined()
+    );
+  }, 10000);
+
+  it("resets the lock screen if the user does not press it the total required times", async () => {
+    const { getAllByRole, getByTestId } = render(<AppRouter />);
+
+    moveToVibrateOnCurrentDevicePage(getAllByRole);
+
+    // 1. goes to expected page
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+
+    // 2. Presses the lock screen button
+    const lockButton = getAllByRole("button").find((buttons) =>
+      within(buttons).queryByText("Lock The Screen")
+    );
+    await act(async () => fireEvent.press(lockButton));
+
+    // 3. user presses the screen but does not unlock it
+    const lockScreen = getByTestId("lock-screen");
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    expect(within(lockScreen).queryAllByTestId("active-lock-dot")).toHaveLength(
+      4
+    );
+
+    // 4. wait for the press count to reduce to zero
+    await waitForExpect(() => {
+      expect(
+        within(lockScreen).queryAllByTestId("active-lock-dot")
+      ).toHaveLength(0);
+    });
+
+    // 5. user can press the screen multiple times again and unlock
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+
+    await waitForExpect(() =>
+      expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined()
+    );
+  }, 30000); // delay so the active-lock-dot count can reduce organically
 });
 
 const moveToVibrateOnCurrentDevicePage = (getAllByRole) => {

@@ -2,21 +2,16 @@ import React, { useMemo } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { StyledText } from "./styled-text";
 
-export const Button = ({ children, ...otherProps }) => {
-  return (
-    <TouchableOpacity accessibilityRole="button" {...otherProps}>
-      {children}
-    </TouchableOpacity>
-  );
-};
+export const Button = ({ ...otherProps }) => (
+  <TouchableOpacity accessibilityRole="button" {...otherProps} />
+);
 
-export const ButtonText = ({ style, ...otherProps }) => {
-  const styleToUse = useMemo(() => ({ ...ViewStyles.buttonText, ...style }), [
-    style,
-  ]);
-
-  return <StyledText style={styleToUse} {...otherProps} />;
-};
+export const ButtonText = ({ style, ...otherProps }) => (
+  <StyledText
+    style={useMemo(() => ({ ...ViewStyles.buttonText, ...style }), [style])}
+    {...otherProps}
+  />
+);
 
 const ViewStyles = StyleSheet.create({
   buttonText: {

@@ -1,15 +1,15 @@
 import { AdMobBanner } from "expo-ads-admob";
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
-import { isSmallScreen } from "../utilities/is-small-screen";
-import { useIsKeyboardVisible } from "./use-is-keyboard-visible";
 import { bannerUnitId } from "../../secrets.json";
 import { darkSpaceCadet } from "../utilities/colours";
+import { isSmallScreen } from "../utilities/is-small-screen";
+import { useIsKeyboardVisible } from "./use-is-keyboard-visible";
 
-export const AdBanner = ({ environment }) => {
+export const AdBanner = ({ environment, shouldShowAds }) => {
   const isKeyboardVisible = useIsKeyboardVisible();
   // On small screens when the keyboard is visible some elements do not fit on the page
-  if (isSmallScreen() && isKeyboardVisible) return null;
+  if (!shouldShowAds || (isSmallScreen() && isKeyboardVisible)) return null;
   return (
     <View style={{ ...ViewStyles.adContainer }}>
       <AdMobBanner

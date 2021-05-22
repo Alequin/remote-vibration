@@ -1,6 +1,7 @@
 jest.mock("react-native/Libraries/AppState/AppState", () => ({
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
+  currentState: "active",
 }));
 // hides warning about module which cannot be used in tests
 jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
@@ -25,12 +26,13 @@ import {
 import Clipboard from "expo-clipboard";
 import * as Network from "expo-network";
 import nock from "nock";
-import React, { useState } from "React";
-import { Vibration } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import React from "React";
+import { AppState, Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
+import { authToken } from "./secrets.json";
 import * as pageNames from "./src/pages/page-names";
+import { ACTIVE_APP_STATE } from "./src/shared/use-app-state/is-state-active";
 import * as newWebsocketClient from "./src/utilities/establish-websocket-connection/new-websocket-client";
 import { newVibrationPattern } from "./src/utilities/new-vibration-pattern";
 import * as vibrationPatterns from "./src/utilities/vibration-patterns";
@@ -61,7 +63,7 @@ describe("App - send vibrations", () => {
     mockCreateARoom({ delayTime: 5000 });
 
     const { getByTestId, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -84,7 +86,7 @@ describe("App - send vibrations", () => {
     });
 
     const { getByTestId, getAllByRole, getByText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -112,7 +114,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { getByTestId, getAllByRole, getByText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -140,7 +142,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { getByTestId, getAllByRole, getByText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -188,7 +190,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { getByTestId, getAllByRole, getByText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -235,7 +237,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { getByTestId, getAllByRole, getByText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -266,7 +268,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { getByTestId, getAllByRole, getByText } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -341,7 +343,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, getByTestId, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -398,7 +400,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findByTestId, getAllByRole, findAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -435,7 +437,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -492,7 +494,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -543,7 +545,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -594,7 +596,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -652,7 +654,7 @@ describe("App - send vibrations", () => {
     const mockPattern = newVibrationPattern("mockRandom", [1, 1, 1]);
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -705,7 +707,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -758,7 +760,7 @@ describe("App - send vibrations", () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -820,37 +822,11 @@ describe("App - send vibrations", () => {
   });
 
   it("reconnects to the server when the state changes from inactive to active", async () => {
-    mockCreateARoom();
+    const initialCreateARoomInterceptor = mockCreateARoom();
 
     // 1. Create buttons to allow mocking of changing app state
-    const TestComponent = () => {
-      const [mockAppState, setMockAppState] = useState({
-        deviceId: MOCK_DEVICE_ID,
-        isAppActive: true,
-      });
-
-      return (
-        <>
-          <AppRouter appState={mockAppState} />
-
-          <TouchableOpacity
-            testID="setAppActive"
-            onPress={() =>
-              setMockAppState({ ...mockAppState, isAppActive: true })
-            }
-          />
-          <TouchableOpacity
-            testID="setAppInactive"
-            onPress={() =>
-              setMockAppState({ ...mockAppState, isAppActive: false })
-            }
-          />
-        </>
-      );
-    };
-
-    const { findByTestId, getByTestId, getAllByRole } = render(
-      <TestComponent />
+    const { findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     await waitFor(async () => {
@@ -863,24 +839,28 @@ describe("App - send vibrations", () => {
       expect(await findByTestId("send-vibrations-page")).toBeDefined();
     });
 
-    // 4. set the app as inactive
-    const inactiveButton = await findByTestId("setAppInactive");
-    await act(async () => fireEvent.press(inactiveButton));
+    // 4. confirm a call is made to create a room
+    await waitForExpect(() =>
+      expect(initialCreateARoomInterceptor.isDone()).toBe(true)
+    );
 
-    // 5. create a fresh mock to intercept connection to server
-    const createARoomInterceptor = mockCreateARoom();
+    // 5. set the app as inactive
+    const handleAppStateUpdate = AppState.addEventListener.mock.calls[0][1];
+    handleAppStateUpdate("inactive");
 
-    // 6. set the app as active
-    const activeButton = await findByTestId("setAppActive");
-    await act(async () => fireEvent.press(activeButton));
+    // 6. create a fresh mock to intercept connection to server
+    const nextCreateARoomInterceptor = mockCreateARoom();
 
+    // 7. set the app as active
+    handleAppStateUpdate(ACTIVE_APP_STATE);
+
+    // 8. re-connects to the room
     await waitForExpect(async () => {
-      // 7. re-connects to the room
-      expect(createARoomInterceptor.isDone()).toBe(true);
+      expect(nextCreateARoomInterceptor.isDone()).toBe(true);
     });
 
+    // 9. re-connects to the websocket
     await waitForExpect(async () => {
-      // 8. re-connects to the websocket
       expect(establishWebsocketSpy).toHaveBeenCalled();
     });
   });
@@ -889,7 +869,7 @@ describe("App - send vibrations", () => {
     mockCreateARoom();
 
     const { getByTestId, findAllByRole, getAllByRole } = render(
-      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID, isAppActive: true }} />
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
 
     // 1. Starts on main menu
@@ -919,6 +899,8 @@ describe("App - send vibrations", () => {
       expect(mockWebsocketClient.close).toHaveBeenCalledTimes(1);
     });
   });
+
+  it.todo("stops vibrating when the app state becomes inactive");
 });
 
 const moveToSendVibrationsPage = async (getAllByRole) => {
@@ -972,6 +954,7 @@ const mockCreateARoom = ({ delayTime, response } = {}) =>
   nock("http://remote-vibration-server.herokuapp.com", {
     reqheaders: {
       deviceId: MOCK_DEVICE_ID,
+      authToken,
     },
   })
     .post("/room")

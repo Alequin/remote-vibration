@@ -2,9 +2,12 @@ import fetch from "node-fetch";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../app-context";
 import { authToken } from "../../secrets.json";
+import { useAppActiveState } from "./use-app-active-state";
 
 export const useCreateRoom = () => {
-  const { deviceId, isAppActive } = useContext(AppContext);
+  const { deviceId } = useContext(AppContext);
+  const { isAppActive } = useAppActiveState();
+
   const [error, setError] = useState(null);
   const [password, setPassword] = useState(null);
 

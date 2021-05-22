@@ -1,13 +1,14 @@
 import React, { useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { darkCyan, darkSpaceCadet } from "../utilities/colours";
 
-export const withBackground = (ChildComponent) => (props) => (
-  <Background>
-    <ChildComponent {...props} />
-  </Background>
-);
+export const withBackground = (ChildComponent) => (props) =>
+  (
+    <Background>
+      <ChildComponent {...props} />
+    </Background>
+  );
 
 const Background = ({ style, children, ...otherProps }) => {
   const styleToUse = useMemo(

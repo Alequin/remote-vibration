@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import React from "react";
+import React, { memo, useMemo, useState } from "react";
 import { View } from "react-native";
 import { AppContext } from "./app-context";
 import { MainMenu } from "./src/pages/main-menu";
@@ -11,81 +11,86 @@ import { vibrateOnCurrentDevice } from "./src/pages/vibrate-on-current-phone";
 import { AdBanner } from "./src/shared/ad-banner";
 import { withBackground } from "./src/shared/background";
 import { Icon } from "./src/shared/icon";
-import { useAppState } from "./src/shared/use-app-state";
+import { useAppEnvironment } from "./src/shared/use-app-environment";
 import { darkCyan } from "./src/utilities/colours";
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const appState = useAppState();
+  const appState = useAppEnvironment();
 
-  if (appState.isLoading) {
-    return <View testID="initial-loading-page" />;
-  }
-
-  return <AppRouter appState={appState} />;
+  return appState.isLoading ? (
+    <View testID="initial-loading-page" />
+  ) : (
+    <AppRouter appState={appState} />
+  );
 };
 
-export const AppRouter = ({ appState = {} }) => (
-  <AppContext.Provider value={appState}>
-    <View
-      style={{
-        width: "100%",
-        height: "100%",
+export const AppRouter = ({ appState = {} }) => {
+  const [shouldShowAds, setShouldShowAds] = useState(true);
+
+  const appContext = useMemo(
+    () => ({
+      ...appState,
+      showAds: () => setShouldShowAds(true),
+      hideAds: () => setShouldShowAds(false),
+    }),
+    []
+  );
+
+  return (
+    <AppContext.Provider value={appContext}>
+      <View
+        style={{
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        <AppPages />
+        <AdBanner
+          environment={appState.environment}
+          shouldShowAds={shouldShowAds}
+        />
+      </View>
+    </AppContext.Provider>
+  );
+};
+
+const AppPages = memo(() => (
+  <NavigationContainer>
+    <Stack.Navigator
+      initialRouteName={pageNames.mainMenu}
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: darkCyan,
+        },
+        headerTitleStyle: {
+          color: "white",
+        },
+        headerBackImage: () => (
+          <Icon icon="backArrow" size={32} color="white" />
+        ),
       }}
     >
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={pageNames.mainMenu}
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: darkCyan,
-            },
-            headerTitleStyle: {
-              color: "white",
-            },
-            headerBackImage: () => (
-              <Icon icon="backArrow" size={32} color="white" />
-            ),
-          }}
-        >
-          {menuPage()}
-          {vibrateOnCurrentDevicePage()}
-          {sendVibrationsPage()}
-          {receiveVibrationsPage()}
-        </Stack.Navigator>
-      </NavigationContainer>
-      <AdBanner environment={appState.environment} />
-    </View>
-  </AppContext.Provider>
-);
-
-const menuPage = () => (
-  <Stack.Screen
-    name={pageNames.mainMenu}
-    component={withBackground(MainMenu)}
-  />
-);
-
-const vibrateOnCurrentDevicePage = () => (
-  <Stack.Screen
-    name={pageNames.vibrateOnCurrentDevice}
-    component={withBackground(vibrateOnCurrentDevice)}
-  />
-);
-
-const sendVibrationsPage = () => (
-  <Stack.Screen
-    name={pageNames.sendVibrations}
-    component={withBackground(SendVibrations)}
-  />
-);
-
-const receiveVibrationsPage = () => (
-  <Stack.Screen
-    name={pageNames.receiveVibrations}
-    component={withBackground(ReceiveVibrations)}
-  />
-);
+      <Stack.Screen
+        name={pageNames.mainMenu}
+        component={withBackground(MainMenu)}
+      />
+      <Stack.Screen
+        name={pageNames.vibrateOnCurrentDevice}
+        component={withBackground(vibrateOnCurrentDevice)}
+      />
+      <Stack.Screen
+        key={1}
+        name={pageNames.sendVibrations}
+        component={withBackground(SendVibrations)}
+      />
+      <Stack.Screen
+        name={pageNames.receiveVibrations}
+        component={withBackground(ReceiveVibrations)}
+      />
+    </Stack.Navigator>
+  </NavigationContainer>
+));
 
 export default App;
