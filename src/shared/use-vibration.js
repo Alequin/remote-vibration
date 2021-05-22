@@ -1,4 +1,4 @@
-import { round } from "lodash";
+import round from "lodash/round";
 import { useCallback, useEffect, useState } from "react";
 import { Vibration } from "react-native";
 import {

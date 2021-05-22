@@ -1,5 +1,5 @@
 jest.mock("lodash/uniqueId");
-import { sumBy } from "lodash";
+import sumBy from "lodash/sumBy";
 import uniqueId from "lodash/uniqueId";
 import { newVibrationPattern } from "./new-vibration-pattern";
 

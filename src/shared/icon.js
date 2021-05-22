@@ -6,7 +6,7 @@ import {
   MaterialIcons,
   SimpleLineIcons,
 } from "@expo/vector-icons";
-import { camelCase } from "lodash";
+import camelCase from "lodash/camelCase";
 import React from "react";
 import { View } from "react-native";
 import { dynamicFontSize } from "../utilities/dynamic-font-size";

@@ -1,4 +1,4 @@
-import { sum } from "lodash";
+import sum from "lodash/sum";
 
 /**
  * @param {String} name - The name of the vibration pattern

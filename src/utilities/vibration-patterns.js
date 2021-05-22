@@ -1,4 +1,6 @@
-import { groupBy, mapValues, round } from "lodash";
+import groupBy from "lodash/groupBy";
+import mapValues from "lodash/mapValues";
+import round from "lodash/round";
 import { newVibrationPattern } from "./new-vibration-pattern";
 
 export const RANDOM_PATTERN_NAME = "Random";
@@ -26,81 +28,29 @@ export const patterns = mapValues(
       newVibrationPattern(RANDOM_PATTERN_NAME, []),
       newVibrationPattern("Pulse", [0.5, 0.5]),
       newVibrationPattern("Rapid Pulse", [0.5, 0.1]),
-      newVibrationPattern("Increasing", [
-        0.1,
-        0.2,
-        0.1,
-        0.2,
-        0.2,
-        0.2,
-        0.2,
-        0.2,
-        0.3,
-        0.2,
-        0.3,
-        0.2,
-        0.5,
-        0.2,
-        0.5,
-        0.2,
-        0.7,
-        0.3,
-        0.7,
-        0.4,
-        1.3,
-        0.5,
-      ]),
-      newVibrationPattern("Decreasing", [
-        1.3,
-        0.5,
-        0.7,
-        0.4,
-        0.7,
-        0.3,
-        0.5,
-        0.2,
-        0.5,
-        0.2,
-        0.3,
-        0.2,
-        0.3,
-        0.2,
-        0.2,
-        0.2,
-        0.2,
-        0.2,
-        0.1,
-        0.2,
-        0.1,
-        0.1,
-        0.1,
-        0.1,
-        0.05,
-        0.1,
-        0.05,
-        0.5,
-      ]),
+      newVibrationPattern(
+        "Increasing",
+        [
+          0.1, 0.2, 0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.2, 0.3, 0.2, 0.5, 0.2,
+          0.5, 0.2, 0.7, 0.3, 0.7, 0.4, 1.3, 0.5,
+        ]
+      ),
+      newVibrationPattern(
+        "Decreasing",
+        [
+          1.3, 0.5, 0.7, 0.4, 0.7, 0.3, 0.5, 0.2, 0.5, 0.2, 0.3, 0.2, 0.3, 0.2,
+          0.2, 0.2, 0.2, 0.2, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1, 0.05, 0.1, 0.05,
+          0.5,
+        ]
+      ),
       newVibrationPattern("Triplet", [0.3, 0.1, 0.3, 0.1, 0.3, 0.5]),
-      newVibrationPattern("S.O.S", [
-        0.15,
-        0.15,
-        0.15,
-        0.15,
-        0.15,
-        0.45,
-        0.45,
-        0.15,
-        0.45,
-        0.15,
-        0.45,
-        0.45,
-        0.15,
-        0.15,
-        0.15,
-        0.15,
-        0.15,
-        0.8,
-      ]),
+      newVibrationPattern(
+        "S.O.S",
+        [
+          0.15, 0.15, 0.15, 0.15, 0.15, 0.45, 0.45, 0.15, 0.45, 0.15, 0.45,
+          0.45, 0.15, 0.15, 0.15, 0.15, 0.15, 0.8,
+        ]
+      ),
     ],
     ({ name }) => name
   ),

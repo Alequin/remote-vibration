@@ -1,4 +1,5 @@
-import { random, shuffle } from "lodash";
+import shuffle from "lodash/shuffle";
+import random from "lodash/random";
 
 export const newDeviceKey = () => {
   const creationTimestamp = Date.now();

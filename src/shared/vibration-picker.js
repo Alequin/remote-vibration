@@ -1,11 +1,8 @@
-import { round } from "lodash";
+import round from "lodash/round";
 import React, { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
 import { lastUsedVibrationSpeed } from "../utilities/async-storage";
 import { patterns } from "../utilities/vibration-patterns";
-import { borderRadius } from "./border-radius";
 import { PatternList } from "./pattern-list";
-import { textShadow } from "./text-shadow-style";
 import { SpeedSelector } from "./vibration-picker/speed-selector";
 
 export const VibrationPicker = ({
@@ -14,11 +11,8 @@ export const VibrationPicker = ({
   listHeight,
   activeVibrationName,
 }) => {
-  const {
-    speedModifier,
-    setSpeedModifier,
-    setHasSpeedModifierBeingPicked,
-  } = useSpeedModifier(onChangeVibrationSpeed);
+  const { speedModifier, setSpeedModifier, setHasSpeedModifierBeingPicked } =
+    useSpeedModifier(onChangeVibrationSpeed);
 
   return (
     <>
@@ -41,10 +35,8 @@ export const VibrationPicker = ({
 const useSpeedModifier = (onChangeVibrationSpeed) => {
   const [speedModifier, setSpeedModifier] = useState(1);
 
-  const [
-    hasSpeedModifierBeingPicked,
-    setHasSpeedModifierBeingPicked,
-  ] = useState(true);
+  const [hasSpeedModifierBeingPicked, setHasSpeedModifierBeingPicked] =
+    useState(true);
 
   useEffect(() => {
     if (hasSpeedModifierBeingPicked && onChangeVibrationSpeed) {

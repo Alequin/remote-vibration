@@ -1,4 +1,4 @@
-import { reject } from "lodash";
+import reject from "lodash/reject";
 import { newWebsocketClient } from "./establish-websocket-connection/new-websocket-client";
 
 export const websocketConnection = async () =>

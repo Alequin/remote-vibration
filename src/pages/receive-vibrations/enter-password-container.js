@@ -1,5 +1,5 @@
 import Clipboard from "expo-clipboard";
-import { isEmpty } from "lodash";
+import isEmpty from "lodash/isEmpty";
 import React, { useMemo } from "react";
 import { Dimensions, StyleSheet, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
