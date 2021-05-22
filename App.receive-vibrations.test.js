@@ -63,8 +63,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("shows a text input to allow the user to request a connection to a room", async () => {
-    mockCreateARoom();
-
     const { getByTestId, findAllByRole, getByPlaceholderText } = render(
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
@@ -85,8 +83,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("allows the user to clear the text in the connection input", async () => {
-    mockCreateARoom();
-
     const { getByTestId, findAllByRole, getByPlaceholderText } = render(
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
@@ -124,8 +120,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("allows the user to paste a password and override the current input", async () => {
-    mockCreateARoom();
-
     const { getByTestId, findAllByRole, getByPlaceholderText } = render(
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
@@ -166,8 +160,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("disables the connect button if the text input is empty", async () => {
-    mockCreateARoom();
-
     const { getByTestId, getAllByRole, findAllByRole } = render(
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
@@ -193,8 +185,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("enables the connect button when the user enters anything into the input", async () => {
-    mockCreateARoom();
-
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
       render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
@@ -224,8 +214,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("make a request to connect to a room when the connect button is pressed", async () => {
-    mockCreateARoom();
-
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
       render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
@@ -275,8 +263,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("shows an error message when the room password cannot be found", async () => {
-    mockCreateARoom();
-
     const {
       getByTestId,
       getAllByRole,
@@ -346,8 +332,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("shows the full page error if there is an error connecting to the websocket", async () => {
-    mockCreateARoom();
-
     const { getByTestId, findAllByRole, getByText } = render(
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
@@ -404,7 +388,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("checks for an internet connection when there is an issue with the client and lets the user know when not connected", async () => {
-    mockCreateARoom();
     jest
       .spyOn(Network, "getNetworkStateAsync")
       .mockResolvedValue({ isConnected: false, isInternetReachable: false });
@@ -489,8 +472,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("saves the Password when the connect button is pressed", async () => {
-    mockCreateARoom();
-
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
       render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
@@ -536,8 +517,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("attempts to load a saved Password when the page is mounted", async () => {
-    mockCreateARoom();
-
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
       render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
@@ -559,8 +538,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("vibrates when a vibration pattern message is received", async () => {
-    mockCreateARoom();
-
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
       render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
@@ -599,8 +576,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("stops vibrating when an empty vibration pattern message is received", async () => {
-    mockCreateARoom();
-
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
       render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
@@ -638,8 +613,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("shows the Password when connection is established and allows it to be copied", async () => {
-    mockCreateARoom();
-
     const {
       getByTestId,
       getAllByRole,
@@ -688,8 +661,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("displays the current vibration pattern", async () => {
-    mockCreateARoom();
-
     const {
       getByTestId,
       getAllByRole,
@@ -733,8 +704,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("disconnects the websocket client when the page is unmounted", async () => {
-    mockCreateARoom();
-
     const { getByTestId, findAllByRole, debug } = render(
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
     );
@@ -772,8 +741,6 @@ describe("App - receive vibrations", () => {
   });
 
   it("stops vibrating when the page is unmounted", async () => {
-    mockCreateARoom();
-
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
       render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
 
@@ -982,13 +949,3 @@ const makeAConnection = async (
     })
   );
 };
-
-const mockCreateARoom = ({ delayTime } = {}) =>
-  nock("http://remote-vibration-server.herokuapp.com", {
-    reqheaders: {
-      deviceId: MOCK_DEVICE_ID,
-    },
-  })
-    .post("/room")
-    .delay(delayTime || 1)
-    .reply(200, { password: MOCK_ROOM_KEY });
