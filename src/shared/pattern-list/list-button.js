@@ -26,7 +26,7 @@ export const ListButton = ({ item, onPress, isActiveButton }) => {
         onPress={() => onPress(item)}
       >
         <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-          <Icon icon="play" color="white" size={dynamicFontSize(22)} />
+          <Icon icon="play" color="white" size={22} />
           <Text style={buttonTextStyle}>{item.name}</Text>
         </View>
         <View
@@ -36,9 +36,7 @@ export const ListButton = ({ item, onPress, isActiveButton }) => {
             justifyContent: "flex-end",
           }}
         >
-          {isActiveButton && (
-            <Icon icon="vibrate" color="white" size={dynamicFontSize(22)} />
-          )}
+          {isActiveButton && <Icon icon="vibrate" color="white" size={22} />}
         </View>
       </TouchableWithoutFeedback>
     </View>

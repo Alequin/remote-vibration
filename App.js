@@ -68,7 +68,7 @@ const AppPages = memo(() => (
           color: "white",
         },
         headerBackImage: () => (
-          <Icon icon="backArrow" size={32} color="white" />
+          <Icon icon="backArrow" size={28} color="white" />
         ),
       }}
     >

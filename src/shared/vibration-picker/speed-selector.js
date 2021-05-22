@@ -18,11 +18,7 @@ export const SpeedSelector = ({
   return (
     <View style={ViewStyles.speedSelectorContainer}>
       <View style={ViewStyles.sliderTextContainer}>
-        <Icon
-          icon={pickSpeedIcon(speedModifier)}
-          color="white"
-          size={dynamicFontSize(28)}
-        />
+        <Icon icon={pickSpeedIcon(speedModifier)} color="white" size={28} />
         <Text style={ViewStyles.sliderText}>{sliderText}</Text>
       </View>
       <Slider

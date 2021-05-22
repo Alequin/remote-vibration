@@ -44,7 +44,7 @@ export const LockScreen = ({ onUnlock }) => {
           <Icon
             icon={shouldUnlock ? "unlocked" : "locked"}
             color="white"
-            size={dynamicFontSize(120)}
+            size={120}
           />
           <View style={ViewStyles.dotContainer}>
             {dots.map((_, dotNumber) => (

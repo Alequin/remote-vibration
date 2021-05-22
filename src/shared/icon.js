@@ -1,5 +1,4 @@
 import {
-  Entypo,
   Feather,
   FontAwesome5,
   Ionicons,
@@ -10,6 +9,7 @@ import {
 import { camelCase } from "lodash";
 import React from "react";
 import { View } from "react-native";
+import { dynamicFontSize } from "../utilities/dynamic-font-size";
 import { textShadow } from "./text-shadow-style";
 
 export const Icon = ({ icon, ...otherProps }) => {
@@ -26,9 +26,9 @@ const customIcon =
       <TestIdElement testID={`${camelCase(iconName)}Icon`} style={style}>
         <IconSourceElement
           name={iconName}
-          size={size}
+          size={dynamicFontSize(size)}
           color={color}
-          style={{ ...textShadow }}
+          style={textShadow}
           {...otherProps}
         />
       </TestIdElement>
