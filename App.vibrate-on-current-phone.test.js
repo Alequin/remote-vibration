@@ -1,6 +1,7 @@
 jest.mock("react-native/Libraries/AppState/AppState", () => ({
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
+  currentState: "active",
 }));
 // hides warning about module which cannot be used in tests
 jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
@@ -24,7 +25,7 @@ import {
   within,
 } from "@testing-library/react-native";
 import React from "React";
-import { Vibration } from "react-native";
+import { AppState, Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
 import { vibrateOnCurrentDevice } from "./src/pages/page-names";
@@ -33,8 +34,8 @@ import * as vibrationPatterns from "./src/utilities/vibration-patterns";
 
 describe("App - Vibrate on current phone", () => {
   beforeEach(() => {
-    Vibration.vibrate.mockClear();
-    Vibration.cancel.mockClear();
+    jest.clearAllMocks();
+    Vibration.addEventListener = jest.fn();
   });
 
   it("allows the user to play a vibration pattern", async () => {
@@ -157,91 +158,55 @@ describe("App - Vibrate on current phone", () => {
     });
   });
 
-  it("saves the current vibration pattern name when returning to the main menu", async () => {
+  it("stops vibrating when the app state becomes inactive", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
     moveToVibrateOnCurrentDevicePage(getAllByRole);
 
+    // 1. goes to expected page
     expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
 
+    // 2. Find the button to press
     const exampleConstantVibrationButton = getAllByTestId(
       "vibration-pattern-option"
     ).find((option) => within(option).queryByText("Constant"));
 
-    await act(async () => fireEvent.press(exampleConstantVibrationButton));
+    // 3. Confirm the vibration icon is not showing before pressing the button
+    expect(
+      within(exampleConstantVibrationButton).queryByTestId("vibrateIcon")
+    ).toBe(null);
 
-    const backButton = getAllByRole("button").find((option) =>
-      within(option).queryByTestId("arrowBackSharpIcon")
+    // 4. Press the button
+    act(() => fireEvent.press(exampleConstantVibrationButton));
+
+    // 5. Confirm vibration has started
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith(
+      vibrationPatterns.patterns["Constant"].pattern,
+      true
     );
 
-    AsyncStorage.setItem.mockClear();
-    await act(async () => fireEvent.press(backButton));
+    // 6. Confirm the vibration icon is showing after pressing the button
+    expect(
+      within(exampleConstantVibrationButton).queryByTestId("vibrateIcon")
+    ).toBeDefined();
 
-    await waitFor(() => {
-      expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        "LAST_ACTIVE_LOCAL_VIBRATION",
-        '{"name":"Constant","pattern":[0,9007199254740991000],"runTime":9007199254740991000}'
-      );
-    });
-  });
+    // 7. Reset vibration.cancel to ensure it is called the expected number of times
+    Vibration.cancel.mockClear();
 
-  it("loads the current vibration pattern when returning to 'Vibrate on current device'", async () => {
-    const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
-
-    moveToVibrateOnCurrentDevicePage(getAllByRole);
-
-    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
-
-    const exampleConstantVibrationButton = getAllByTestId(
-      "vibration-pattern-option"
-    ).find((option) => within(option).queryByText("Constant"));
-
-    // 1. Start a vibration pattern
-    await act(async () => fireEvent.press(exampleConstantVibrationButton));
-    const backButton = getAllByRole("button").find((option) =>
-      within(option).queryByTestId("arrowBackSharpIcon")
+    // 8. set the app as inactive
+    const handleAppStateUpdates = AppState.addEventListener.mock.calls.map(
+      ([_, handleAppStateUpdate]) => handleAppStateUpdate
     );
-
-    AsyncStorage.setItem.mockClear();
-    // 2. Move off the current page back to the main menu
-    await act(async () => fireEvent.press(backButton));
-
-    // 3. Confirm pattern was saved
-    const expectedSavedData =
-      '{"name":"Constant","pattern":[0,9007199254740991000],"runTime":9007199254740991000}';
-    await waitFor(() => {
-      expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1);
-      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        "LAST_ACTIVE_LOCAL_VIBRATION",
-        expectedSavedData
-      );
-
-      AsyncStorage.getItem.mockClear();
-      AsyncStorage.getItem.mockResolvedValue(expectedSavedData);
-    });
-
-    // 4. Return to current page
-    moveToVibrateOnCurrentDevicePage(getAllByRole);
-
-    // 5. See that the last pattern is loaded
-    Vibration.vibrate.mockClear();
-    await waitFor(() => {
-      expect(AsyncStorage.getItem).toHaveBeenCalledTimes(1);
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith(
-        "LAST_ACTIVE_LOCAL_VIBRATION"
-      );
-      expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
-      expect(Vibration.vibrate).toHaveBeenCalledWith(
-        vibrationPatterns.patterns["Constant"].pattern,
-        true
+    await act(async () => {
+      handleAppStateUpdates.forEach((handleAppStateUpdate) =>
+        handleAppStateUpdate("inactive")
       );
     });
+
+    // 9. Confirm vibration was canceled
+    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
   });
-
-  it.todo("stops vibrating when the app state becomes inactive");
-
-  it.todo("clears the saved vibration pattern when the app stops being active");
 
   it("allows the user to lock and unlock the screen", async () => {
     const { getAllByRole, getByTestId, queryByTestId } = render(<AppRouter />);

@@ -285,7 +285,6 @@ describe("App - send vibrations", () => {
       establishWebsocketSpy,
       mockWebsocketClient
     );
-    console.log(mockWebsocketClient.send.mock.calls);
 
     // 4. Fake client disconnection
     expect(mockWebsocketClient.onclose).toBeDefined();
@@ -311,7 +310,6 @@ describe("App - send vibrations", () => {
     expect(mockWebsocketClient.onopen).toBeDefined();
     await act(async () => mockWebsocketClient.onopen());
     // 7.3. Confirm a message is send to connect to the new room
-    console.log("7.3");
     await waitForExpect(() => {
       expect(mockWebsocketClient.send).toHaveBeenCalledTimes(2);
       expect(mockWebsocketClient.send).toHaveBeenCalledWith(
@@ -323,7 +321,6 @@ describe("App - send vibrations", () => {
     });
 
     // 7.4. Fake receiving a message confirming the room connection
-    console.log("7.4");
     await act(async () =>
       mockWebsocketClient.onmessage({
         data: JSON.stringify({
@@ -333,7 +330,6 @@ describe("App - send vibrations", () => {
     );
 
     // 8. Confirm the page has loaded
-    console.log("8");
     await waitForExpect(() => {
       expect(getByText(`Password:`));
     });
@@ -845,14 +841,21 @@ describe("App - send vibrations", () => {
     );
 
     // 5. set the app as inactive
-    const handleAppStateUpdate = AppState.addEventListener.mock.calls[0][1];
-    handleAppStateUpdate("inactive");
+    await act(async () =>
+      AppState.addEventListener.mock.calls.forEach(
+        ([_, handleAppStateUpdate]) => handleAppStateUpdate("inactive")
+      )
+    );
 
     // 6. create a fresh mock to intercept connection to server
     const nextCreateARoomInterceptor = mockCreateARoom();
 
     // 7. set the app as active
-    handleAppStateUpdate(ACTIVE_APP_STATE);
+    await act(async () =>
+      AppState.addEventListener.mock.calls.forEach(
+        ([_, handleAppStateUpdate]) => handleAppStateUpdate(ACTIVE_APP_STATE)
+      )
+    );
 
     // 8. re-connects to the room
     await waitForExpect(async () => {
@@ -900,7 +903,69 @@ describe("App - send vibrations", () => {
     });
   });
 
-  it.todo("stops vibrating when the app state becomes inactive");
+  it("stops vibrating when the app state becomes inactive", async () => {
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
+    );
+
+    // 1. Starts on main menu
+    expect(await findByTestId("main-menu-page")).toBeDefined();
+
+    // 2. Moves to expected page
+    await moveToSendVibrationsPage(getAllByRole);
+    expect(await findByTestId("send-vibrations-page")).toBeDefined();
+
+    await mockCallsToMakeRoomAndCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(`Password:`));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    // 4. Press the enable vibration on device button
+    const allButtons = getAllByRole("button");
+    await act(async () =>
+      fireEvent.press(
+        allButtons.find((button) =>
+          within(button).queryByText("Also vibrate on this device")
+        )
+      )
+    );
+
+    // 5. Press play on a vibration pattern
+    const constantVibrationButton = (
+      await findAllByTestId("vibration-pattern-option")
+    ).find((button) => within(button).getByText("Constant"));
+    act(() => fireEvent.press(constantVibrationButton));
+
+    // 6. Confirm vibration has started
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith(
+      vibrationPatterns.patterns["Constant"].pattern,
+      true
+    );
+
+    // 7. Reset vibration.cancel to ensure it is called the expected number of times
+    Vibration.cancel.mockClear();
+
+    // 8. set the app as inactive
+    const handleAppStateUpdates = AppState.addEventListener.mock.calls.map(
+      ([_, handleAppStateUpdate]) => handleAppStateUpdate
+    );
+    await act(async () =>
+      handleAppStateUpdates.forEach((handleAppStateUpdate) =>
+        handleAppStateUpdate("inactive")
+      )
+    );
+
+    // 9. Confirm vibration was canceled
+    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+  });
 });
 
 const moveToSendVibrationsPage = async (getAllByRole) => {

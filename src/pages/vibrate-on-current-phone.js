@@ -5,7 +5,6 @@ import { LockScreen } from "../shared/lock-screen";
 import { Page } from "../shared/page";
 import { useVibration } from "../shared/use-vibration";
 import { VibrationPicker } from "../shared/vibration-picker";
-import { lastActiveVibrationPattern } from "../utilities/async-storage";
 import { dynamicFontSize } from "../utilities/dynamic-font-size";
 
 export const vibrateOnCurrentDevice = ({ navigation }) => {
@@ -13,25 +12,6 @@ export const vibrateOnCurrentDevice = ({ navigation }) => {
   const { activePattern, setActivePattern, setSpeedModifier } = useVibration({
     disableVibration: false,
   });
-
-  useEffect(() => {
-    let hasUnmounted = false;
-    lastActiveVibrationPattern
-      .read()
-      .then(
-        async (savedPattern) =>
-          !hasUnmounted && savedPattern && setActivePattern(savedPattern)
-      );
-    return () => (hasUnmounted = true);
-  }, []);
-
-  useEffect(
-    () => async () => {
-      if (!activePattern) await lastActiveVibrationPattern.clear();
-      else await lastActiveVibrationPattern.save(activePattern);
-    },
-    [activePattern]
-  );
 
   if (shouldShowLockScreen)
     return <LockScreen onUnlock={() => setShouldShowLockScreen(false)} />;

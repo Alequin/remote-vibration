@@ -1,6 +1,7 @@
 jest.mock("react-native/Libraries/AppState/AppState", () => ({
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
+  currentState: "active",
 }));
 // hides warning about module which cannot be used in tests
 jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
@@ -34,7 +35,7 @@ import Clipboard from "expo-clipboard";
 import * as Network from "expo-network";
 import nock from "nock";
 import React from "React";
-import { Vibration, Alert } from "react-native";
+import { Alert, AppState, Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
 import * as pageNames from "./src/pages/page-names";
@@ -742,18 +743,18 @@ describe("App - receive vibrations", () => {
     expect(getByTestId("main-menu-page")).toBeDefined();
 
     // 2. Moves to expected page
-    console.log(mockWebsocketClient.close.mock.calls);
+
     await moveToReceiveVibrationsPage(findAllByRole);
 
     expect(getByTestId("receive-vibrations-page")).toBeDefined();
 
     // 3. Fake the websocket opening
-    console.log(mockWebsocketClient.close.mock.calls);
+
     expect(mockWebsocketClient.onopen).toBeDefined();
     await act(async () => mockWebsocketClient.onopen());
 
     // 4. Confirm the client has not been closed
-    console.log(mockWebsocketClient.close.mock.calls);
+
     expect(mockWebsocketClient.close).toHaveBeenCalledTimes(0);
 
     // 5. Return to the main menu
@@ -770,7 +771,61 @@ describe("App - receive vibrations", () => {
     });
   });
 
-  it.todo("stops vibrating when the app state becomes inactive");
+  it("stops vibrating when the app state becomes inactive", async () => {
+    mockCreateARoom();
+
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. start the connection
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
+
+    // 4. Fake receiving a vibration pattern message
+    const mockVibrationPattern = newVibrationPattern("mockPattern", [0.1]);
+    await act(async () =>
+      mockWebsocketClient.onmessage({
+        data: JSON.stringify({
+          type: "receivedVibrationPattern",
+          data: { vibrationPattern: mockVibrationPattern, speed: 2 },
+        }),
+      })
+    );
+
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith([0, 50], true);
+
+    // 5. Reset vibration.cancel to ensure it is called the expected number of times
+    Vibration.cancel.mockClear();
+
+    // 6. set the app as inactive
+    const handleAppStateUpdates = AppState.addEventListener.mock.calls.map(
+      ([_, handleAppStateUpdate]) => handleAppStateUpdate
+    );
+    await act(async () =>
+      handleAppStateUpdates.forEach((handleAppStateUpdate) =>
+        handleAppStateUpdate("inactive")
+      )
+    );
+
+    // 7. Confirm vibration was canceled
+    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+  });
 });
 
 const moveToReceiveVibrationsPage = async (findAllByRole) => {
