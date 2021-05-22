@@ -6,8 +6,13 @@ import { AppRouter } from "./App";
 import * as pageNames from "./src/pages/page-names";
 
 describe("App - Menu", () => {
+  it("does not show the navigation header on the main menu", async () => {
+    const { queryByText } = render(<AppRouter />);
+    expect(queryByText(pageNames.mainMenu)).toBeNull();
+  });
+
   it("displays the expected menu buttons by default", async () => {
-    const { getAllByRole, getAllByTestId, debug } = render(<AppRouter />);
+    const { getAllByRole, getAllByTestId } = render(<AppRouter />);
 
     const buttons = getAllByRole("button");
 
