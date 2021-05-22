@@ -82,7 +82,7 @@ const KeyInput = ({ value, onChangeText, shouldShowLoadingIndicator }) => {
       >
         <Icon icon="pasteFromClipboard" color="white" size={32} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => onChangeText("")}>
+      <TouchableOpacity onPress={() => onChangeText(null)}>
         <Icon icon="cancel" color="white" size={32} />
       </TouchableOpacity>
     </View>

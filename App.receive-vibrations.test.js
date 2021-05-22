@@ -18,6 +18,7 @@ jest.mock(
 jest.mock("@react-native-async-storage/async-storage", () => ({
   setItem: jest.fn(),
   getItem: jest.fn(),
+  removeItem: jest.fn(),
 }));
 jest.mock("react-native/Libraries/Alert/Alert", () => ({
   alert: jest.fn(),
@@ -117,6 +118,10 @@ describe("App - receive vibrations", () => {
     const input = getByPlaceholderText("Password");
     expect(within(input).queryByText("fake password")).toBeNull();
     expect(within(input).queryByText("")).toBeDefined();
+    expect(AsyncStorage.removeItem).toHaveBeenCalledTimes(1);
+    expect(AsyncStorage.removeItem).toHaveBeenCalledWith(
+      "MOST_RECENT_ROOM_KEY"
+    );
   });
 
   it("allows the user to paste a password and override the current input", async () => {

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { isNull } from "lodash";
+import React, { useCallback, useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { CannotConnectErrorPage } from "../shared/cannot-connect-error-page";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
@@ -13,6 +14,7 @@ export const ReceiveVibrations = ({ navigation }) => {
     activePattern,
     password,
     setPassword,
+    clearPassword,
     clearError,
     connectToRoom,
     connectToRoomError,
@@ -53,6 +55,8 @@ export const ReceiveVibrations = ({ navigation }) => {
         password={password}
         error={connectToRoomError}
         onChangeText={(newPassword) => {
+          if (isNull(newPassword)) return clearPassword();
+
           setPassword(newPassword);
           clearError();
         }}
@@ -71,7 +75,7 @@ export const ReceiveVibrations = ({ navigation }) => {
 };
 
 const useReceiveVibrations = () => {
-  const { password, setPassword } = usePassword();
+  const { password, setPassword, clearPassword } = usePassword();
 
   const {
     client,
@@ -114,6 +118,7 @@ const useReceiveVibrations = () => {
     activePattern,
     password,
     setPassword,
+    clearPassword,
     clearError,
     resetClient,
     connectToRoomError,
@@ -126,6 +131,8 @@ const useReceiveVibrations = () => {
 
 const usePassword = () => {
   const [password, setPassword] = useState("");
+
+  const clearPassword = useCallback(async () => mostRecentRoomKey.clear(), []);
 
   useEffect(() => {
     let hasUnmounted = false;
@@ -140,5 +147,5 @@ const usePassword = () => {
 
   useEffect(() => {}, []);
 
-  return { password, setPassword };
+  return { password, setPassword, clearPassword };
 };
