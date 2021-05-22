@@ -824,6 +824,120 @@ describe("App - receive vibrations", () => {
       expect(Vibration.cancel).toHaveBeenCalledTimes(1);
     });
   });
+
+  it("allows the user to lock and unlock the screen", async () => {
+    const {
+      queryByTestId,
+      getByTestId,
+      getAllByRole,
+      findAllByRole,
+      getByPlaceholderText,
+    } = render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. start the connection
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
+
+    // 4. Presses the lock screen button
+    const lockButton = getAllByRole("button").find((buttons) =>
+      within(buttons).queryByText("Lock The Screen")
+    );
+    await act(async () => fireEvent.press(lockButton));
+
+    // 5. Confirms the lock screen contains the expected content
+    expect(queryByTestId("receive-vibrations-page")).toBeNull();
+    const lockScreen = getByTestId("lock-screen");
+    expect(within(lockScreen).getByText("Lock Screen")).toBeDefined();
+    expect(within(lockScreen).getByTestId("lockIcon")).toBeDefined();
+    expect(
+      within(lockScreen).getByText("Press the screen\nto unlock")
+    ).toBeDefined();
+
+    // 6. user presses the screen enough times to unlock it
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+
+    // 7. user is returned to the main vibration screen
+    await waitForExpect(async () =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+  }, 10000);
+
+  it("resets the lock screen if the user does not press it the total required times", async () => {
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. start the connection
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
+
+    // 4. Presses the lock screen button
+    const lockButton = getAllByRole("button").find((buttons) =>
+      within(buttons).queryByText("Lock The Screen")
+    );
+    await act(async () => fireEvent.press(lockButton));
+
+    // 5. user presses the screen but does not unlock it
+    const lockScreen = getByTestId("lock-screen");
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    expect(within(lockScreen).queryAllByTestId("active-lock-dot")).toHaveLength(
+      4
+    );
+
+    // 6. wait for the press count to reduce to zero
+    await waitForExpect(() => {
+      expect(
+        within(lockScreen).queryAllByTestId("active-lock-dot")
+      ).toHaveLength(0);
+    });
+
+    // 5. user can press the screen multiple times again and unlock
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+    await act(async () => fireEvent.press(lockScreen));
+
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+  }, 30000); // delay so the active-lock-dot count can reduce organically
 });
 
 const moveToReceiveVibrationsPage = async (findAllByRole) => {

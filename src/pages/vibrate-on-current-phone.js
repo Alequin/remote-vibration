@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
-import { Button, ButtonText } from "../shared/button";
 import { LockScreen } from "../shared/lock-screen";
+import { LockTheScreenButton } from "../shared/lock-the-screen-button";
 import { Page } from "../shared/page";
 import { useVibration } from "../shared/use-vibration";
 import { VibrationPicker } from "../shared/vibration-picker";
@@ -31,14 +31,7 @@ export const vibrateOnCurrentDevice = ({ navigation }) => {
           setActivePattern(pattern);
         }}
       />
-      <Button
-        style={ViewStyles.lockScreenButton}
-        onPress={() => setShouldShowLockScreen(true)}
-      >
-        <ButtonText style={ViewStyles.lockScreenButtonText}>
-          Lock The Screen
-        </ButtonText>
-      </Button>
+      <LockTheScreenButton onPress={() => setShouldShowLockScreen(true)} />
     </Page>
   );
 };

@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { CopyPasswordButton } from "../../shared/copy-password-button";
+import { LockScreen } from "../../shared/lock-screen";
+import { LockTheScreenButton } from "../../shared/lock-the-screen-button";
 import { Page } from "../../shared/page";
 import { StyledText } from "../../shared/styled-text";
 import { dynamicFontSize } from "../../utilities/dynamic-font-size";
@@ -10,6 +12,11 @@ export const ReceiveVibrationInterface = ({
   testID,
   currentVibrationPattern,
 }) => {
+  const [shouldShowLockScreen, setShouldShowLockScreen] = useState(false);
+
+  if (shouldShowLockScreen)
+    return <LockScreen onUnlock={() => setShouldShowLockScreen(false)} />;
+
   return (
     <Page testID={testID} style={ViewStyles.container}>
       <CopyPasswordButton label="Connected To" password={password} />
@@ -21,6 +28,7 @@ export const ReceiveVibrationInterface = ({
           {currentVibrationPattern ? currentVibrationPattern.name : "Nothing"}
         </StyledText>
       </View>
+      <LockTheScreenButton onPress={() => setShouldShowLockScreen(true)} />
     </Page>
   );
 };
