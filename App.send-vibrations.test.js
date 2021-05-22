@@ -903,7 +903,7 @@ describe("App - send vibrations", () => {
     });
   });
 
-  it("stops vibrating when the app state becomes inactive", async () => {
+  it("stops vibrating when the page is unmounted", async () => {
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
@@ -953,18 +953,16 @@ describe("App - send vibrations", () => {
     // 7. Reset vibration.cancel to ensure it is called the expected number of times
     Vibration.cancel.mockClear();
 
-    // 8. set the app as inactive
-    const handleAppStateUpdates = AppState.addEventListener.mock.calls.map(
-      ([_, handleAppStateUpdate]) => handleAppStateUpdate
+    // 8. go back to the main menu
+    const mainMenuButton = getAllByRole("button").find((button) =>
+      within(button).queryByTestId("chevronBackIcon")
     );
-    await act(async () =>
-      handleAppStateUpdates.forEach((handleAppStateUpdate) =>
-        handleAppStateUpdate("inactive")
-      )
-    );
+    await act(async () => fireEvent.press(mainMenuButton));
 
     // 9. Confirm vibration was canceled
-    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+    await waitForExpect(() => {
+      expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+    });
   });
 });
 

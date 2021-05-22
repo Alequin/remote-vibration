@@ -16,7 +16,6 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
   removeItem: jest.fn(),
 }));
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   act,
   fireEvent,
@@ -25,7 +24,7 @@ import {
   within,
 } from "@testing-library/react-native";
 import React from "React";
-import { AppState, Vibration } from "react-native";
+import { Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
 import { vibrateOnCurrentDevice } from "./src/pages/page-names";
@@ -194,18 +193,16 @@ describe("App - Vibrate on current phone", () => {
     // 7. Reset vibration.cancel to ensure it is called the expected number of times
     Vibration.cancel.mockClear();
 
-    // 8. set the app as inactive
-    const handleAppStateUpdates = AppState.addEventListener.mock.calls.map(
-      ([_, handleAppStateUpdate]) => handleAppStateUpdate
+    // 8. go back to the main menu
+    const mainMenuButton = getAllByRole("button").find((button) =>
+      within(button).queryByTestId("chevronBackIcon")
     );
-    await act(async () => {
-      handleAppStateUpdates.forEach((handleAppStateUpdate) =>
-        handleAppStateUpdate("inactive")
-      );
-    });
+    await act(async () => fireEvent.press(mainMenuButton));
 
     // 9. Confirm vibration was canceled
-    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+    await waitForExpect(() => {
+      expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("allows the user to lock and unlock the screen", async () => {

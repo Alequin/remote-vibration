@@ -5,19 +5,14 @@ import {
   newRandomPattern,
   RANDOM_PATTERN_NAME,
 } from "../utilities/vibration-patterns";
-import { useAppActiveState } from "./use-app-active-state";
 
 export const useVibration = ({ disableVibration }) => {
-  const { isAppActive } = useAppActiveState();
   const [activePattern, setActivePattern] = useState(null);
 
   const { speedModifier, setSpeedModifier, applySpeedModifier } =
     useSpeedModifier();
 
-  useEffect(() => {
-    // Disable all vibration when the app moves to the background
-    if (!isAppActive) Vibration.cancel();
-  }, [isAppActive]);
+  useEffect(() => () => Vibration.cancel(), []);
 
   useEffect(() => {
     Vibration.cancel();

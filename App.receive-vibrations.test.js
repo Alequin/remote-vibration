@@ -35,7 +35,7 @@ import Clipboard from "expo-clipboard";
 import * as Network from "expo-network";
 import nock from "nock";
 import React from "React";
-import { Alert, AppState, Vibration } from "react-native";
+import { Alert, Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
 import * as pageNames from "./src/pages/page-names";
@@ -771,7 +771,7 @@ describe("App - receive vibrations", () => {
     });
   });
 
-  it("stops vibrating when the app state becomes inactive", async () => {
+  it("stops vibrating when the page is unmounted", async () => {
     mockCreateARoom();
 
     const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
@@ -813,18 +813,16 @@ describe("App - receive vibrations", () => {
     // 5. Reset vibration.cancel to ensure it is called the expected number of times
     Vibration.cancel.mockClear();
 
-    // 6. set the app as inactive
-    const handleAppStateUpdates = AppState.addEventListener.mock.calls.map(
-      ([_, handleAppStateUpdate]) => handleAppStateUpdate
+    // 6. go back to the main menu
+    const mainMenuButton = getAllByRole("button").find((button) =>
+      within(button).queryByTestId("chevronBackIcon")
     );
-    await act(async () =>
-      handleAppStateUpdates.forEach((handleAppStateUpdate) =>
-        handleAppStateUpdate("inactive")
-      )
-    );
+    await act(async () => fireEvent.press(mainMenuButton));
 
     // 7. Confirm vibration was canceled
-    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+    await waitForExpect(() => {
+      expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+    });
   });
 });
 
