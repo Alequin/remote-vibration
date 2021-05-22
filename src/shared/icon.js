@@ -36,9 +36,7 @@ const customIcon =
 
 const ICON_OPTIONS = {
   vibrate: customIcon(MaterialCommunityIcons, "vibrate"),
-  link: customIcon(Entypo, "link"),
-  backArrow: customIcon(Ionicons, "arrow-back-sharp"),
-  backArrow2: customIcon(Ionicons, "return-up-back"),
+  backArrow: customIcon(Ionicons, "chevron-back"),
   play: customIcon(Feather, "play"),
   checkBoxActive: customIcon(MaterialIcons, "check-box"),
   checkBoxInactive: customIcon(MaterialIcons, "check-box-outline-blank"),
@@ -48,9 +46,7 @@ const ICON_OPTIONS = {
   connectedPeople: customIcon(MaterialIcons, "connect-without-contact"),
   copyToClipboard: customIcon(MaterialIcons, "content-copy"),
   pasteFromClipboard: customIcon(MaterialIcons, "content-paste"),
-  create: customIcon(Ionicons, "create-outline"),
   cancel: customIcon(MaterialIcons, "cancel"),
-  playSpeed: customIcon(MaterialCommunityIcons, "play-speed"),
   speedometerSlow: customIcon(MaterialCommunityIcons, "speedometer-slow"),
   speedometerMedium: customIcon(MaterialCommunityIcons, "speedometer-medium"),
   speedometerFast: customIcon(MaterialCommunityIcons, "speedometer"),

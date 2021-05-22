@@ -759,7 +759,7 @@ describe("App - receive vibrations", () => {
 
     // 5. Return to the main menu
     const backButton = (await findAllByRole("button")).find((button) =>
-      within(button).queryByTestId("arrowBackSharpIcon")
+      within(button).queryByTestId("chevronBackIcon")
     );
 
     await act(async () => fireEvent.press(backButton));
