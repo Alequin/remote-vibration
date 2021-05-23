@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import { StatusBar, View } from "react-native";
 import { AppContext } from "./app-context";
 import { MainMenu } from "./src/pages/main-menu";
@@ -13,11 +13,16 @@ import { withBackground } from "./src/shared/background";
 import { Icon } from "./src/shared/icon";
 import { useAppEnvironment } from "./src/shared/use-app-environment";
 import { darkCyan } from "./src/utilities/colours";
+import { wakeUpServer } from "./src/utilities/wake-up-server";
 
 const Stack = createStackNavigator();
 
 const App = () => {
   const appState = useAppEnvironment();
+
+  useEffect(() => {
+    if (appState.isNewSession) wakeUpServer();
+  }, [appState.isNewSession]);
 
   return appState.isLoading ? (
     <View testID="initial-loading-page" />
