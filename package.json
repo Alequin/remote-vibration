@@ -11,7 +11,8 @@
     "eject": "expo eject",
     "build-android-apk": "expo build:android -t apk",
     "build-android-bundle": "expo build:android -t app-bundle",
-    "review-bundle": "npx react-native-bundle-visualizer --expo managed"
+    "review-bundle": "npx react-native-bundle-visualizer --expo managed",
+    "make-app-json": "node ./app.json-generator.js"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.14.1",
