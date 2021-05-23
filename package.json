@@ -23,6 +23,7 @@
     "expo-ads-admob": "~8.4.0",
     "expo-clipboard": "~1.0.1",
     "expo-constants": "~9.3.3",
+    "expo-keep-awake": "~8.4.0",
     "expo-linear-gradient": "~8.4.0",
     "expo-network": "~2.4.0",
     "lodash": "^4.17.21",

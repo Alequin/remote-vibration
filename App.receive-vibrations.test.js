@@ -1,3 +1,7 @@
+jest.mock("expo-keep-awake", () => ({
+  activateKeepAwake: jest.fn(),
+  deactivateKeepAwake: jest.fn(),
+}));
 jest.mock("react-native/Libraries/AppState/AppState", () => ({
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
@@ -33,6 +37,7 @@ import {
   within,
 } from "@testing-library/react-native";
 import Clipboard from "expo-clipboard";
+import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import * as Network from "expo-network";
 import nock from "nock";
 import React from "React";
@@ -783,12 +788,16 @@ describe("App - receive vibrations", () => {
     Vibration.cancel.mockClear();
 
     // 6. go back to the main menu
+    deactivateKeepAwake.mockClear();
     const mainMenuButton = getAllByRole("button").find((button) =>
       within(button).queryByTestId("chevronBackIcon")
     );
     await act(async () => fireEvent.press(mainMenuButton));
 
-    // 7. Confirm vibration was canceled
+    // 7. Confirm the screen can sleep
+    expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
+
+    // 8. Confirm vibration was canceled
     await waitForExpect(() => {
       expect(Vibration.cancel).toHaveBeenCalledTimes(1);
     });
@@ -907,6 +916,61 @@ describe("App - receive vibrations", () => {
       expect(getByTestId("receive-vibrations-page")).toBeDefined()
     );
   }, 30000); // delay so the active-lock-dot count can reduce organically
+
+  it("vibrates when a vibration pattern message is received", async () => {
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. start the connection
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
+
+    // 4. Fake receiving a vibration pattern message
+    const mockVibrationPattern = newVibrationPattern("mockPattern", [0.1]);
+    await act(async () =>
+      mockWebsocketClient.onmessage({
+        data: JSON.stringify({
+          type: "receivedVibrationPattern",
+          data: { vibrationPattern: mockVibrationPattern, speed: 2 },
+        }),
+      })
+    );
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+
+    // 5. Confirm the screen has been instructed to stay awake
+    expect(activateKeepAwake).toHaveBeenCalledTimes(1);
+
+    // 6. Fake receiving a vibration pattern message
+    Vibration.cancel.mockClear();
+    deactivateKeepAwake.mockClear();
+    await act(async () =>
+      mockWebsocketClient.onmessage({
+        data: JSON.stringify({
+          type: "receivedVibrationPattern",
+          data: { vibrationPattern: null },
+        }),
+      })
+    );
+    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+
+    // 7. Confirm the screen has been instructed to no longer stay awake
+    expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
+  });
 });
 
 const moveToReceiveVibrationsPage = async (findAllByRole) => {

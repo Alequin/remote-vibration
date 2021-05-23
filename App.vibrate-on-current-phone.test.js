@@ -1,3 +1,7 @@
+jest.mock("expo-keep-awake", () => ({
+  activateKeepAwake: jest.fn(),
+  deactivateKeepAwake: jest.fn(),
+}));
 jest.mock("react-native/Libraries/AppState/AppState", () => ({
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
@@ -23,6 +27,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react-native";
+import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import React from "React";
 import { Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
@@ -157,7 +162,7 @@ describe("App - Vibrate on current phone", () => {
     });
   });
 
-  it("stops vibrating when the app state becomes inactive", async () => {
+  it("stops vibrating and allows the screen to sleep when the page unmounts", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
     moveToVibrateOnCurrentDevicePage(getAllByRole);
@@ -194,12 +199,18 @@ describe("App - Vibrate on current phone", () => {
     Vibration.cancel.mockClear();
 
     // 8. go back to the main menu
+    deactivateKeepAwake.mockClear();
     const mainMenuButton = getAllByRole("button").find((button) =>
       within(button).queryByTestId("chevronBackIcon")
     );
     await act(async () => fireEvent.press(mainMenuButton));
 
-    // 9. Confirm vibration was canceled
+    // 9. Confirm the screen can sleep
+    await waitForExpect(async () => {
+      expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
+    });
+
+    // 10. Confirm vibration was canceled
     await waitForExpect(() => {
       expect(Vibration.cancel).toHaveBeenCalledTimes(1);
     });
@@ -283,6 +294,34 @@ describe("App - Vibrate on current phone", () => {
       expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined()
     );
   }, 30000); // delay so the active-lock-dot count can reduce organically
+
+  it("keeps the screen awake when a vibration is playing and allows it sleep once it has stopped", async () => {
+    const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
+
+    moveToVibrateOnCurrentDevicePage(getAllByRole);
+
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+
+    const exampleConstantVibrationButton = getAllByTestId(
+      "vibration-pattern-option"
+    ).find((option) => within(option).queryByText("Constant"));
+
+    // 1. Assert vibration starts on the first press
+    act(() => fireEvent.press(exampleConstantVibrationButton));
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+
+    // 2. Confirm the screen has been instructed to stay awake
+    expect(activateKeepAwake).toHaveBeenCalledTimes(1);
+
+    // Assert vibration stops on the second press
+    Vibration.cancel.mockClear();
+    deactivateKeepAwake.mockClear();
+    act(() => fireEvent.press(exampleConstantVibrationButton));
+    expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+
+    // 4. Confirm the screen has been instructed to no longer stay awake
+    expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
+  });
 });
 
 const moveToVibrateOnCurrentDevicePage = (getAllByRole) => {

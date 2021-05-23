@@ -1,3 +1,7 @@
+jest.mock("expo-keep-awake", () => ({
+  activateKeepAwake: jest.fn(),
+  deactivateKeepAwake: jest.fn(),
+}));
 jest.mock("react-native/Libraries/AppState/AppState", () => ({
   addEventListener: jest.fn(),
   removeEventListener: jest.fn(),
@@ -24,6 +28,7 @@ import {
   within,
 } from "@testing-library/react-native";
 import Clipboard from "expo-clipboard";
+import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import * as Network from "expo-network";
 import nock from "nock";
 import React from "React";
@@ -954,15 +959,71 @@ describe("App - send vibrations", () => {
     Vibration.cancel.mockClear();
 
     // 8. go back to the main menu
+    deactivateKeepAwake.mockClear();
     const mainMenuButton = getAllByRole("button").find((button) =>
       within(button).queryByTestId("chevronBackIcon")
     );
     await act(async () => fireEvent.press(mainMenuButton));
 
-    // 9. Confirm vibration was canceled
+    // 9. Confirm the screen can sleep
+    expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
+
+    // 10. Confirm vibration was canceled
     await waitForExpect(() => {
       expect(Vibration.cancel).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it("keeps the screen awake after a vibration has been send and allows it sleep once it has been stopped", async () => {
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToSendVibrationsPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
+    });
+
+    await mockCallsToMakeRoomAndCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Press play on a vibration pattern
+    const constantVibrationButton = (
+      await findAllByTestId("vibration-pattern-option")
+    ).find((button) => within(button).getByText("Constant"));
+    await act(async () => fireEvent.press(constantVibrationButton));
+
+    // 4. Confirm the pattern was sent
+    expect(mockWebsocketClient.send).toHaveBeenCalled();
+    expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+      JSON.stringify({
+        type: "sendVibrationPattern",
+        data: {
+          vibrationPattern: patterns["Constant"],
+          speed: 1,
+        },
+      })
+    );
+
+    // 5. Confirm the screen has been instructed to stay awake
+    expect(activateKeepAwake).toHaveBeenCalledTimes(1);
+
+    // 6. Press play again to stop the vibration
+    deactivateKeepAwake.mockClear();
+    await act(async () => fireEvent.press(constantVibrationButton));
+
+    // 7. Confirm the screen has been instructed to no longer stay awake
+    expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
   });
 });
 
