@@ -13,7 +13,8 @@ export const LockTheScreenButton = ({ onPress }) => (
 
 const ViewStyles = StyleSheet.create({
   lockScreenButton: {
-    margin: "2%",
+    width: "100%",
+    padding: "2%",
     marginTop: "4%",
   },
   lockScreenButtonText: {
