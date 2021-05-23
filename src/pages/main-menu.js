@@ -48,6 +48,7 @@ const ViewStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: "1%",
+    height: "90%",
   },
   button: {
     margin: isSmallScreen() ? "3%" : "5%",

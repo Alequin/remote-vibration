@@ -10,7 +10,7 @@ export const withBackground = (ChildComponent) => (props) =>
     </Background>
   );
 
-const Background = ({ style, children, ...otherProps }) => {
+const Background = ({ style, children }) => {
   const styleToUse = useMemo(
     () => ({
       ...ViewStyles.backgroundImage,

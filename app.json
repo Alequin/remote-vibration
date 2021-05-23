@@ -2,7 +2,7 @@
   "expo": {
     "name": "Vibration Remote: send vibrations to other devices",
     "slug": "vibration-remote-send-vibrations-to-other-devices",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "updates": {
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.just_for_fun.remote_vibration",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

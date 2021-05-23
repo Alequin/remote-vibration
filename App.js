@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { memo, useMemo, useState } from "react";
-import { View } from "react-native";
+import { StatusBar, View } from "react-native";
 import { AppContext } from "./app-context";
 import { MainMenu } from "./src/pages/main-menu";
 import * as pageNames from "./src/pages/page-names";
@@ -46,6 +46,7 @@ export const AppRouter = ({ appState = {} }) => {
           height: "100%",
         }}
       >
+        <StatusBar animated backgroundColor={darkCyan} />
         <AppPages />
         <AdBanner
           environment={appState.environment}
