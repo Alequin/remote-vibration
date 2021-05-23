@@ -107,17 +107,14 @@ describe("App - receive vibrations", () => {
     await act(async () =>
       fireEvent.changeText(getByPlaceholderText("Password"), "fake password")
     );
-    expect(
-      within(getByPlaceholderText("Password")).queryByText("fake password")
-    );
+    expect(getByPlaceholderText("Password").props.value).toBe("fake password");
 
     // 6. Press the clear text button
     await act(async () => fireEvent.press(getByTestId("cancelIcon")));
 
     // 7. Confirm the input was cleared
     const input = getByPlaceholderText("Password");
-    expect(within(input).queryByText("fake password")).toBeNull();
-    expect(within(input).queryByText("")).toBeDefined();
+    expect(input.props.value).toBe("");
     expect(AsyncStorage.removeItem).toHaveBeenCalledTimes(1);
     expect(AsyncStorage.removeItem).toHaveBeenCalledWith(
       "MOST_RECENT_ROOM_KEY"

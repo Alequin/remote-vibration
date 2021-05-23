@@ -55,9 +55,9 @@ export const ReceiveVibrations = ({ navigation }) => {
         password={password}
         error={connectToRoomError}
         onChangeText={(newPassword) => {
-          if (isNull(newPassword)) return clearPassword();
+          if (isNull(newPassword)) clearPassword();
 
-          setPassword(newPassword);
+          setPassword(newPassword || "");
           clearError();
         }}
         onPressConnect={() => connectToRoom(password)}
