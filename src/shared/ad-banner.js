@@ -16,7 +16,6 @@ export const AdBanner = ({ environment, shouldShowAds }) => {
   return (
     <View style={{ ...ViewStyles.adContainer }}>
       <AdMobBanner
-        bannerSize="smartBannerPortrait"
         adUnitID={
           environment === "production"
             ? bannerUnitId
