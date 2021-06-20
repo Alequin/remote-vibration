@@ -965,11 +965,10 @@ describe("App - send vibrations", () => {
     );
     await act(async () => fireEvent.press(mainMenuButton));
 
-    // 9. Confirm the screen can sleep
-    expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
-
-    // 10. Confirm vibration was canceled
     await waitForExpect(() => {
+      // 9. Confirm the screen can sleep
+      expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
+      // 10. Confirm vibration was canceled
       expect(Vibration.cancel).toHaveBeenCalledTimes(1);
     });
   });
