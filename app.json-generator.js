@@ -1,7 +1,7 @@
 const fs = require("fs");
 const { googleMobileAdsAppId } = require("./secrets.json");
 
-const appVersionNumber = 8;
+const appVersionNumber = 9;
 
 fs.writeFileSync(
   __dirname + "/app.json",
