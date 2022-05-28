@@ -8,10 +8,15 @@ jest.mock("react-native/Libraries/AppState/AppState", () => ({
   currentState: "active",
 }));
 // hides warning about module which cannot be used in tests
-jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
+jest.mock("react-native/Libraries/Animated/NativeAnimatedHelper");
 jest.mock("react-native/Libraries/Vibration/Vibration", () => ({
   vibrate: jest.fn(),
   cancel: jest.fn(),
+}));
+jest.mock("@react-native-async-storage/async-storage", () => ({
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+  removeItem: jest.fn(),
 }));
 jest.mock(
   "./src/pages/send-vibrations/hide-loading-indicator-interval",
@@ -19,6 +24,7 @@ jest.mock(
     hideLoadingIndicatorInterval: () => 0,
   })
 );
+jest.genMockFromModule("expo-clipboard");
 
 import {
   act,
@@ -27,7 +33,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react-native";
-import Clipboard from "expo-clipboard";
+import * as Clipboard from "expo-clipboard";
 import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import * as Network from "expo-network";
 import nock from "nock";
@@ -56,6 +62,7 @@ describe("App - send vibrations", () => {
     establishWebsocketSpy = jest
       .spyOn(newWebsocketClient, "newWebsocketClient")
       .mockReturnValue(mockWebsocketClient);
+    AppState.addEventListener.mockImplementation(() => ({ remove: jest.fn() }));
   });
 
   afterEach(() => {
@@ -397,7 +404,7 @@ describe("App - send vibrations", () => {
   });
 
   it("allows the user to copy the Password to the clipboard", async () => {
-    jest.spyOn(Clipboard, "setString");
+    jest.spyOn(Clipboard, "setStringAsync");
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findByTestId, getAllByRole, findAllByRole } = render(
@@ -430,8 +437,8 @@ describe("App - send vibrations", () => {
     );
 
     // 5. Confirm the key is copied
-    expect(Clipboard.setString).toHaveBeenCalledTimes(1);
-    expect(Clipboard.setString).toHaveBeenCalledWith(MOCK_ROOM_KEY);
+    expect(Clipboard.setStringAsync).toHaveBeenCalledTimes(1);
+    expect(Clipboard.setStringAsync).toHaveBeenCalledWith(MOCK_ROOM_KEY);
   });
 
   it("sends a vibration pattern when one is selected", async () => {
@@ -649,7 +656,7 @@ describe("App - send vibrations", () => {
   });
 
   it("creates a new random pattern when the 'Random' option is selected", async () => {
-    jest.spyOn(Clipboard, "setString");
+    jest.spyOn(Clipboard, "setStringAsync");
     const createARoomInterceptor = mockCreateARoom();
 
     const mockPattern = newVibrationPattern("mockRandom", [1, 1, 1]);
@@ -704,7 +711,7 @@ describe("App - send vibrations", () => {
   });
 
   it("sends an empty vibration pattern when one deselected to signify the vibration should stop", async () => {
-    jest.spyOn(Clipboard, "setString");
+    jest.spyOn(Clipboard, "setStringAsync");
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
@@ -757,7 +764,7 @@ describe("App - send vibrations", () => {
   });
 
   it("sends a different vibration pattern if one is playing and then another is selected", async () => {
-    jest.spyOn(Clipboard, "setString");
+    jest.spyOn(Clipboard, "setStringAsync");
     const createARoomInterceptor = mockCreateARoom();
 
     const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(

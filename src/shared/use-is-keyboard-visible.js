@@ -7,13 +7,19 @@ export const useIsKeyboardVisible = () => {
   useEffect(() => {
     const setKeyboardIsVisible = () => setIsKeyboardVisible(true);
     const setKeyboardIsHidden = () => setIsKeyboardVisible(false);
-    Keyboard.addListener("keyboardDidShow", setKeyboardIsVisible);
-    Keyboard.addListener("keyboardDidHide", setKeyboardIsHidden);
+    const didShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      setKeyboardIsVisible
+    );
+    const didHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      setKeyboardIsHidden
+    );
 
     // cleanup function
     return () => {
-      Keyboard.removeListener("keyboardDidShow", setKeyboardIsVisible);
-      Keyboard.removeListener("keyboardDidHide", setKeyboardIsHidden);
+      didShowListener.remove();
+      didHideListener.remove();
     };
   }, []);
 

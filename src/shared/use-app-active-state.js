@@ -14,8 +14,11 @@ export const useAppActiveState = () => {
   );
 
   useEffect(() => {
-    AppState.addEventListener("change", handleAppStateChange);
-    return () => AppState.removeEventListener("change", handleAppStateChange);
+    const appStateChangeListener = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+    return () => appStateChangeListener.remove();
   }, [handleAppStateChange]);
 
   return { isAppActive, appState };

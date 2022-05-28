@@ -21,8 +21,8 @@ const App = () => {
   const appState = useAppEnvironment();
 
   useEffect(() => {
-    if (appState.isNewSession) wakeUpServer();
-  }, [appState.isNewSession]);
+    wakeUpServer();
+  }, []);
 
   return appState.isLoading ? (
     <View testID="initial-loading-page" />

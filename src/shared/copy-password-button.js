@@ -1,4 +1,4 @@
-import Clipboard from "expo-clipboard";
+import * as Clipboard from "expo-clipboard";
 import React, { useRef } from "react";
 import { Animated, StyleSheet, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -24,8 +24,8 @@ export const CopyPasswordButton = ({ label, password }) => {
         testID="copyPasswordButton"
         accessibilityRole="button"
         style={ViewStyles.passwordButton}
-        onPress={() => {
-          Clipboard.setString(password);
+        onPress={async () => {
+          await Clipboard.setStringAsync(password);
           fadeOut();
         }}
       >

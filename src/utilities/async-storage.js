@@ -13,8 +13,6 @@ const newStorageItem = (storageKey) => ({
 
 export const deviceId = newStorageItem("DEVICE_ID_KEY");
 
-export const sessionId = newStorageItem("SESSION_ID_KEY");
-
 export const mostRecentRoomKey = newStorageItem("MOST_RECENT_ROOM_KEY");
 
 export const lastUsedVibrationSpeed = newStorageItem(

@@ -1,5 +1,10 @@
-jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
+jest.mock("@react-native-async-storage/async-storage", () => ({
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+  removeItem: jest.fn(),
+}));
 
+// import "react-test-renderer";
 import React from "React";
 import { render, within } from "@testing-library/react-native";
 import { AppRouter } from "./App";

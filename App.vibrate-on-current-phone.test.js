@@ -8,7 +8,7 @@ jest.mock("react-native/Libraries/AppState/AppState", () => ({
   currentState: "active",
 }));
 // hides warning about module which cannot be used in tests
-jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
+jest.mock("react-native/Libraries/Animated/NativeAnimatedHelper");
 jest.mock("react-native/Libraries/Vibration/Vibration", () => ({
   vibrate: jest.fn(),
   cancel: jest.fn(),
@@ -236,7 +236,7 @@ describe("App - Vibrate on current phone", () => {
     expect(within(lockScreen).getByText("Lock Screen")).toBeDefined();
     expect(within(lockScreen).getByTestId("lockIcon")).toBeDefined();
     expect(
-      within(lockScreen).getByText("Press the screen\nto unlock")
+      within(lockScreen).getByText(/Press the screen.*to unlock/i)
     ).toBeDefined();
 
     // 4. user presses the screen enough times to unlock it

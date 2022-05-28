@@ -1,9 +1,9 @@
-const blacklist = require("metro-config/src/defaults/blacklist");
+const exclusionList = require("metro-config/src/defaults/exclusionList");
 
 module.exports = {
   resolver: {
     // Exclude files from the final app bundle
-    blacklistRE: blacklist([
+    blacklistRE: exclusionList([
       /.*assets\/icon-html.*/,
       /.*assets\/google-play.*/,
       /.*test.js/,

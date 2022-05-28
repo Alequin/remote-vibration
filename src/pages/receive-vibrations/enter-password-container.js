@@ -1,4 +1,4 @@
-import Clipboard from "expo-clipboard";
+import * as Clipboard from "expo-clipboard";
 import isEmpty from "lodash/isEmpty";
 import React, { useMemo } from "react";
 import { Dimensions, StyleSheet, TextInput, View } from "react-native";

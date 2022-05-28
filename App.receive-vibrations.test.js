@@ -8,7 +8,7 @@ jest.mock("react-native/Libraries/AppState/AppState", () => ({
   currentState: "active",
 }));
 // hides warning about module which cannot be used in tests
-jest.mock("react-native/Libraries/Animated/src/NativeAnimatedHelper");
+jest.mock("react-native/Libraries/Animated/NativeAnimatedHelper");
 jest.mock("react-native/Libraries/Vibration/Vibration", () => ({
   vibrate: jest.fn(),
   cancel: jest.fn(),
@@ -27,7 +27,12 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
 jest.mock("react-native/Libraries/Alert/Alert", () => ({
   alert: jest.fn(),
 }));
+jest.mock("expo-clipboard", () => ({
+  setStringAsync: jest.fn(),
+  getStringAsync: jest.fn(),
+}));
 
+import "@testing-library/jest-native/extend-expect";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   act,
@@ -36,7 +41,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react-native";
-import Clipboard from "expo-clipboard";
+import * as Clipboard from "expo-clipboard";
 import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import * as Network from "expo-network";
 import nock from "nock";
@@ -655,7 +660,7 @@ describe("App - receive vibrations", () => {
       expect(within(page).queryByText(MOCK_ROOM_KEY)).toBeDefined();
     });
 
-    jest.spyOn(Clipboard, "setString");
+    jest.spyOn(Clipboard, "setStringAsync");
 
     // 5. Press button to copy key
     await act(async () =>
@@ -663,8 +668,8 @@ describe("App - receive vibrations", () => {
     );
 
     // 6. Confirm the key is copied
-    expect(Clipboard.setString).toHaveBeenCalledTimes(1);
-    expect(Clipboard.setString).toHaveBeenCalledWith(MOCK_ROOM_KEY);
+    expect(Clipboard.setStringAsync).toHaveBeenCalledTimes(1);
+    expect(Clipboard.setStringAsync).toHaveBeenCalledWith(MOCK_ROOM_KEY);
   });
 
   it("displays the current vibration pattern", async () => {
@@ -842,7 +847,7 @@ describe("App - receive vibrations", () => {
     expect(within(lockScreen).getByText("Lock Screen")).toBeDefined();
     expect(within(lockScreen).getByTestId("lockIcon")).toBeDefined();
     expect(
-      within(lockScreen).getByText("Press the screen\nto unlock")
+      within(lockScreen).getByText(/Press the screen.*to unlock/i)
     ).toBeDefined();
 
     // 6. user presses the screen enough times to unlock it
