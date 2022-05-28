@@ -19,21 +19,18 @@ export const MainMenu = ({ navigation }) => {
   return (
     <Page testID="main-menu-page" style={ViewStyles.container}>
       <MenuButton
-        style={ViewStyles.button}
         icon="vibrate"
         onPress={() => navigation.navigate(pageNames.vibrateOnCurrentDevice)}
       >
         {pageNames.vibrateOnCurrentDevice}
       </MenuButton>
       <MenuButton
-        style={ViewStyles.button}
         icon="connectedPeople"
         onPress={() => navigation.navigate(pageNames.receiveVibrations)}
       >
         {pageNames.receiveVibrations}
       </MenuButton>
       <MenuButton
-        style={ViewStyles.button}
         icon="wifi"
         onPress={() => navigation.navigate(pageNames.sendVibrations)}
       >
@@ -48,9 +45,6 @@ const ViewStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: "1%",
-    height: "90%",
-  },
-  button: {
-    margin: isSmallScreen() ? "3%" : "5%",
+    height: "70%",
   },
 });
