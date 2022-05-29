@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { websocketConnection } from "../utilities/websocket-connection";
+import { useAppActiveState } from "./use-app-active-state";
 
 export const useConnectToRoom = () => {
   const [websocketError, setWebsocketError] = useState(null);
@@ -9,7 +10,10 @@ export const useConnectToRoom = () => {
   const [isConnectedToRoom, setIsConnectedToRoom] = useState(false);
 
   let hasUnmounted = false;
-  useEffect(() => () => (hasUnmounted = true), []);
+  useEffect(() => {
+    hasUnmounted = false;
+    return () => (hasUnmounted = true);
+  }, []);
 
   const startWebsocketConnection = useCallback(async () => {
     if (hasUnmounted) return;
@@ -48,14 +52,19 @@ export const useConnectToRoom = () => {
     }
   }, []);
 
+  const { isAppActive } = useAppActiveState();
+
+  // Connect client on mount and app moving to foreground
   useEffect(() => {
-    const activeConnection = startWebsocketConnection();
-    return () => activeConnection?.then(({ disconnect }) => disconnect());
-  }, []);
+    if (isAppActive) {
+      const activeConnection = startWebsocketConnection();
+      return () => activeConnection?.then(({ disconnect }) => disconnect());
+    }
+  }, [isAppActive]);
 
   const connectToRoom = useCallback(
     (password) => {
-      if (connection) {
+      if (connection?.client) {
         connection.client.send(
           JSON.stringify({
             type: "connectToRoom",
@@ -66,13 +75,13 @@ export const useConnectToRoom = () => {
         setIsLoading(true);
       }
     },
-    [connection]
+    [connection?.client]
   );
 
+  // Send heartbeat messages to keep client alive
   useEffect(() => {
-    if (connection?.client && isConnectedToRoom) {
+    if (isAppActive && connection?.client && isConnectedToRoom) {
       const interval = setInterval(() => {
-        console.log("send heartbeat");
         connection.client.send(
           JSON.stringify({
             type: "heartbeat",
@@ -81,7 +90,7 @@ export const useConnectToRoom = () => {
       }, 30000);
       return () => clearInterval(interval);
     }
-  }, [connection?.client, isConnectedToRoom]);
+  }, [connection?.client, isConnectedToRoom, isAppActive]);
 
   return {
     client: connection?.client,

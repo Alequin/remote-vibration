@@ -958,6 +958,40 @@ describe("App - send vibrations", () => {
     });
   });
 
+  it("disconnects the connection to the server when the app moves to the background", async () => {
+    // 1. Render
+    const { findByTestId, getAllByRole, getAllByTestId } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
+    );
+
+    await waitFor(async () => {
+      // 2. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToSendVibrationsPage(getAllByRole);
+
+      // 3. Moves to expected page
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
+    });
+
+    // 4. Fake the connection to the websocket event fire
+    expect(mockWebsocketClient.onopen).toBeDefined();
+    await act(async () => mockWebsocketClient.onopen());
+
+    // 5. Confirm the client has not been closed
+    expect(mockWebsocketClient.close).toHaveBeenCalledTimes(0);
+
+    // 6. set the app as inactive
+    await act(async () =>
+      AppState.addEventListener.mock.calls.forEach(
+        ([_, handleAppStateUpdate]) => handleAppStateUpdate("inactive")
+      )
+    );
+
+    // 7. Confirm the client has closed
+    expect(mockWebsocketClient.close).toHaveBeenCalledTimes(1);
+  });
+
   it("stops vibrating when the page is unmounted", async () => {
     const createARoomInterceptor = mockCreateARoom();
 
