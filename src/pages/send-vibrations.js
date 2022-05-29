@@ -19,7 +19,7 @@ export const SendVibrations = ({ navigation }) => {
     return (
       <CannotConnectErrorPage
         testID="send-vibrations-page"
-        buttonText={"Try to Reconnect"}
+        buttonText="Try to Reconnect"
         onPress={() => {
           resetClient();
         }}

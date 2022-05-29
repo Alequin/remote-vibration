@@ -36,6 +36,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import * as Network from "expo-network";
+import { forEach } from "lodash";
 import nock from "nock";
 import React from "React";
 import { AppState, Vibration } from "react-native";
@@ -116,10 +117,12 @@ describe("App - send vibrations", () => {
       expect(createARoomInterceptor.isDone()).toBe(true);
     });
 
-    // 4. Confirm the error page is shown
-    expect(
-      getByText("Sorry but it looks like there was a connection issue")
-    ).toBeDefined();
+    await waitFor(async () => {
+      // 4. Confirm the error page is shown
+      expect(
+        getByText("Sorry but it looks like there was a connection issue")
+      ).toBeDefined();
+    });
   });
 
   it("shows the full page error if there is an error with the initial websocket connection", async () => {
@@ -498,6 +501,46 @@ describe("App - send vibrations", () => {
     ).toBeDefined();
   });
 
+  it("displays all vibration pattern options", async () => {
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { findByText, getAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
+    );
+
+    await waitFor(async () => {
+      // 1. Starts on main menu
+      expect(await findByTestId("main-menu-page")).toBeDefined();
+
+      await moveToSendVibrationsPage(getAllByRole);
+
+      // 2. Moves to expected page
+      expect(await findByTestId("send-vibrations-page")).toBeDefined();
+    });
+
+    await mockCallsToMakeRoomAndCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(`Password:`));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    // 4. Confirm all expected vibration buttons are visible
+    const vibrationButtons = getAllByTestId("vibration-pattern-option");
+    forEach(vibrationPatterns.patterns, (pattern) => {
+      const patternButton = vibrationButtons.find((button) =>
+        within(button).queryByText(pattern.name)
+      );
+
+      expect(patternButton).toBeDefined();
+      expect(within(patternButton).getByText(pattern.name)).toBeDefined();
+      expect(within(patternButton).getByText(pattern.emoji)).toBeDefined();
+    });
+  });
+
   it("also vibrates on the current device if check box is ticked", async () => {
     const createARoomInterceptor = mockCreateARoom();
 
@@ -808,12 +851,12 @@ describe("App - send vibrations", () => {
     await waitFor(async () => {
       // 5. Press play on the pulse vibration pattern
       const pulseVibration = patternOptions.find((option) =>
-        within(option).queryByText("Pulse")
+        within(option).queryByText("Drum Roll")
       );
 
       const examplePulseVibrationButton = within(pulseVibration)
         .getAllByRole("button")
-        .find((button) => within(button).getByText("Pulse"));
+        .find((button) => within(button).getByText("Drum Roll"));
       await act(async () => fireEvent.press(examplePulseVibrationButton));
     });
 
@@ -822,7 +865,7 @@ describe("App - send vibrations", () => {
       JSON.stringify({
         type: "sendVibrationPattern",
         data: {
-          vibrationPattern: patterns["Pulse"],
+          vibrationPattern: patterns["Drum Roll"],
           speed: 1,
         },
       })

@@ -20,6 +20,7 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
   removeItem: jest.fn(),
 }));
 
+import { expect } from "@jest/globals";
 import {
   act,
   fireEvent,
@@ -28,6 +29,7 @@ import {
   within,
 } from "@testing-library/react-native";
 import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
+import { forEach } from "lodash";
 import React from "React";
 import { Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
@@ -76,6 +78,27 @@ describe("App - Vibrate on current phone", () => {
     ).toBeDefined();
   });
 
+  it("displays all vibration pattern options", async () => {
+    const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
+
+    moveToVibrateOnCurrentDevicePage(getAllByRole);
+
+    // 1. goes to expected page
+    expect(getByTestId("vibrate-on-current-phone-page")).toBeDefined();
+
+    // 2. Confirm all expected vibration buttons are visible
+    const vibrationButtons = getAllByTestId("vibration-pattern-option");
+    forEach(vibrationPatterns.patterns, (pattern) => {
+      const patternButton = vibrationButtons.find((button) =>
+        within(button).queryByText(pattern.name)
+      );
+
+      expect(patternButton).toBeDefined();
+      expect(within(patternButton).getByText(pattern.name)).toBeDefined();
+      expect(within(patternButton).getByText(pattern.emoji)).toBeDefined();
+    });
+  });
+
   it("plays a second pattern when selects a different one after a first is active", async () => {
     const { getAllByRole, getByTestId, getAllByTestId } = render(<AppRouter />);
 
@@ -97,13 +120,13 @@ describe("App - Vibrate on current phone", () => {
 
     const pulseVibrationButton = getAllByTestId(
       "vibration-pattern-option"
-    ).find((option) => within(option).queryByText("Pulse"));
+    ).find((option) => within(option).queryByText("Drum Roll"));
 
     // 1. Press second pattern
     act(() => fireEvent.press(pulseVibrationButton));
     expect(Vibration.vibrate).toHaveBeenCalledTimes(2);
     expect(Vibration.vibrate).toHaveBeenCalledWith(
-      vibrationPatterns.patterns["Pulse"].pattern,
+      vibrationPatterns.patterns["Drum Roll"].pattern,
       true
     );
   });

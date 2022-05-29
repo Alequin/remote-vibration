@@ -17,16 +17,7 @@ describe("vibration-patterns - newRandomPattern", () => {
       .mockImplementation(() => mockRandomOutput.shift());
 
     expect(newRandomPattern().pattern.slice(0, 10)).toEqual([
-      0,
-      800,
-      400,
-      800,
-      400,
-      800,
-      400,
-      800,
-      400,
-      800,
+      0, 800, 400, 800, 400, 800, 400, 800, 400, 800,
     ]);
   });
 });

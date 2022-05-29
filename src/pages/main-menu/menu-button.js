@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { Button, ButtonText } from "../../shared/button";
 import { Icon } from "../../shared/icon";
 import { textShadow } from "../../shared/text-shadow-style";
