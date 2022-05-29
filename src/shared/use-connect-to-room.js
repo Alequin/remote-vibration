@@ -69,6 +69,20 @@ export const useConnectToRoom = () => {
     [connection]
   );
 
+  useEffect(() => {
+    if (connection?.client && isConnectedToRoom) {
+      const interval = setInterval(() => {
+        console.log("send heartbeat");
+        connection.client.send(
+          JSON.stringify({
+            type: "heartbeat",
+          })
+        );
+      }, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [connection?.client, isConnectedToRoom]);
+
   return {
     client: connection?.client,
     resetClient: startWebsocketConnection,
