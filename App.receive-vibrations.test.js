@@ -73,6 +73,24 @@ describe("App - receive vibrations", () => {
     nock.abortPendingRequests();
   });
 
+  it("shows the message explaining what to do on the receive-vibrations-page", async () => {
+    const { getByTestId, findAllByRole, getByText } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
+    );
+
+    // 1. Starts on main menu
+    expect(getByTestId("main-menu-page")).toBeDefined();
+
+    // 2. Moves to expected page
+    await moveToReceiveVibrationsPage(findAllByRole);
+    expect(getByTestId("receive-vibrations-page")).toBeDefined();
+
+    // 3. Confirms message appears as expected
+    expect(
+      getByText("Enter another person's password to receive vibrations")
+    ).toBeDefined();
+  });
+
   it("shows a text input to allow the user to request a connection to a room", async () => {
     const { getByTestId, findAllByRole, getByPlaceholderText } = render(
       <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />

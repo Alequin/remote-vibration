@@ -11,8 +11,8 @@ export const HighlightButton = ({ style = {}, isActive, ...otherProps }) => {
           backgroundColor: isActive
             ? transparency(white, "90")
             : transparency(white, "30"),
-          borderColor: spaceCadet,
-          borderWidth: 1,
+          borderColor: transparency(spaceCadet, "20"),
+          borderWidth: 2,
         },
         style,
       ]}

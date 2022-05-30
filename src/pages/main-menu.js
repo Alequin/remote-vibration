@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import { MenuButton } from "./main-menu/menu-button";
 import { Page } from "../shared/page";
 import * as pageNames from "./page-names";
-import { isSmallScreen } from "../utilities/is-small-screen";
+import { isSmallScreenHeight } from "../utilities/is-small-screen";
 
 export const MainMenu = ({ navigation }) => {
   useEffect(() => {

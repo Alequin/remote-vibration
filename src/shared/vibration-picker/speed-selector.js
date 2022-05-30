@@ -3,7 +3,10 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { cyan } from "../../utilities/colours";
 import { dynamicFontSize } from "../../utilities/dynamic-font-size";
-import { isSmallScreen } from "../../utilities/is-small-screen";
+import {
+  isSmallScreen,
+  isSmallScreenHeight,
+} from "../../utilities/is-small-screen";
 import { Icon } from "../icon";
 import { textShadow } from "../text-shadow-style";
 
@@ -60,7 +63,7 @@ const ViewStyles = StyleSheet.create({
     ...textShadow,
   },
   slider: {
-    marginTop: isSmallScreen() ? 0 : 10,
+    marginTop: isSmallScreenHeight() ? 0 : 10,
     width: "100%",
   },
   speedSelectorContainer: {

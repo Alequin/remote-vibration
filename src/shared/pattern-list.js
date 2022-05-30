@@ -1,9 +1,12 @@
 import { chunk } from "lodash";
-import React from "react";
+import React, { useMemo } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { borderRadius } from "../shared/border-radius";
-import { isSmallScreen } from "../utilities/is-small-screen";
+import {
+  islargeScreenWidth,
+  isSmallScreenWidth,
+} from "../utilities/is-small-screen";
 import { HighlightButton } from "./highlight-button";
 import { StyledText } from "./styled-text";
 
@@ -14,7 +17,7 @@ export const PatternList = ({
   onSelectItem,
   activeVibrationName,
 }) => {
-  const patternRows = chunk(patterns, isSmallScreen() ? 3 : 4);
+  const patternRows = chunk(patterns, isSmallScreenWidth() ? 3 : 4);
 
   return (
     <ScrollView style={{ width: "100%", flex: 1 }}>
@@ -62,41 +65,61 @@ const ButtonRow = ({ patternRow, activeVibrationName, onSelectItem }) => {
 };
 
 const PatternButton = ({ name, emoji, isButtonActive, onPress }) => {
+  const isSmallScreen = isSmallScreenWidth();
+  const buttonSize = useMemo(
+    () => windowWidth * (isSmallScreen ? 0.25 : 0.21),
+    [windowWidth, isSmallScreen]
+  );
+
   return (
     <HighlightButton
       testID="vibration-pattern-option"
       isActive={isButtonActive}
       style={{
-        height: windowWidth * (isSmallScreen() ? 0.25 : 0.2),
-        width: windowWidth * (isSmallScreen() ? 0.25 : 0.2),
+        height: buttonSize,
+        width: buttonSize,
         borderRadius: 20,
-        justifyContent: "center",
+        justifyContent: "space-around",
         alignItems: "center",
         padding: 5,
       }}
       onPress={onPress}
     >
-      <StyledText
-        style={{
-          fontSize: isSmallScreen() ? 30 : 30,
-          textAlign: "center",
-        }}
-      >
-        {emoji}
-      </StyledText>
-      <StyledText
-        style={{
-          marginTop: 5,
-          fontSize: 10,
-          textAlign: "center",
-          color: "white",
-        }}
-      >
-        {name}
-      </StyledText>
+      <ButtonItemWrapper>
+        <StyledText
+          style={{
+            fontSize: islargeScreenWidth() ? 32 : 25,
+            textAlign: "center",
+          }}
+        >
+          {emoji}
+        </StyledText>
+      </ButtonItemWrapper>
+      <ButtonItemWrapper>
+        <StyledText
+          style={{
+            fontSize: islargeScreenWidth() ? 13 : 10,
+            textAlign: "center",
+            color: "white",
+            paddingHorizontal: 4,
+          }}
+        >
+          {name}
+        </StyledText>
+      </ButtonItemWrapper>
     </HighlightButton>
   );
 };
+
+const ButtonItemWrapper = (props) => (
+  <View
+    style={{
+      flex: 4,
+      justifyContent: "center",
+    }}
+    {...props}
+  />
+);
 
 const ViewStyles = StyleSheet.create({
   patternListFlexWrapper: {

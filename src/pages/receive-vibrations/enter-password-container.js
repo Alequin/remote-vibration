@@ -12,7 +12,10 @@ import { useIsKeyboardVisible } from "../../shared/use-is-keyboard-visible";
 import { mostRecentRoomKey } from "../../utilities/async-storage";
 import { darkSpaceCadet, transparency, white } from "../../utilities/colours";
 import { dynamicFontSize } from "../../utilities/dynamic-font-size";
-import { isSmallScreen } from "../../utilities/is-small-screen";
+import {
+  isSmallScreen,
+  isSmallScreenHeight,
+} from "../../utilities/is-small-screen";
 
 const windowHeight = Dimensions.get("window").height;
 
@@ -28,9 +31,9 @@ export const EnterPasswordContainer = ({
 
   return (
     <Page testID={testID} style={ViewStyles.keyInputContainer}>
-      {(!isKeyboardVisible || !isSmallScreen()) && (
+      {(!isKeyboardVisible || !isSmallScreenHeight()) && (
         <StyledText style={ViewStyles.keyText}>
-          {`Enter another person's\npassword to receive vibrations`}
+          {`Enter another person's password to receive vibrations`}
         </StyledText>
       )}
       <KeyInput
@@ -67,8 +70,8 @@ const KeyInput = ({ value, onChangeText, shouldShowLoadingIndicator }) => {
 
   return (
     <View style={ViewStyles.keyInputWrapper}>
-      <Icon icon="blankSpace" size={32} />
-      <Icon icon="blankSpace" size={32} />
+      <Icon icon="blankSpace" size={30} />
+      <Icon icon="blankSpace" size={30} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -80,10 +83,10 @@ const KeyInput = ({ value, onChangeText, shouldShowLoadingIndicator }) => {
       <TouchableOpacity
         onPress={() => Clipboard.getStringAsync().then(onChangeText)}
       >
-        <Icon icon="pasteFromClipboard" color="white" size={32} />
+        <Icon icon="pasteFromClipboard" color="white" size={30} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => onChangeText(null)}>
-        <Icon icon="cancel" color="white" size={32} />
+        <Icon icon="cancel" color="white" size={30} />
       </TouchableOpacity>
     </View>
   );
@@ -98,7 +101,7 @@ const ViewStyles = StyleSheet.create({
     padding: "2.5%",
   },
   keyText: {
-    fontSize: dynamicFontSize(20),
+    fontSize: 18,
     textAlign: "center",
     textAlign: "center",
   },
@@ -111,7 +114,7 @@ const ViewStyles = StyleSheet.create({
   keyInput: {
     textAlign: "center",
     color: "white",
-    fontSize: dynamicFontSize(20),
+    fontSize: 20,
     padding: 5,
     flex: 1,
   },
@@ -126,10 +129,10 @@ const ViewStyles = StyleSheet.create({
     color: "white",
     padding: windowHeight * 0.01,
     textAlign: "center",
-    fontSize: dynamicFontSize(18),
+    fontSize: 14,
   },
   errorText: {
-    fontSize: dynamicFontSize(17),
+    fontSize: 17,
     textAlign: "center",
     margin: 10,
   },

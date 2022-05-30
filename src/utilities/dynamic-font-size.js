@@ -1,5 +1,5 @@
 import { Dimensions, Platform, PixelRatio } from "react-native";
-import { isSmallScreen } from "./is-small-screen";
+import { isSmallScreenHeight } from "./is-small-screen";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -15,7 +15,7 @@ export const dynamicFontSize = (requestedSize) => {
 };
 
 const scaleModifier = (size) => {
-  if (isSmallScreen()) return size - 2;
+  if (isSmallScreenHeight()) return size - 2;
   if (SCREEN_WIDTH > 700) return size - 5;
   return size;
 };

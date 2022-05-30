@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Button, ButtonText } from "../../shared/button";
 import { Icon } from "../../shared/icon";
 import { textShadow } from "../../shared/text-shadow-style";
@@ -9,15 +9,18 @@ export const MenuButton = ({ icon, children, ...otherProps }) => {
   return (
     <Button style={ViewStyles.menuButton} {...otherProps}>
       <Icon style={ViewStyles.buttonIcon} color="white" icon={icon} size={30} />
-      <ButtonText style={ViewStyles.buttonText}>{children}</ButtonText>
+      <View style={{ flex: 8, justifyContent: "center" }}>
+        <ButtonText style={textShadow}>{children}</ButtonText>
+      </View>
     </Button>
   );
 };
 
 const ViewStyles = StyleSheet.create({
   menuButton: {
-    margin: "5%",
+    margin: "2%",
     padding: 10,
+    height: 70,
     borderRadius: 20,
     width: "80%",
     backgroundColor: spaceCadet,
@@ -26,10 +29,6 @@ const ViewStyles = StyleSheet.create({
   buttonIcon: {
     flex: 2,
     alignItems: "center",
-  },
-  buttonText: {
-    flex: 8,
-    alignItems: "center",
-    ...textShadow,
+    justifyContent: "center",
   },
 });
