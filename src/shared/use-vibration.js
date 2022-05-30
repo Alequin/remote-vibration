@@ -5,27 +5,28 @@ import {
   newRandomPattern,
   RANDOM_PATTERN_NAME,
 } from "../utilities/vibration-patterns";
-import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
+import { useAppActiveState } from "./use-app-active-state";
+import { useKeepAwake } from "./use-keep-awake";
 
 export const useVibration = ({ disableVibration }) => {
   const [activePattern, setActivePattern] = useState(null);
+  useKeepAwake({ shouldKeepAwake: Boolean(activePattern) });
 
   const { speedModifier, setSpeedModifier, applySpeedModifier } =
     useSpeedModifier();
 
-  useEffect(
-    () => () => {
-      deactivateKeepAwake();
-      Vibration.cancel();
-    },
-    []
-  );
+  // stop vibration on unmount
+  useEffect(() => () => Vibration.cancel(), []);
+
+  // stop vibration when app moves to background
+  const { isAppActive } = useAppActiveState();
+  useEffect(() => {
+    if (!isAppActive) Vibration.cancel();
+  }, [isAppActive]);
 
   useEffect(() => {
-    deactivateKeepAwake();
     Vibration.cancel();
 
-    if (activePattern) activateKeepAwake();
     if (activePattern && !disableVibration) {
       const pattern =
         activePattern?.name === RANDOM_PATTERN_NAME

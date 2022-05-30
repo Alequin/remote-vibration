@@ -3,6 +3,7 @@ import { CannotConnectErrorPage } from "../shared/cannot-connect-error-page";
 import { FullPageLoading } from "../shared/full-page-loading";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useCreateRoom } from "../shared/use-create-room";
+import { useWebsocketConnection } from "../shared/use-websocket-connection";
 import { SendVibrationsInterface } from "./send-vibrations/send-vibrations-interface";
 import { useHasEnoughTimePassedToHideLoadingIndicator } from "./send-vibrations/use-has-enough-time-to-hide-loading-indicator";
 
@@ -49,14 +50,9 @@ const useSendVibrations = () => {
     error: createRoomError,
   } = useCreateRoom();
 
-  const {
-    client,
-    resetClient,
-    isConnectedToRoom,
-    connectToRoomError,
-    websocketError,
-    connectToRoom,
-  } = useConnectToRoom();
+  const { client, resetClient, websocketError } = useWebsocketConnection();
+  const { isConnectedToRoom, connectToRoomError, connectToRoom } =
+    useConnectToRoom(client);
 
   useEffect(() => {
     if (password && client && !isConnectedToRoom) connectToRoom(password);

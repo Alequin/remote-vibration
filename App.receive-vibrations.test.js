@@ -3,8 +3,7 @@ jest.mock("expo-keep-awake", () => ({
   deactivateKeepAwake: jest.fn(),
 }));
 jest.mock("react-native/Libraries/AppState/AppState", () => ({
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
+  addEventListener: jest.fn(() => ({ remove: jest.fn() })),
   currentState: "active",
 }));
 // hides warning about module which cannot be used in tests
@@ -32,8 +31,8 @@ jest.mock("expo-clipboard", () => ({
   getStringAsync: jest.fn(),
 }));
 
-import "@testing-library/jest-native/extend-expect";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import "@testing-library/jest-native/extend-expect";
 import {
   act,
   fireEvent,
@@ -46,7 +45,7 @@ import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import * as Network from "expo-network";
 import nock from "nock";
 import React from "React";
-import { Alert, Vibration } from "react-native";
+import { Alert, AppState, Vibration } from "react-native";
 import waitForExpect from "wait-for-expect";
 import { AppRouter } from "./App";
 import * as pageNames from "./src/pages/page-names";
@@ -59,13 +58,14 @@ const MOCK_ROOM_KEY = "234";
 describe("App - receive vibrations", () => {
   let mockWebsocketClient = null;
 
-  let establishWebsocketSpy = null;
+  const establishWebsocketSpy = jest.spyOn(
+    newWebsocketClient,
+    "newWebsocketClient"
+  );
   beforeEach(() => {
     jest.clearAllMocks();
     mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
-    establishWebsocketSpy = jest
-      .spyOn(newWebsocketClient, "newWebsocketClient")
-      .mockReturnValue(mockWebsocketClient);
+    establishWebsocketSpy.mockReturnValue(mockWebsocketClient);
   });
 
   afterEach(() => {
@@ -343,21 +343,15 @@ describe("App - receive vibrations", () => {
     await act(async () =>
       mockWebsocketClient.onmessage({
         data: JSON.stringify({
-          error: "There is no room for the given key",
+          error: "password does not exist",
         }),
       })
     );
 
     // 9. Confirm an error message is shown
-    expect(Alert.alert).toBeCalledWith(
-      "Sorry there was an issue",
-      `There is no one with the password "${MOCK_ROOM_KEY}".\n\nCheck the password is correct and try again`,
-      [
-        {
-          text: "Continue",
-        },
-      ],
-      { cancelable: false }
+    expect(Alert.alert.mock.calls[0][0]).toBe("Sorry there was an issue");
+    expect(Alert.alert.mock.calls[0][1]).toBe(
+      `There is no one with the password "${MOCK_ROOM_KEY}".\n\nCheck the password is correct and try again`
     );
   });
 
@@ -479,23 +473,29 @@ describe("App - receive vibrations", () => {
       getByText("Sorry but it looks like there was a connection issue")
     ).toBeDefined();
 
-    // 6. press the reconnect button
+    // 6. Return new client object so react hook dependencies work as expected
+    const secondMockWebsocketClient = { close: jest.fn(), send: jest.fn() };
+    newWebsocketClient.newWebsocketClient.mockReturnValue(
+      secondMockWebsocketClient
+    );
+
+    // 7. press the reconnect button
     const reconnectButton = getAllByRole("button").find((button) =>
       within(button).queryByText("Try to Reconnect")
     );
     await act(async () => fireEvent.press(reconnectButton));
 
-    // 7. Confirm the client connection is being made again
+    // 8. Confirm the client connection is being made again
     await waitForExpect(async () => {
-      // 7.1. Make the call to open a websocket
+      // 8.1. Make the call to open a websocket
       expect(establishWebsocketSpy).toHaveBeenCalledTimes(2);
     });
 
-    // 7.2. Fake the connection to the websocket
-    expect(mockWebsocketClient.onopen).toBeDefined();
-    await act(async () => mockWebsocketClient.onopen());
+    // 8.2. Fake the connection to the websocket
+    expect(secondMockWebsocketClient.onopen).toBeDefined();
+    await act(async () => secondMockWebsocketClient.onopen());
 
-    // 8. Confirm the page has loaded
+    // 9. Confirm the page has loaded
     await waitForExpect(() => {
       expect(getByPlaceholderText("Password")).toBeDefined();
     });
@@ -821,6 +821,59 @@ describe("App - receive vibrations", () => {
       // 7. Confirm the screen can sleep
       expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
       // 8. Confirm vibration was canceled
+      expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("stops vibrating when the app moves to the background", async () => {
+    const { getByTestId, getAllByRole, findAllByRole, getByPlaceholderText } =
+      render(<AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />);
+
+    // 1. Starts on main menu
+    await waitForExpect(() =>
+      expect(getByTestId("main-menu-page")).toBeDefined()
+    );
+
+    await waitFor(async () => moveToReceiveVibrationsPage(findAllByRole));
+
+    // 2. Moves to expected page
+    await waitForExpect(() =>
+      expect(getByTestId("receive-vibrations-page")).toBeDefined()
+    );
+
+    // 3. start the connection
+    await makeAConnection(
+      getAllByRole,
+      getByPlaceholderText,
+      mockWebsocketClient
+    );
+
+    // 4. Fake receiving a vibration pattern message
+    const mockVibrationPattern = newVibrationPattern("mockPattern", [0.1]);
+    await act(async () =>
+      mockWebsocketClient.onmessage({
+        data: JSON.stringify({
+          type: "receivedVibrationPattern",
+          data: { vibrationPattern: mockVibrationPattern, speed: 2 },
+        }),
+      })
+    );
+
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith([0, 50], true);
+
+    // 5. Reset vibration.cancel to ensure it is called the expected number of times
+    Vibration.cancel.mockClear();
+
+    // 6. set the app as inactive
+    await act(async () =>
+      AppState.addEventListener.mock.calls.forEach(
+        ([_, handleAppStateUpdate]) => handleAppStateUpdate("inactive")
+      )
+    );
+
+    // 9. Confirm vibration was canceled
+    await waitForExpect(() => {
       expect(Vibration.cancel).toHaveBeenCalledTimes(1);
     });
   });

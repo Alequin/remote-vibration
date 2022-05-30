@@ -1,10 +1,11 @@
 import { isNull } from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert } from "react-native";
 import { CannotConnectErrorPage } from "../shared/cannot-connect-error-page";
 import { useConnectToRoom } from "../shared/use-connect-to-room";
 import { useVibration } from "../shared/use-vibration";
+import { useWebsocketConnection } from "../shared/use-websocket-connection";
 import { mostRecentRoomKey } from "../utilities/async-storage";
+import { badPasswordAlert } from "./receive-vibrations/bad-password-alert";
 import { EnterPasswordContainer } from "./receive-vibrations/enter-password-container";
 import { ReceiveVibrationInterface } from "./receive-vibrations/receive-vibrations-interface";
 
@@ -22,20 +23,6 @@ export const ReceiveVibrations = ({ navigation }) => {
     shouldShowPasswordInput,
     shouldShowLoadingIndicator,
   } = useReceiveVibrations();
-
-  useEffect(() => {
-    if (connectToRoomError)
-      Alert.alert(
-        "Sorry there was an issue",
-        `There is no one with the password "${password}".\n\nCheck the password is correct and try again`,
-        [
-          {
-            text: "Continue",
-          },
-        ],
-        { cancelable: false }
-      );
-  }, [connectToRoomError]);
 
   if (shouldShowErrorPage) {
     return (
@@ -77,16 +64,14 @@ export const ReceiveVibrations = ({ navigation }) => {
 const useReceiveVibrations = () => {
   const { password, setPassword, clearPassword } = usePassword();
 
+  const { client, resetClient, websocketError } = useWebsocketConnection();
   const {
-    client,
-    resetClient,
     isLoading,
     isConnectedToRoom,
     connectToRoomError,
-    websocketError,
     clearError,
     connectToRoom,
-  } = useConnectToRoom();
+  } = useConnectToRoom(client);
 
   const { activePattern, setActivePattern, setSpeedModifier } = useVibration({
     disableVibration: false,
@@ -106,8 +91,18 @@ const useReceiveVibrations = () => {
     };
   }, [client]);
 
-  const shouldShowErrorPage =
-    websocketError || connectToRoomError === "timeout";
+  const shouldShowBadPasswordAlert =
+    connectToRoomError === "password does not exist";
+
+  useEffect(() => {
+    if (shouldShowBadPasswordAlert) {
+      badPasswordAlert({ password, onClose: clearError });
+    }
+  }, [shouldShowBadPasswordAlert, password, clearError]);
+
+  const shouldShowErrorPage = Boolean(
+    !shouldShowBadPasswordAlert && (websocketError || connectToRoomError)
+  );
 
   const shouldShowLoadingIndicator =
     !client || (!isConnectedToRoom && isLoading);

@@ -3,8 +3,7 @@ jest.mock("expo-keep-awake", () => ({
   deactivateKeepAwake: jest.fn(),
 }));
 jest.mock("react-native/Libraries/AppState/AppState", () => ({
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
+  addEventListener: jest.fn(() => ({ remove: jest.fn() })),
   currentState: "active",
 }));
 // hides warning about module which cannot be used in tests
@@ -56,13 +55,14 @@ const MOCK_ROOM_KEY = "234";
 describe("App - send vibrations", () => {
   let mockWebsocketClient = null;
 
-  let establishWebsocketSpy = null;
+  const establishWebsocketSpy = jest.spyOn(
+    newWebsocketClient,
+    "newWebsocketClient"
+  );
   beforeEach(() => {
     jest.clearAllMocks();
     mockWebsocketClient = { close: jest.fn(), send: jest.fn() };
-    establishWebsocketSpy = jest
-      .spyOn(newWebsocketClient, "newWebsocketClient")
-      .mockReturnValue(mockWebsocketClient);
+    establishWebsocketSpy.mockReturnValue(mockWebsocketClient);
     AppState.addEventListener.mockImplementation(() => ({ remove: jest.fn() }));
   });
 
@@ -310,24 +310,32 @@ describe("App - send vibrations", () => {
       getByText("Sorry but it looks like there was a connection issue")
     ).toBeDefined();
 
-    // 6. press the reconnect button
+    // 6. Return new client object so react hook dependencies work as expected
+    const secondMockWebsocketClient = { close: jest.fn(), send: jest.fn() };
+    newWebsocketClient.newWebsocketClient.mockReturnValue(
+      secondMockWebsocketClient
+    );
+
+    // 7. press the reconnect button
     const reconnectButton = getAllByRole("button").find((button) =>
       within(button).queryByText("Try to Reconnect")
     );
+
     await act(async () => fireEvent.press(reconnectButton));
 
-    // 7. Confirm the client connection is made again
+    // 8. Confirm the client connection is made again
     await waitForExpect(async () => {
-      // 7.1. Make the call to open a websocket
+      // 8.1. Make the call to open a websocket
       expect(establishWebsocketSpy).toHaveBeenCalledTimes(2);
     });
-    // 7.2. Fake the connection to the websocket
-    expect(mockWebsocketClient.onopen).toBeDefined();
-    await act(async () => mockWebsocketClient.onopen());
-    // 7.3. Confirm a message is send to connect to the new room
+
+    // 8.2. Fake the connection to the websocket
+    expect(secondMockWebsocketClient.onopen).toBeDefined();
+    await act(async () => secondMockWebsocketClient.onopen());
+    // 8.3. Confirm a message is send to connect to the new room
     await waitForExpect(() => {
-      expect(mockWebsocketClient.send).toHaveBeenCalledTimes(2);
-      expect(mockWebsocketClient.send).toHaveBeenCalledWith(
+      expect(secondMockWebsocketClient.send).toHaveBeenCalledTimes(1);
+      expect(secondMockWebsocketClient.send).toHaveBeenCalledWith(
         JSON.stringify({
           type: "connectToRoom",
           data: { password: MOCK_ROOM_KEY },
@@ -335,16 +343,16 @@ describe("App - send vibrations", () => {
       );
     });
 
-    // 7.4. Fake receiving a message confirming the room connection
+    // 8.4. Fake receiving a message confirming the room connection
     await act(async () =>
-      mockWebsocketClient.onmessage({
+      secondMockWebsocketClient.onmessage({
         data: JSON.stringify({
           type: "confirmRoomConnection",
         }),
       })
     );
 
-    // 8. Confirm the page has loaded
+    // 9. Confirm the page has loaded
     await waitForExpect(() => {
       expect(getByText(`Password:`));
     });
@@ -1053,6 +1061,69 @@ describe("App - send vibrations", () => {
       // 9. Confirm the screen can sleep
       expect(deactivateKeepAwake).toHaveBeenCalledTimes(1);
       // 10. Confirm vibration was canceled
+      expect(Vibration.cancel).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("stops vibrating when the app moves to the background", async () => {
+    const createARoomInterceptor = mockCreateARoom();
+
+    const { findByText, findAllByTestId, findByTestId, getAllByRole } = render(
+      <AppRouter appState={{ deviceId: MOCK_DEVICE_ID }} />
+    );
+
+    // 1. Starts on main menu
+    expect(await findByTestId("main-menu-page")).toBeDefined();
+
+    // 2. Moves to expected page
+    await moveToSendVibrationsPage(getAllByRole);
+    expect(await findByTestId("send-vibrations-page")).toBeDefined();
+
+    await mockCallsToMakeRoomAndCreateConnection(
+      createARoomInterceptor,
+      establishWebsocketSpy,
+      mockWebsocketClient
+    );
+
+    // 3. Confirm connection is established
+    expect(await findByText(`Password:`));
+    expect(await findByText(`${MOCK_ROOM_KEY}`));
+
+    // 4. Press the enable vibration on device button
+    const allButtons = getAllByRole("button");
+    await act(async () =>
+      fireEvent.press(
+        allButtons.find((button) =>
+          within(button).queryByText("Also vibrate on this device")
+        )
+      )
+    );
+
+    // 5. Press play on a vibration pattern
+    const constantVibrationButton = (
+      await findAllByTestId("vibration-pattern-option")
+    ).find((button) => within(button).getByText("Constant"));
+    act(() => fireEvent.press(constantVibrationButton));
+
+    // 6. Confirm vibration has started
+    expect(Vibration.vibrate).toHaveBeenCalledTimes(1);
+    expect(Vibration.vibrate).toHaveBeenCalledWith(
+      vibrationPatterns.patterns["Constant"].pattern,
+      true
+    );
+
+    // 7. Reset vibration.cancel to ensure it is called the expected number of times
+    Vibration.cancel.mockClear();
+
+    // 8. set the app as inactive
+    await act(async () =>
+      AppState.addEventListener.mock.calls.forEach(
+        ([_, handleAppStateUpdate]) => handleAppStateUpdate("inactive")
+      )
+    );
+
+    // 9. Confirm vibration was canceled
+    await waitForExpect(() => {
       expect(Vibration.cancel).toHaveBeenCalledTimes(1);
     });
   });
