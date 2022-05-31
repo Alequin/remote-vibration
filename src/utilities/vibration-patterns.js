@@ -72,8 +72,7 @@ const rawPatterns = [
     [0.6, 0.12, 0.18, 0.12, 0.18, 0.12, 0.18, 0.12, 0.18, 0.12],
     "🚵‍♀️"
   ),
-  newVibrationPattern("Punch", [0.22, 0.1, 0.22, 0.6], "👊"),
-  newVibrationPattern("Punch", [0.22, 0.1, 0.22, 0.6], "👊"),
+  newVibrationPattern("Punch", [0.25, 0.3], "👊"),
   newVibrationPattern(
     "Explosion",
     [0.3, 0.2, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.4, 1, 0.75],
