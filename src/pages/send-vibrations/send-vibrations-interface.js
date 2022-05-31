@@ -11,23 +11,16 @@ import {
 import { AlsoVibrateOnCurrentDeviceCheckBox } from "./also-vibrate-on-current-device-check-box";
 
 export const SendVibrationsInterface = ({ password, client, testID }) => {
-  const [
-    shouldVibrateOnCurrentDevice,
-    setShouldVibrateOnCurrentDevice,
-  ] = useState(false);
+  const [shouldVibrateOnCurrentDevice, setShouldVibrateOnCurrentDevice] =
+    useState(false);
 
-  const [hasFirstPatternBeingPicked, setHasFirstPatternBeingPicked] = useState(
-    false
-  );
+  const [hasFirstPatternBeingPicked, setHasFirstPatternBeingPicked] =
+    useState(false);
 
-  const {
-    activePattern,
-    setActivePattern,
-    speedModifier,
-    setSpeedModifier,
-  } = useVibration({
-    disableVibration: !shouldVibrateOnCurrentDevice,
-  });
+  const { activePattern, setActivePattern, speedModifier, setSpeedModifier } =
+    useVibration({
+      disableVibration: !shouldVibrateOnCurrentDevice,
+    });
 
   useEffect(() => {
     if (hasFirstPatternBeingPicked) {

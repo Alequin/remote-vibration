@@ -48,7 +48,8 @@ const ViewStyles = StyleSheet.create({
   passwordButton: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 5,
+    paddingVertical: 5,
+    paddingHorizontal: "15%",
   },
   passwordCopiedMessage: {
     color: spaceCadet,
