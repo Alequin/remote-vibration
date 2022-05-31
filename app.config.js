@@ -1,6 +1,6 @@
 import { googleMobileAdsAppId } from "./secrets.json";
 
-const appVersionNumber = 12;
+const appVersionNumber = 13;
 
 export default {
   name: "Vibration Control! Help yourself and others relax",
