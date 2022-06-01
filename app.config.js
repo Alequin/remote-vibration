@@ -3,7 +3,7 @@ import { googleMobileAdsAppId } from "./secrets.json";
 const appVersionNumber = 15;
 
 export default {
-  name: "Vibration Control! Help yourself and others relax",
+  name: "Vibration Controller",
   slug: "vibration-remote-send-vibrations-to-other-devices", // This should never be changed
   version: `${appVersionNumber}.0.0`,
   orientation: "portrait",
